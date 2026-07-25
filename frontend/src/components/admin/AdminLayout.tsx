@@ -1,74 +1,128 @@
-import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
-import Sidebar from './Sidebar';
-import Topbar from './Topbar';
+export default function AdminDashboard() {
+  const { data, isLoading } = useQuery({ queryKey: ['dashboard-stats'], queryFn: fetchDashboardStats });
+  const { data: enquiriesData } = useQuery({ queryKey: ['recent-enquiries'], queryFn: () => fetchAdminEnquiries(1, 5) });
 
-export default function AdminLayout({ title, children }: { title: string; children: React.ReactNode }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const location = useLocation();
+  const cards = [
+    { label: 'Total Cars', value: data?.stats.totalCars ?? '—', icon: Car, color: 'bg-navy', to: '/admin/cars' },
+    { label: 'Available Cars', value: data?.stats.availableCars ?? '—', icon: Package, color: 'bg-emerald', to: '/admin/cars?status=Available' },
+    { label: 'Sold Cars', value: data?.stats.soldCars ?? '—', icon: CheckCircle2, color: 'bg-sky-600', to: '/admin/cars?status=Sold' },
+    { label: 'Featured Cars', value: data?.stats.featuredCars ?? '—', icon: Star, color: 'bg-amber', to: '/admin/cars?featuredOnly=true' },
+  ];
 
-  // Close sidebar on route change (mobile)
-  useEffect(() => {
-    setSidebarOpen(false);
-  }, [location]);
-
-  // Close sidebar on escape key
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setSidebarOpen(false);
-    };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, []);
+  const maxSales = Math.max(1, ...(data?.salesStats.map((s) => s.count) ?? [1]));
 
   return (
-    <div className="flex min-h-screen bg-surface relative">
-      {/* Mobile Hamburger Menu */}
-      <button
-        onClick={() => setSidebarOpen(true)}
-        className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-white dark:bg-[#111a2c] shadow-lg"
-        aria-label="Open menu"
-      >
-        <Menu size={20} className="text-ink dark:text-white" />
-      </button>
-
-      {/* Sidebar - Full screen left drawer on mobile */}
-      <div className={`
-        fixed inset-0 z-50 transition-all duration-300 ease-in-out
-        ${sidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}
-      `}>
-        {/* Overlay */}
-        <div 
-          className="absolute inset-0 sidebar-overlay bg-black/65 backdrop-blur-sm"
-          onClick={() => setSidebarOpen(false)}
-        />
-        
-        {/* Sidebar */}
-        <div className={`
-          admin-sidebar-drawer transition-transform duration-300 ease-in-out
-          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-        `}>
-          <button
-            onClick={() => setSidebarOpen(false)}
-            className="absolute top-4 right-4 p-2 rounded-lg hover:bg-white/10 transition-colors"
-            aria-label="Close menu"
+    <AdminLayout title="Dashboard">
+      {/* Stats Cards - One column on mobile, 2 on tablet, 4 on desktop */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-4 sm:mb-6">
+        {cards.map((c) => (
+          <Link
+            key={c.label}
+            to={c.to}
+            className="admin-stat-card bg-white rounded-2xl shadow-card p-4 sm:p-5 flex items-center gap-4 transition-shadow hover:shadow-lg cursor-pointer"
           >
-            <X size={20} className="text-white" />
-          </button>
-          <Sidebar />
+            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-2xl ${c.color} text-white flex items-center justify-center shrink-0`}>
+              <c.icon size={18} className="sm:size-20" />
+            </div>
+            <div>
+              <p className="text-xl sm:text-2xl font-display font-bold text-ink">{isLoading ? '—' : c.value}</p>
+              <p className="text-[10px] sm:text-xs text-body">{c.label}</p>
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      {/* Revenue Cards - One column on mobile, 2 on tablet, 4 on desktop */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-4 sm:mb-6">
+        {[
+          { label: "Today's Revenue", value: data?.revenue.today.revenue, sub: `${data?.revenue.today.count ?? 0} sold` },
+          { label: "This Month's Revenue", value: data?.revenue.month.revenue, sub: `${data?.revenue.month.count ?? 0} sold` },
+          { label: 'Lifetime Revenue', value: data?.revenue.lifetime.revenue, sub: `Avg ${data ? formatLakh(data.revenue.averageSellingPrice) : '—'}/car` },
+          { label: 'Lifetime Profit', value: data?.revenue.lifetime.profit, sub: `Avg ${data ? formatLakh(data.revenue.averageProfit) : '—'}/car` },
+        ].map((r) => (
+          <div key={r.label} className="admin-stat-card bg-white rounded-2xl shadow-card p-4 sm:p-5">
+            <p className="flex items-center gap-1.5 text-[10px] sm:text-xs text-body mb-1">
+              <IndianRupee size={11} className="sm:size-12" /> {r.label}
+            </p>
+            <p className="text-lg sm:text-xl font-display font-bold text-ink">{data ? formatLakh(r.value ?? 0) : '—'}</p>
+            <p className="text-[10px] sm:text-xs text-body mt-1">{r.sub}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Charts Section - Stacked on mobile */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
+        {/* Sales Statistics - Full width on mobile */}
+        <div className="lg:col-span-2 bg-white rounded-2xl shadow-card p-4 sm:p-6">
+          <div className="flex items-center justify-between mb-4 sm:mb-5">
+            <h3 className="font-display font-semibold text-ink flex items-center gap-2 text-sm sm:text-base">
+              <TrendingUp size={16} className="sm:size-17" /> Sales Statistics
+            </h3>
+            <span className="text-[10px] sm:text-xs text-body">Last 6 months</span>
+          </div>
+          {data?.salesStats.length ? (
+            <div className="flex items-end gap-2 sm:gap-4 h-40 sm:h-48">
+              {data.salesStats.map((s) => (
+                <div key={`${s._id.year}-${s._id.month}`} className="flex-1 flex flex-col items-center gap-1.5 sm:gap-2">
+                  <div
+                    className="w-full bg-emerald/80 rounded-t-lg transition-all"
+                    style={{ height: `${(s.count / maxSales) * 100}%`, minHeight: 4 }}
+                  />
+                  <span className="text-[9px] sm:text-[11px] text-body">{MONTHS[s._id.month - 1]}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-body py-8 sm:py-10 text-center">No sales recorded in the last 6 months yet.</p>
+          )}
+        </div>
+
+        {/* Recent Enquiries - Full width on mobile */}
+        <div className="bg-white rounded-2xl shadow-card p-4 sm:p-6">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <h3 className="font-display font-semibold text-ink text-sm sm:text-base">Recent Enquiries</h3>
+            <Link to="/admin/enquiries" className="text-[10px] sm:text-xs text-navy font-medium hover:underline">View all</Link>
+          </div>
+          <div className="space-y-2.5 sm:space-y-3">
+            {enquiriesData?.enquiries.length ? (
+              enquiriesData.enquiries.map((e) => (
+                <div key={e._id} className="border-b border-line pb-2.5 sm:pb-3 last:border-0 last:pb-0">
+                  <p className="text-sm font-medium text-ink">{e.customerName}</p>
+                  <p className="text-[11px] sm:text-xs text-body">
+                    {e.carSnapshot ? `${e.carSnapshot.brand} ${e.carSnapshot.model}` : 'General enquiry'}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-body py-6 sm:py-8 text-center">No enquiries yet.</p>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Desktop Sidebar */}
-      <div className="hidden md:block">
-        <Sidebar />
+      {/* Recent Uploads - 2 columns on mobile, 5 on desktop */}
+      <div className="bg-white rounded-2xl shadow-card p-4 sm:p-6 mt-4 sm:mt-5">
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
+          <h3 className="font-display font-semibold text-ink text-sm sm:text-base">Recent Uploads</h3>
+          <Link to="/admin/cars" className="text-[10px] sm:text-xs text-navy font-medium hover:underline">Manage all cars</Link>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
+          {data?.recentUploads.map((car) => (
+            <Link key={car._id} to={`/admin/edit/${car._id}`} className="group">
+              <div className="aspect-square rounded-xl overflow-hidden bg-surface mb-1.5 sm:mb-2">
+                <img 
+                  src={car.images?.[0]?.url} 
+                  alt="" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform" 
+                  loading="lazy"
+                />
+              </div>
+              <p className="text-[10px] sm:text-xs font-medium text-ink truncate">{car.brand} {car.model}</p>
+              <p className="text-[10px] sm:text-xs text-emerald font-semibold">₹{(car.price / 100000).toFixed(2)}L</p>
+            </Link>
+          ))}
+        </div>
       </div>
-
-      <div className="flex-1 min-w-0">
-        <Topbar title={title} />
-        <main className="p-4 sm:p-6">{children}</main>
-      </div>
-    </div>
+    </AdminLayout>
   );
 }
