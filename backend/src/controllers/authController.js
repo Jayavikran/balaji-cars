@@ -10,28 +10,53 @@ const cookieOptions = (rememberMe) => ({
   maxAge: (rememberMe ? 30 : 7) * 24 * 60 * 60 * 1000,
 });
 
-// POST /api/admin/auth/login
+// POST /api/admin/auth/login - SIMPLIFIED
 const loginAdmin = asyncHandler(async (req, res) => {
   const { email, password, rememberMe } = req.body;
+
+  console.log('\n🔐 ===== LOGIN ATTEMPT =====');
+  console.log(`📧 Email: ${email}`);
+  console.log(`🔑 Password provided: ${password ? '✅ Yes' : '❌ No'}`);
 
   if (!email || !password) {
     res.status(400);
     throw new Error('Email and password are required.');
   }
 
+  console.log('📡 Searching for user...');
   const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
 
-  if (!user || !user.isActive) {
+  if (!user) {
+    console.log('❌ User NOT found');
     res.status(401);
     throw new Error('Invalid email or password.');
   }
 
+  console.log('👤 User FOUND:');
+  console.log(`   Name: ${user.name}`);
+  console.log(`   Email: ${user.email}`);
+  console.log(`   Role: ${user.role}`);
+  console.log(`   Active: ${user.isActive}`);
+  console.log(`   Password hash: ${user.password}`);
+  console.log(`   Hash length: ${user.password ? user.password.length : 0}`);
+
+  if (!user.isActive) {
+    console.log('❌ User is not active');
+    res.status(401);
+    throw new Error('Invalid email or password.');
+  }
+
+  console.log('🔐 Calling comparePassword...');
   const isMatch = await user.comparePassword(password);
+  console.log(`   Result: ${isMatch ? '✅ MATCH' : '❌ NO MATCH'}`);
+
   if (!isMatch) {
+    console.log('❌ Password does not match');
     res.status(401);
     throw new Error('Invalid email or password.');
   }
 
+  console.log('✅ Login successful!');
   user.lastLoginAt = new Date();
   await user.save();
 
@@ -40,7 +65,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
 
   res.json({
     success: true,
-    token, // also returned for clients using Authorization header (e.g. mobile)
+    token,
     user: user.toSafeObject(),
   });
 });
@@ -61,7 +86,6 @@ const forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email: (email || '').toLowerCase() });
 
-  // Always respond the same way to avoid leaking which emails exist.
   if (!user) {
     return res.json({
       success: true,
@@ -71,11 +95,9 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
   const resetToken = crypto.randomBytes(32).toString('hex');
   user.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
-  user.passwordResetExpires = Date.now() + 60 * 60 * 1000; // 1 hour
+  user.passwordResetExpires = Date.now() + 60 * 60 * 1000;
   await user.save();
 
-  // In production: email this link via a transactional email provider.
-  // For local/dev, it's returned so you can test the flow end-to-end.
   const resetUrl = `${process.env.CLIENT_URL}/admin/reset-password/${resetToken}`;
 
   res.json({

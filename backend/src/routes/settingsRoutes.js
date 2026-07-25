@@ -5,10 +5,10 @@ const { logoUpload } = require('../middleware/upload');
 
 const router = express.Router();
 
-// Public - header/footer/contact info for the storefront.
+// Public - GET settings
 router.get('/', getPublicSettings);
 
-// Admin only - update company/site settings.
+// Admin only - PUT update settings
 router.put('/', protect, authorize('admin', 'superadmin'), logoUpload.single('logo'), updateSettings);
 
 module.exports = router;

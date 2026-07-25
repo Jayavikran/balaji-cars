@@ -43,26 +43,46 @@ app.use(
   })
 );
 
+// Health check
 app.get('/api/health', (req, res) => res.json({ success: true, message: 'BALAJI CARS API is running' }));
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'Balaji Cars API is running',
+    endpoints: {
+      public: {
+        cars: '/api/cars',
+        enquiries: '/api/enquiries',
+        settings: '/api/settings'
+      },
+      admin: {
+        auth: '/api/admin/auth',
+        cars: '/api/admin/cars',
+        enquiries: '/api/admin/enquiries',
+        settings: '/api/admin/settings'  // ✅ This is now available
+      }
+    }
+  });
+});
+
 const { getSitemap } = require('./controllers/sitemapController');
-// Available at the API path, and at the bare path so it works directly if
-// the backend is ever hit on its own domain — but see README > SEO &
-// Sitemap for how to make https://yourdomain.com/sitemap.xml (the frontend
-// origin) resolve here in a typical split frontend/backend deployment.
 app.get('/api/sitemap.xml', getSitemap);
 app.get('/sitemap.xml', getSitemap);
 
 // ---- Public API (customers browsing the storefront) ----
 app.use('/api/cars', carRoutes);
 app.use('/api/enquiries', enquiryRoutes);
-app.use('/api/settings', settingsRoutes);
+app.use('/api/settings', settingsRoutes);  // Public settings - GET only
 
 // ---- Admin API (everything under /api/admin/* requires JWT auth) ----
-// ---- Admin API (everything under /api/admin/* requires JWT auth) ----
 app.use('/api/admin/auth', authRoutes);
-app.use('/api/admin', adminCarRoutes);
-app.use('/api/admin/enquiries', adminEnquiryRoutes);
+app.use('/api/admin', adminCarRoutes);  // Admin car routes
+app.use('/api/admin/enquiries', adminEnquiryRoutes);  // Admin enquiry routes
+app.use('/api/admin/settings', settingsRoutes);  // ✅ ADD THIS LINE - Admin settings routes
+
+// 404 handler
 app.use(notFound);
 app.use(errorHandler);
 

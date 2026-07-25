@@ -1,15 +1,14 @@
 import axios from 'axios';
 
-// Vite dev server proxies /api -> http://localhost:5000 (see vite.config.ts).
-// In production, set VITE_API_URL to your deployed backend origin.
-const baseURL = import.meta.env.VITE_API_URL || '/api';
+// ✅ Use the full backend URL
+const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export const api = axios.create({
   baseURL,
-  withCredentials: true, // sends the httpOnly adminToken cookie
+  withCredentials: true,
 });
 
-// Fallback: also attach a bearer token if present (useful for non-cookie clients).
+// Attach bearer token if present
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('BALAJI CARS_admin_token');
   if (token) {
