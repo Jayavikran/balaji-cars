@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply font-body text-ink bg-white antialiased transition-colors duration-200 dark:bg-[#0B1220] dark:text-white/90;
+  }
+  h1, h2, h3, h4 {
+    @apply font-display;
+  }
+  :focus-visible {
+    outline: 2px solid #0E9F6E;
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Signature element: a dashboard-style spec readout, evoking a car's
+     instrument cluster. Used on car cards and the details page. */
+  .spec-strip {
+    @apply flex items-center gap-x-3 gap-y-1 flex-wrap font-mono text-[11px] uppercase tracking-wider text-white/90 bg-navy rounded-full px-3 py-1.5;
+  }
+  .spec-strip span {
+    @apply flex items-center gap-1;
+  }
+  .spec-strip .sep {
+    @apply text-white/30;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide;
+  }
+  .badge-available { @apply bg-emerald/10 text-emerald-dark dark:bg-emerald/20 dark:text-emerald; }
+  .badge-sold { @apply bg-red-50 text-red-600 dark:bg-red-500/15 dark:text-red-400; }
+  .badge-reserved { @apply bg-amber/10 text-amber; }
+  .badge-featured { @apply bg-navy text-white; }
+  .badge-insurance { @apply bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300; }
+  .badge-new { @apply bg-blue-50 text-blue-600 dark:bg-blue-500/15 dark:text-blue-300; }
+  .badge-price-drop { @apply bg-red-500 text-white; }
+
+  .price-tag {
+    @apply font-display font-bold text-emerald text-xl;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-navy text-white font-medium px-5 py-2.5 transition-transform duration-200 hover:scale-[1.02] hover:bg-navy-light dark:bg-emerald dark:hover:bg-emerald-dark;
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-line text-ink font-medium px-5 py-2.5 transition-colors duration-200 hover:border-navy dark:border-white/15 dark:text-white/90 dark:hover:border-white/40;
+  }
+
+  /* Shared form control style used across admin forms (Upload/Edit Car, Settings) */
+  .input {
+    @apply w-full border border-line rounded-xl px-3.5 py-2.5 text-sm text-ink bg-white transition-colors focus:border-navy outline-none dark:bg-white/5 dark:border-white/15 dark:text-white dark:focus:border-emerald;
+  }
+
+  /* Surfaces used throughout the public site — a single class to flip a
+     white card/panel to its dark-mode equivalent consistently. */
+  .surface-card {
+    @apply bg-white dark:bg-[#111a2c] border border-line dark:border-white/10;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

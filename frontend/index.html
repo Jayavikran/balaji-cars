@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0F1B2D" />
+    <title>BALAJI CARS | Premium Certified Used Cars</title>
+    <meta name="description" content="Buy certified used cars with confidence. Browse premium listings, compare vehicles, calculate EMI, and connect with our dealership instantly." />
+    <!--
+      Open Graph / Twitter Card tags are intentionally NOT duplicated here —
+      they're set dynamically per-page via the <Seo> component
+      (react-helmet-async) so each car/page gets its own title, image, and
+      description. Note: since this is a client-rendered SPA, crawlers/bots
+      that don't execute JavaScript (some link-unfurlers) will only see
+      these base tags, not the per-page ones. For pixel-perfect social
+      previews on every page, consider adding prerendering or SSR later.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+      // Applied before React mounts to avoid a flash of the wrong theme.
+      (function () {
+        try {
+          var stored = localStorage.getItem('BALAJI CARS_theme');
+          var isDark = stored === 'dark' || (stored !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (isDark) {
+            document.documentElement.classList.add('dark');
+            document.documentElement.style.colorScheme = 'dark';
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
