@@ -15,7 +15,7 @@ const enquiryRoutes = require('./routes/enquiryRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
 const authRoutes = require('./routes/authRoutes');
 
-// Admin-only route groups (each applies its own `protect` middleware)
+// Admin-only route groups
 const adminCarRoutes = require('./routes/adminCarRoutes');
 const adminEnquiryRoutes = require('./routes/adminEnquiryRoutes');
 
@@ -23,19 +23,39 @@ connectDB();
 
 const app = express();
 
-app.use(helmet());
+// ✅ FIXED CORS CONFIGURATION
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://balaji-cars-1.onrender.com',
+  'https://balaji-cars-frontend.onrender.com',
+  process.env.CLIENT_URL
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        console.log('❌ Blocked by CORS:', origin);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   })
 );
+
+app.use(helmet());
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
-// Basic global rate limit as defense-in-depth (per-route limiters add stricter caps).
+// Basic global rate limit
 app.use(
   rateLimit({
     windowMs: 15 * 60 * 1000,
@@ -61,7 +81,7 @@ app.get('/', (req, res) => {
         auth: '/api/admin/auth',
         cars: '/api/admin/cars',
         enquiries: '/api/admin/enquiries',
-        settings: '/api/admin/settings'  // ✅ This is now available
+        settings: '/api/admin/settings'
       }
     }
   });
@@ -71,16 +91,16 @@ const { getSitemap } = require('./controllers/sitemapController');
 app.get('/api/sitemap.xml', getSitemap);
 app.get('/sitemap.xml', getSitemap);
 
-// ---- Public API (customers browsing the storefront) ----
+// ---- Public API ----
 app.use('/api/cars', carRoutes);
 app.use('/api/enquiries', enquiryRoutes);
-app.use('/api/settings', settingsRoutes);  // Public settings - GET only
+app.use('/api/settings', settingsRoutes);
 
-// ---- Admin API (everything under /api/admin/* requires JWT auth) ----
+// ---- Admin API ----
 app.use('/api/admin/auth', authRoutes);
-app.use('/api/admin', adminCarRoutes);  // Admin car routes
-app.use('/api/admin/enquiries', adminEnquiryRoutes);  // Admin enquiry routes
-app.use('/api/admin/settings', settingsRoutes);  // ✅ ADD THIS LINE - Admin settings routes
+app.use('/api/admin', adminCarRoutes);
+app.use('/api/admin/enquiries', adminEnquiryRoutes);
+app.use('/api/admin/settings', settingsRoutes);
 
 // 404 handler
 app.use(notFound);
