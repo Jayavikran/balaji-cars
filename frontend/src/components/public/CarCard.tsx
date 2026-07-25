@@ -176,7 +176,7 @@ function CarCard({ car, badge }: CarCardProps) {
               >
                 <MessageCircle size={14} />
                 WhatsApp
-              </button>
+              </a>
             )}
 
             <Link
