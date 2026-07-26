@@ -13,7 +13,7 @@ export default function Footer({ settings }: { settings?: SiteSettings }) {
   return (
     <footer className="bg-navy text-white/80 mt-10 sm:mt-16">
       {/* Desktop: unchanged 3-column layout */}
-      <div className="hidden md:grid max-w-7xl mx-auto px-4 sm:px-6 py-12 grid-cols-3 gap-10">
+      <div className="hidden md:grid max-w-7xl lg:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-12 lg:py-16 grid-cols-3 gap-10 lg:gap-16">
         <div>
           <h4 className="font-display font-bold text-white text-lg mb-3">{settings?.companyName || 'BALAJI CARS'}</h4>
           <p className="text-sm leading-relaxed">

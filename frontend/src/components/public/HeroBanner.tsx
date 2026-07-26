@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ShieldCheck, BadgeIndianRupee, FileText, BadgeCheck, ArrowRight } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const slides = [
@@ -39,7 +39,7 @@ export default function HeroBanner() {
     <section
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      className="relative h-[200px] sm:h-[520px] lg:h-[600px] overflow-hidden bg-gray-900 mx-3 mt-3 rounded-2xl sm:mx-0 sm:mt-0 sm:rounded-none"
+      className="relative h-[180px] sm:h-[440px] lg:h-[540px] xl:h-[600px] overflow-hidden bg-gray-900 mx-3 mt-3 rounded-2xl sm:mx-0 sm:mt-0 sm:rounded-none"
     >
       <AnimatePresence mode="wait">
         <motion.div
@@ -53,38 +53,51 @@ export default function HeroBanner() {
           <img 
             src={slides[index].image} 
             alt={slides[index].title} 
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover lg:object-center"
             style={{
               maxWidth: '100%',
               maxHeight: '100%',
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20 lg:bg-gradient-to-r lg:from-black/80 lg:via-black/45 lg:to-transparent" />
         </motion.div>
       </AnimatePresence>
 
-      <div className="relative z-10 h-full max-w-7xl mx-auto px-4 sm:px-6 flex flex-col items-start justify-center">
+      <div className="relative z-10 h-full max-w-7xl lg:max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-[70px] flex flex-col items-start justify-center">
         <motion.div 
           key={`text-${index}`} 
           initial={{ opacity: 0, y: 20 }} 
           animate={{ opacity: 1, y: 0 }} 
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="max-w-2xl"
+          className="max-w-2xl lg:max-w-[42%]"
         >
-          <h1 className="font-display text-2xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight">
+          <h1 className="font-display text-2xl sm:text-4xl lg:text-7xl xl:text-8xl font-black tracking-tight text-white leading-tight lg:leading-none">
             {slides[index].title}
           </h1>
-          <p className="mt-2 sm:mt-4 text-white/90 max-w-md text-xs sm:text-base lg:text-lg line-clamp-2 sm:line-clamp-none">
+          <p className="mt-2 sm:mt-4 lg:mt-5 text-white/90 max-w-md lg:max-w-[560px] text-xs sm:text-base lg:text-xl lg:leading-[1.7] line-clamp-2 sm:line-clamp-none">
             {slides[index].subtitle}
           </p>
+          <div className="hidden lg:flex mt-8 items-center gap-0 text-white">
+            {[
+              { label: 'Certified Cars', icon: ShieldCheck },
+              { label: 'Loan Facility', icon: BadgeIndianRupee },
+              { label: 'RC Transfer', icon: FileText },
+              { label: 'Best Price', icon: BadgeCheck },
+            ].map(({ label, icon: Icon }, itemIndex) => (
+              <div key={label} className="flex items-center gap-3 pr-6 mr-6 border-r border-white/30 last:border-r-0 last:mr-0 last:pr-0">
+                <Icon size={28} strokeWidth={1.8} />
+                <span className="text-sm font-medium whitespace-nowrap">{label}</span>
+              </div>
+            ))}
+          </div>
           <button
             type="button"
             onClick={() =>
               document.getElementById('car-listings')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
             }
-            className="mt-4 sm:mt-8 w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-8 py-2.5 sm:py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-colors duration-200 text-sm sm:text-base"
+            className="mt-4 sm:mt-8 w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 sm:px-8 py-2.5 sm:py-3 lg:h-16 lg:px-12 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl lg:rounded-2xl transition-all duration-200 text-sm sm:text-base lg:shadow-xl lg:hover:scale-105"
           >
-            Explore Cars
+            Explore Cars <ArrowRight className="hidden lg:block" size={24} />
           </button>
         </motion.div>
       </div>
@@ -95,14 +108,14 @@ export default function HeroBanner() {
           <button
             onClick={() => goto(index - 1)}
             aria-label="Previous slide"
-            className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white flex items-center justify-center transition-all duration-200 hover:scale-105"
+            className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 lg:w-[60px] lg:h-[60px] rounded-full bg-white/20 lg:bg-white/15 hover:bg-white/30 lg:hover:bg-white/25 backdrop-blur-sm text-white flex items-center justify-center transition-all duration-200 hover:scale-105 lg:shadow-xl"
           >
             <ChevronLeft size={20} className="sm:w-6 sm:h-6" />
           </button>
           <button
             onClick={() => goto(index + 1)}
             aria-label="Next slide"
-            className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white flex items-center justify-center transition-all duration-200 hover:scale-105"
+            className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 lg:w-[60px] lg:h-[60px] rounded-full bg-white/20 lg:bg-white/15 hover:bg-white/30 lg:hover:bg-white/25 backdrop-blur-sm text-white flex items-center justify-center transition-all duration-200 hover:scale-105 lg:shadow-xl"
           >
             <ChevronRight size={20} className="sm:w-6 sm:h-6" />
           </button>
@@ -110,7 +123,7 @@ export default function HeroBanner() {
       )}
 
       {/* Dots */}
-      <div className="absolute bottom-4 sm:bottom-6 left-0 right-0 flex justify-center gap-2 z-20">
+      <div className="absolute bottom-4 sm:bottom-6 lg:bottom-10 left-0 right-0 flex justify-center gap-2 z-20">
         {slides.map((_, i) => (
           <button
             key={i}
@@ -118,8 +131,8 @@ export default function HeroBanner() {
             aria-label={`Go to slide ${i + 1}`}
             className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 ${
               i === index 
-                ? 'w-8 sm:w-10 bg-white' 
-                : 'w-2 sm:w-2.5 bg-white/50 hover:bg-white/80'
+                ? 'w-8 sm:w-10 lg:w-12 bg-white' 
+                : 'w-2 sm:w-2.5 lg:w-3 bg-white/50 hover:bg-white/80'
             }`}
           />
         ))}

@@ -61,17 +61,17 @@ export default function Header({ settings, search, onSearchChange, sort, onSortC
           hamburger — filter/sort/favourites live as icon buttons that
           scale down to icon-only on small screens. */}
       <header className="sticky top-0 z-40 bg-white/80 dark:bg-[#0B1220]/80 backdrop-blur-md border-b border-line dark:border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 md:h-16 flex items-center gap-3 md:gap-4">
+        <div className="max-w-7xl lg:max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-[70px] h-14 md:h-16 lg:h-20 flex items-center gap-3 md:gap-4">
           <Link to="/" className="flex items-center gap-2 shrink-0">
-            <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-navy flex items-center justify-center text-white font-display font-bold text-xs md:text-sm">
+            <div className="w-8 h-8 md:w-9 md:h-9 lg:w-11 lg:h-11 rounded-lg bg-navy flex items-center justify-center text-white font-display font-bold text-xs md:text-sm lg:text-base">
               {(settings?.companyName || 'BC').slice(0, 2).toUpperCase()}
             </div>
-            <span className="font-display font-bold text-ink dark:text-white text-base md:text-lg hidden sm:inline">
+            <span className="font-display font-bold text-ink dark:text-white text-base md:text-lg lg:text-xl hidden sm:inline">
               {settings?.companyName || 'BALAJI CARS'}
             </span>
           </Link>
 
-          <div ref={searchRef} className="relative flex-1 max-w-xl mx-auto hidden md:block">
+          <div ref={searchRef} className="relative flex-1 max-w-xl lg:max-w-[520px] mx-auto hidden md:block">
             <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-body" />
             <input
               value={search}
