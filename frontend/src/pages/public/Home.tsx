@@ -101,8 +101,8 @@ export default function Home() {
 
       <HeroBanner />
 
-      <section className="hidden lg:block relative z-20 max-w-[1400px] mx-auto -mt-[60px] px-6">
-        <div className="h-[120px] rounded-3xl bg-white dark:bg-[#111a2c] shadow-2xl border border-line/70 dark:border-white/10 flex items-center justify-around">
+      <section className="hidden lg:block relative z-20 max-w-[1400px] mx-auto -mt-10 px-6">
+        <div className="h-[108px] rounded-3xl bg-white dark:bg-[#111a2c] shadow-2xl border border-line/70 dark:border-white/10 flex items-center justify-around">
           {[
             { value: '500+', label: 'Cars Available', icon: CarFront },
             { value: '1000+', label: 'Happy Customers', icon: Users },
@@ -111,7 +111,7 @@ export default function Home() {
           ].map(({ value, label, icon: Icon }, index) => (
             <div key={label} className="flex items-center gap-4 px-8 flex-1 justify-center border-r border-line dark:border-white/10 last:border-r-0">
               <span className="w-14 h-14 rounded-full bg-emerald/10 text-emerald flex items-center justify-center"><Icon size={25} /></span>
-              <span><strong className="block font-display text-[27px] leading-none text-emerald">{value}</strong><span className="block mt-2 text-sm font-medium text-body dark:text-white/70">{label}</span></span>
+              <span><strong className="block font-display text-2xl leading-none text-emerald">{value}</strong><span className="block mt-1.5 text-sm font-medium text-body dark:text-white/70">{label}</span></span>
             </div>
           ))}
         </div>
@@ -121,7 +121,7 @@ export default function Home() {
 
       {featured.length > 0 && (
         <section className="max-w-7xl lg:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 pb-4 lg:pt-[60px] lg:pb-[60px]">
-          <h2 className="font-display text-xl lg:text-[36px] font-bold text-ink dark:text-white mb-4 lg:mb-6">Featured Cars</h2>
+          <h2 className="font-display text-[22px] lg:text-[32px] font-bold text-ink dark:text-white mb-4 lg:mb-6">Featured Cars</h2>
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-8">
             {featured.slice(0, 4).map((car) => <CarCard key={car._id} car={car} />)}
           </div>
@@ -131,7 +131,7 @@ export default function Home() {
       <section id="car-listings" className="scroll-mt-24 sm:scroll-mt-20 max-w-7xl lg:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-8 lg:py-[60px] flex-1">
         <div className="flex items-center justify-between mb-5 lg:mb-8 flex-wrap gap-3 lg:flex-nowrap lg:gap-4 lg:bg-surface/60 dark:lg:bg-white/5 lg:rounded-2xl lg:px-5 lg:py-3.5">
           <div className="flex items-center gap-3 flex-wrap">
-            <h2 className="font-display text-xl lg:text-[36px] font-bold text-ink dark:text-white">{resultsHeading()}</h2>
+            <h2 className="font-display text-[22px] lg:text-[32px] font-bold text-ink dark:text-white">{resultsHeading()}</h2>
             {showBackgroundSpinner && <Loader2 size={16} className="animate-spin text-navy dark:text-emerald" aria-label="Updating results" />}
           </div>
           <div className="flex items-center gap-3 lg:gap-4">

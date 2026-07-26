@@ -61,12 +61,12 @@ export default function Header({ settings, search, onSearchChange, sort, onSortC
           hamburger — filter/sort/favourites live as icon buttons that
           scale down to icon-only on small screens. */}
       <header className="sticky top-0 z-40 bg-white/80 dark:bg-[#0B1220]/80 backdrop-blur-md border-b border-line dark:border-white/10">
-        <div className="max-w-7xl lg:max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-[70px] h-14 md:h-16 lg:h-20 flex items-center gap-3 md:gap-4">
-          <Link to="/" className="flex items-center gap-2 shrink-0">
+        <div className="max-w-7xl lg:max-w-[1450px] mx-auto px-3 sm:px-6 lg:px-[70px] h-14 md:h-16 lg:h-20 flex items-center gap-2 md:gap-4">
+          <Link to="/" className="flex items-center gap-2 min-w-0 shrink">
             <div className="w-8 h-8 md:w-9 md:h-9 lg:w-11 lg:h-11 rounded-lg bg-navy flex items-center justify-center text-white font-display font-bold text-xs md:text-sm lg:text-base">
               {(settings?.companyName || 'BC').slice(0, 2).toUpperCase()}
             </div>
-            <span className="font-display font-bold text-ink dark:text-white text-base md:text-lg lg:text-xl hidden sm:inline">
+            <span className="font-display font-bold text-ink dark:text-white text-sm sm:text-base md:text-lg lg:text-xl truncate min-w-0 max-w-[92px] sm:max-w-[190px] lg:max-w-none">
               {settings?.companyName || 'BALAJI CARS'}
             </span>
           </Link>
@@ -97,14 +97,14 @@ export default function Header({ settings, search, onSearchChange, sort, onSortC
           </div>
 
           {/* Unified action toolbar — icon-only on mobile, icon+label on desktop. */}
-          <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 shrink-0 ml-auto md:ml-0">
+          <div className="flex items-center gap-0.5 sm:gap-1.5 md:gap-2 shrink-0 ml-auto md:ml-0">
             <div ref={sortRef} className="relative">
               <button
                 onClick={() => setSortOpen((v) => !v)}
                 aria-label="Sort"
                 className="flex items-center justify-center gap-1.5 text-sm font-medium text-ink dark:text-white/90 w-10 h-10 md:w-auto md:h-auto md:px-3 md:py-2 rounded-full hover:bg-surface dark:hover:bg-white/5 transition-colors"
               >
-                <ArrowUpDown size={17} className="md:hidden" />
+                <ArrowUpDown size={16} className="md:hidden" />
                 <ArrowUpDown size={15} className="hidden md:block" />
                 <span className="hidden md:inline">Sort</span>
               </button>
@@ -128,7 +128,7 @@ export default function Header({ settings, search, onSearchChange, sort, onSortC
               aria-label="Filters"
               className="flex items-center justify-center gap-1.5 text-sm font-medium text-ink dark:text-white/90 w-10 h-10 md:w-auto md:h-auto md:px-3 md:py-2 rounded-full hover:bg-surface dark:hover:bg-white/5 transition-colors"
             >
-              <SlidersHorizontal size={17} className="md:hidden" />
+              <SlidersHorizontal size={16} className="md:hidden" />
               <SlidersHorizontal size={15} className="hidden md:block" />
               <span className="hidden md:inline">Filter</span>
             </button>
@@ -138,7 +138,7 @@ export default function Header({ settings, search, onSearchChange, sort, onSortC
               className="relative flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface dark:hover:bg-white/5 transition-colors"
               aria-label="Favourites"
             >
-              <Heart size={18} className="text-ink dark:text-white/90" />
+              <Heart size={17} className="text-ink dark:text-white/90" />
               {favorites.length > 0 && (
                 <span className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-emerald text-white text-[10px] flex items-center justify-center font-semibold">
                   {favorites.length}
@@ -154,7 +154,7 @@ export default function Header({ settings, search, onSearchChange, sort, onSortC
 
         {/* Mobile search bar — part of the sticky header, so it stays
             pinned under the logo row while scrolling. */}
-        <div className="md:hidden px-4 pb-3">
+        <div className="md:hidden px-3 pb-3">
           <div className="relative">
             <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-body" />
             <input

@@ -160,8 +160,8 @@ function CarCard({ car, badge }: CarCardProps) {
         </div>
 
         <div className="p-2.5 sm:p-5 flex flex-col flex-1">
-          <Link to={`/cars/${car.slug}`} className="block">
-            <h3 className="font-semibold text-gray-900 dark:text-white text-[13px] sm:text-lg lg:text-xl leading-snug truncate">
+          <Link to={`/cars/${car.slug}`} className="block min-w-0">
+            <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-lg lg:text-xl leading-snug break-words line-clamp-2 min-h-[2.5rem] sm:min-h-0 sm:line-clamp-1">
               {car.brand} {car.model} {car.variant}
             </h3>
           </Link>

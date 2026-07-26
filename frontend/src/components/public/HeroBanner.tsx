@@ -39,7 +39,7 @@ export default function HeroBanner() {
     <section
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      className="relative h-[180px] sm:h-[440px] lg:h-[540px] xl:h-[600px] overflow-hidden bg-gray-900 mx-3 mt-3 rounded-2xl sm:mx-0 sm:mt-0 sm:rounded-none"
+      className="relative h-[172px] sm:h-[340px] lg:h-[400px] xl:h-[440px] overflow-hidden bg-gray-900 mx-3 mt-3 rounded-2xl sm:mx-0 sm:mt-0 sm:rounded-none"
     >
       <AnimatePresence mode="wait">
         <motion.div
@@ -69,12 +69,12 @@ export default function HeroBanner() {
           initial={{ opacity: 0, y: 20 }} 
           animate={{ opacity: 1, y: 0 }} 
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="max-w-2xl lg:max-w-[42%]"
+          className="max-w-[calc(100%-3.5rem)] sm:max-w-2xl lg:max-w-[46%]"
         >
-          <h1 className="font-display text-2xl sm:text-4xl lg:text-7xl xl:text-8xl font-black tracking-tight text-white leading-tight lg:leading-none">
+          <h1 className="font-display text-xl sm:text-4xl lg:text-6xl xl:text-7xl font-black tracking-tight text-white leading-tight lg:leading-none break-words">
             {slides[index].title}
           </h1>
-          <p className="mt-2 sm:mt-4 lg:mt-5 text-white/90 max-w-md lg:max-w-[560px] text-xs sm:text-base lg:text-xl lg:leading-[1.7] line-clamp-2 sm:line-clamp-none">
+          <p className="mt-1.5 sm:mt-4 lg:mt-4 text-white/90 max-w-md lg:max-w-[560px] text-xs sm:text-base lg:text-lg lg:leading-[1.6] line-clamp-2 sm:line-clamp-none">
             {slides[index].subtitle}
           </p>
           <div className="hidden lg:flex mt-8 items-center gap-0 text-white">
@@ -95,7 +95,7 @@ export default function HeroBanner() {
             onClick={() =>
               document.getElementById('car-listings')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
             }
-            className="mt-4 sm:mt-8 w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 sm:px-8 py-2.5 sm:py-3 lg:h-16 lg:px-12 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl lg:rounded-2xl transition-all duration-200 text-sm sm:text-base lg:shadow-xl lg:hover:scale-105"
+            className="mt-3 sm:mt-8 w-full sm:w-auto inline-flex items-center justify-center gap-3 px-5 sm:px-8 py-2.5 sm:py-3 lg:h-14 lg:px-10 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl lg:rounded-2xl transition-all duration-200 text-sm sm:text-base lg:shadow-xl lg:hover:scale-105"
           >
             Explore Cars <ArrowRight className="hidden lg:block" size={24} />
           </button>
@@ -123,7 +123,7 @@ export default function HeroBanner() {
       )}
 
       {/* Dots */}
-      <div className="absolute bottom-4 sm:bottom-6 lg:bottom-10 left-0 right-0 flex justify-center gap-2 z-20">
+      <div className="absolute bottom-3 sm:bottom-6 lg:bottom-7 left-0 right-0 flex justify-center gap-2 z-20">
         {slides.map((_, i) => (
           <button
             key={i}
