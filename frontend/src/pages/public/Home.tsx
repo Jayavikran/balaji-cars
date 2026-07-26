@@ -88,7 +88,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="mobile-page min-h-screen flex flex-col">
       <Seo title={seoTitle} description={seoDescription} jsonLd={autoDealerJsonLd} />
       <Header
         settings={settings}
@@ -128,7 +128,7 @@ export default function Home() {
         </section>
       )}
 
-      <section id="car-listings" className="scroll-mt-24 sm:scroll-mt-20 max-w-7xl lg:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-8 lg:py-[60px] flex-1">
+      <section id="car-listings" className="mobile-listings scroll-mt-24 sm:scroll-mt-20 max-w-7xl lg:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-8 lg:py-[60px] flex-1">
         <div className="flex items-center justify-between mb-5 lg:mb-8 flex-wrap gap-3 lg:flex-nowrap lg:gap-4 lg:bg-surface/60 dark:lg:bg-white/5 lg:rounded-2xl lg:px-5 lg:py-3.5">
           <div className="flex items-center gap-3 flex-wrap">
             <h2 className="font-display text-[22px] lg:text-[32px] font-bold text-ink dark:text-white">{resultsHeading()}</h2>

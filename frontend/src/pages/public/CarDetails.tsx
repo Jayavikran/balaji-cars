@@ -55,7 +55,7 @@ export default function CarDetails() {
 
   if (isLoading || !car) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="mobile-page min-h-screen flex items-center justify-center">
         <div className="w-10 h-10 border-2 border-line border-t-navy rounded-full animate-spin" />
       </div>
     );
@@ -132,7 +132,7 @@ export default function CarDetails() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="mobile-page min-h-screen flex flex-col">
       <Seo
         title={seoTitle}
         description={seoDescription}

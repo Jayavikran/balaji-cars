@@ -11,7 +11,7 @@ export default function Footer({ settings }: { settings?: SiteSettings }) {
   const toggle = (id: string) => setOpenSection((cur) => (cur === id ? null : id));
 
   return (
-    <footer className="bg-navy text-white/80 mt-10 sm:mt-16">
+    <footer className="mobile-footer w-full max-w-full overflow-hidden bg-navy text-white/80 mt-10 sm:mt-16">
       {/* Desktop: unchanged 3-column layout */}
       <div className="hidden md:grid max-w-7xl lg:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-12 lg:py-16 grid-cols-3 gap-10 lg:gap-16">
         <div>

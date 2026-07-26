@@ -34,7 +34,7 @@ export default function App() {
   const isAdminRoute = location.pathname.startsWith('/admin');
 
   return (
-    <>
+    <div className="app-shell">
       <ScrollToTop />
       <Suspense fallback={<RouteFallback />}>
         <Routes>
@@ -88,6 +88,6 @@ export default function App() {
         </Routes>
       </Suspense>
       {!isAdminRoute && <CompareBar />}
-    </>
+    </div>
   );
 }

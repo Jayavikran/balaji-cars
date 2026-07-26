@@ -154,7 +154,7 @@ export default function Header({ settings, search, onSearchChange, sort, onSortC
 
         {/* Mobile search bar — part of the sticky header, so it stays
             pinned under the logo row while scrolling. */}
-        <div className="md:hidden px-3 pb-3">
+        <div className="md:hidden px-4 pb-3">
           <div className="relative">
             <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-body" />
             <input

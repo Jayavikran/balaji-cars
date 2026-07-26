@@ -10,8 +10,8 @@ interface BrandFilterProps {
 
 export default function BrandFilter({ active, onSelect }: BrandFilterProps) {
   return (
-    <div className="max-w-7xl lg:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-3 sm:py-5 lg:py-6">
-      <div className="flex gap-2 sm:gap-2.5 lg:gap-3 overflow-x-auto pb-1 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0 lg:justify-center">
+    <div className="mobile-brand-section max-w-7xl lg:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-3 sm:py-5 lg:py-6">
+      <div className="mobile-brand-strip flex gap-2 sm:gap-2.5 lg:gap-3 overflow-x-auto pb-1 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0 lg:justify-center">
         {BRANDS.map((brand) => (
           <button
             key={brand}

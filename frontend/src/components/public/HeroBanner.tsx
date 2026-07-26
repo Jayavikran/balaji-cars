@@ -39,7 +39,7 @@ export default function HeroBanner() {
     <section
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      className="relative h-[172px] sm:h-[340px] lg:h-[400px] xl:h-[440px] overflow-hidden bg-gray-900 mx-3 mt-3 rounded-2xl sm:mx-0 sm:mt-0 sm:rounded-none"
+      className="mobile-hero relative h-[172px] sm:h-[340px] lg:h-[400px] xl:h-[440px] overflow-hidden bg-gray-900 mx-0 mt-0 rounded-none"
     >
       <AnimatePresence mode="wait">
         <motion.div
@@ -48,12 +48,12 @@ export default function HeroBanner() {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 1.05 }}
           transition={{ duration: 0.8, ease: 'easeInOut' }}
-          className="absolute inset-0 flex items-center justify-center"
+          className="mobile-hero-media absolute inset-0 flex items-center justify-center"
         >
           <img 
             src={slides[index].image} 
             alt={slides[index].title} 
-            className="w-full h-full object-cover lg:object-center"
+            className="mobile-hero-image w-full h-full object-cover lg:object-center"
             style={{
               maxWidth: '100%',
               maxHeight: '100%',
@@ -63,7 +63,7 @@ export default function HeroBanner() {
         </motion.div>
       </AnimatePresence>
 
-      <div className="relative z-10 h-full max-w-7xl lg:max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-[70px] flex flex-col items-start justify-center">
+      <div className="mobile-hero-content relative z-10 h-full max-w-7xl lg:max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-[70px] flex flex-col items-start justify-center">
         <motion.div 
           key={`text-${index}`} 
           initial={{ opacity: 0, y: 20 }} 

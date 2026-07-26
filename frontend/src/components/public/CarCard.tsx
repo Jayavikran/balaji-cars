@@ -86,7 +86,7 @@ function CarCard({ car, badge }: CarCardProps) {
         transition={{ duration: 0.4, ease: 'easeOut' }}
         onMouseEnter={startHoverSlider}
         onMouseLeave={stopHoverSlider}
-        className="group relative bg-white dark:bg-[#111a2c] rounded-2xl lg:rounded-[22px] shadow-sm sm:shadow-md lg:shadow-xl sm:hover:shadow-xl lg:hover:shadow-2xl dark:shadow-black/20 transition-[box-shadow,transform] duration-300 ease-out lg:hover:-translate-y-2 overflow-hidden border border-line/60 sm:border-transparent dark:border-white/10 h-full flex flex-col"
+        className="car-card group relative bg-white dark:bg-[#111a2c] rounded-2xl lg:rounded-[22px] shadow-sm sm:shadow-md lg:shadow-xl sm:hover:shadow-xl lg:hover:shadow-2xl dark:shadow-black/20 transition-[box-shadow,transform] duration-300 ease-out lg:hover:-translate-y-2 overflow-hidden border border-line/60 sm:border-transparent dark:border-white/10 h-full flex flex-col"
       >
         <div className="relative aspect-[4/3] sm:aspect-[16/9] overflow-hidden bg-gray-100 dark:bg-white/5 shrink-0">
           <img
@@ -159,7 +159,7 @@ function CarCard({ car, badge }: CarCardProps) {
           </div>
         </div>
 
-        <div className="p-2.5 sm:p-5 flex flex-col flex-1">
+        <div className="car-card-body p-2.5 sm:p-5 flex flex-col flex-1 min-w-0">
           <Link to={`/cars/${car.slug}`} className="block min-w-0">
             <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-lg lg:text-xl leading-snug break-words line-clamp-2 min-h-[2.5rem] sm:min-h-0 sm:line-clamp-1">
               {car.brand} {car.model} {car.variant}
@@ -178,7 +178,7 @@ function CarCard({ car, badge }: CarCardProps) {
           </p>
 
           <div className="mt-1.5 sm:mt-3 flex items-center text-gray-600 dark:text-white/60 text-[11px] sm:text-sm lg:text-[15px]">
-            <span className="flex items-center gap-1 truncate">
+            <span className="flex items-center gap-1 truncate min-w-0">
               <span>📍</span> {car.location}
             </span>
           </div>

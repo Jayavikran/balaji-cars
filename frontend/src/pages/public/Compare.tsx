@@ -59,7 +59,7 @@ export default function Compare() {
   const isLoading = results.some((r) => r.isLoading);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="mobile-page min-h-screen flex flex-col">
       <Seo
         title={`Compare Cars | ${settings?.companyName || 'BALAJI CARS'}`}
         description="Compare vehicle specs, pricing, and features side by side."
