@@ -18,7 +18,8 @@ export default function Settings() {
 
   const onSubmit = async (values: SiteSettings) => {
     try {
-      await updateSettings(values);
+      const savedSettings = await updateSettings(values);
+      queryClient.setQueryData(['settings'], savedSettings);
       toast.success('Settings saved.');
       queryClient.invalidateQueries({ queryKey: ['settings'] });
     } catch {

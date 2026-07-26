@@ -39,10 +39,13 @@ export default function Home() {
   const seoTitle = `${siteName} | Premium Certified Used Cars`;
   const seoDescription = `Browse ${siteName}'s certified used car inventory. Compare vehicles, calculate EMI, and connect with our dealership over WhatsApp or phone — every listing verified.`;
 
+  const seoDescriptionFromSettings = settings?.seoDescription?.trim() || seoDescription;
+
   const autoDealerJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'AutoDealer',
     name: siteName,
+    description: seoDescriptionFromSettings,
     url: siteOrigin,
     telephone: settings?.phoneNumber,
     email: settings?.email,
@@ -89,7 +92,7 @@ export default function Home() {
 
   return (
     <div className="mobile-page min-h-screen flex flex-col">
-      <Seo title={seoTitle} description={seoDescription} jsonLd={autoDealerJsonLd} />
+      <Seo title={seoTitle} description={seoDescriptionFromSettings} jsonLd={autoDealerJsonLd} />
       <Header
         settings={settings}
         search={search}
