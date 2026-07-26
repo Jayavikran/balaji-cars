@@ -24,116 +24,98 @@ export default function AdminDashboard() {
 
   const maxSales = Math.max(1, ...(data?.salesStats.map((s) => s.count) ?? [1]));
 
-  const revenueCards = [
-    { label: "Today's Revenue", value: data?.revenue.today.revenue, sub: `${data?.revenue.today.count ?? 0} sold` },
-    { label: "This Month's Revenue", value: data?.revenue.month.revenue, sub: `${data?.revenue.month.count ?? 0} sold` },
-    { label: 'Lifetime Revenue', value: data?.revenue.lifetime.revenue, sub: `Avg ${data ? formatLakh(data.revenue.averageSellingPrice) : '—'}/car` },
-    { label: 'Lifetime Profit', value: data?.revenue.lifetime.profit, sub: `Avg ${data ? formatLakh(data.revenue.averageProfit) : '—'}/car` },
-  ];
-
   return (
     <AdminLayout title="Dashboard">
-      {/* Stats Cards - Mobile: 1 column, Tablet: 2 columns, Desktop: 4 columns */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-4 sm:mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 mb-4 sm:mb-6">
         {cards.map((c) => (
           <Link
             key={c.label}
             to={c.to}
-            className="bg-white rounded-2xl shadow-card p-4 sm:p-5 flex items-center gap-4 transition-shadow hover:shadow-lg cursor-pointer"
+            className="bg-white rounded-2xl sm:rounded-card shadow-card p-3.5 sm:p-5 flex items-center gap-2.5 sm:gap-4 transition-shadow hover:shadow-lg cursor-pointer"
           >
-            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-2xl ${c.color} text-white flex items-center justify-center shrink-0`}>
-              <c.icon size={18} className="sm:size-20" />
+            <div className={`w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl ${c.color} text-white flex items-center justify-center shrink-0`}>
+              <c.icon size={18} className="sm:hidden" />
+              <c.icon size={20} className="hidden sm:block" />
             </div>
-            <div>
-              <p className="text-xl sm:text-2xl font-display font-bold text-ink">{isLoading ? '—' : c.value}</p>
-              <p className="text-[10px] sm:text-xs text-body">{c.label}</p>
+            <div className="min-w-0">
+              <p className="text-lg sm:text-2xl font-display font-bold text-ink">{isLoading ? '—' : c.value}</p>
+              <p className="text-[11px] sm:text-xs text-body truncate">{c.label}</p>
             </div>
           </Link>
         ))}
       </div>
 
-      {/* Revenue Cards - Mobile: 1 column, Tablet: 2 columns, Desktop: 4 columns */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-4 sm:mb-6">
-        {revenueCards.map((r) => (
-          <div key={r.label} className="bg-white rounded-2xl shadow-card p-4 sm:p-5">
-            <p className="flex items-center gap-1.5 text-[10px] sm:text-xs text-body mb-1">
-              <IndianRupee size={11} className="sm:size-12" /> {r.label}
-            </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 mb-4 sm:mb-6">
+        {[
+          { label: "Today's Revenue", value: data?.revenue.today.revenue, sub: `${data?.revenue.today.count ?? 0} sold` },
+          { label: "This Month's Revenue", value: data?.revenue.month.revenue, sub: `${data?.revenue.month.count ?? 0} sold` },
+          { label: 'Lifetime Revenue', value: data?.revenue.lifetime.revenue, sub: `Avg ${data ? formatLakh(data.revenue.averageSellingPrice) : '—'}/car` },
+          { label: 'Lifetime Profit', value: data?.revenue.lifetime.profit, sub: `Avg ${data ? formatLakh(data.revenue.averageProfit) : '—'}/car` },
+        ].map((r) => (
+          <div key={r.label} className="bg-white rounded-2xl sm:rounded-card shadow-card p-4 sm:p-5">
+            <p className="flex items-center gap-1.5 text-xs text-body mb-1"><IndianRupee size={12} /> {r.label}</p>
             <p className="text-lg sm:text-xl font-display font-bold text-ink">{data ? formatLakh(r.value ?? 0) : '—'}</p>
-            <p className="text-[10px] sm:text-xs text-body mt-1">{r.sub}</p>
+            <p className="text-xs text-body mt-1">{r.sub}</p>
           </div>
         ))}
       </div>
 
-      {/* Charts Section - Stacked on mobile */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
-        {/* Sales Statistics - Full width on mobile */}
-        <div className="lg:col-span-2 bg-white rounded-2xl shadow-card p-4 sm:p-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-5">
+        <div className="lg:col-span-2 bg-white rounded-2xl sm:rounded-card shadow-card p-4 sm:p-6">
           <div className="flex items-center justify-between mb-4 sm:mb-5">
-            <h3 className="font-display font-semibold text-ink flex items-center gap-2 text-sm sm:text-base">
-              <TrendingUp size={16} className="sm:size-17" /> Sales Statistics
-            </h3>
-            <span className="text-[10px] sm:text-xs text-body">Last 6 months</span>
+            <h3 className="font-display font-semibold text-ink flex items-center gap-2 text-sm sm:text-base"><TrendingUp size={17} /> Sales Statistics</h3>
+            <span className="text-xs text-body">Last 6 months</span>
           </div>
           {data?.salesStats.length ? (
-            <div className="flex items-end gap-2 sm:gap-4 h-40 sm:h-48">
+            <div className="flex items-end gap-2.5 sm:gap-4 h-40 sm:h-48">
               {data.salesStats.map((s) => (
-                <div key={`${s._id.year}-${s._id.month}`} className="flex-1 flex flex-col items-center gap-1.5 sm:gap-2">
+                <div key={`${s._id.year}-${s._id.month}`} className="flex-1 flex flex-col items-center gap-2">
                   <div
                     className="w-full bg-emerald/80 rounded-t-lg transition-all"
-                    style={{ height: `${(s.count / maxSales) * 100}%`, minHeight: 4 }}
+                    style={{ height: `${(s.count / maxSales) * 100}%`, minHeight: 6 }}
                   />
-                  <span className="text-[9px] sm:text-[11px] text-body">{MONTHS[s._id.month - 1]}</span>
+                  <span className="text-[11px] text-body">{MONTHS[s._id.month - 1]}</span>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-body py-8 sm:py-10 text-center">No sales recorded in the last 6 months yet.</p>
+            <p className="text-sm text-body py-10 text-center">No sales recorded in the last 6 months yet.</p>
           )}
         </div>
 
-        {/* Recent Enquiries - Full width on mobile */}
-        <div className="bg-white rounded-2xl shadow-card p-4 sm:p-6">
-          <div className="flex items-center justify-between mb-3 sm:mb-4">
+        <div className="bg-white rounded-2xl sm:rounded-card shadow-card p-4 sm:p-6">
+          <div className="flex items-center justify-between mb-4">
             <h3 className="font-display font-semibold text-ink text-sm sm:text-base">Recent Enquiries</h3>
-            <Link to="/admin/enquiries" className="text-[10px] sm:text-xs text-navy font-medium hover:underline">View all</Link>
+            <Link to="/admin/enquiries" className="text-xs text-navy font-medium hover:underline">View all</Link>
           </div>
-          <div className="space-y-2.5 sm:space-y-3">
+          <div className="space-y-3">
             {enquiriesData?.enquiries.length ? (
               enquiriesData.enquiries.map((e) => (
-                <div key={e._id} className="border-b border-line pb-2.5 sm:pb-3 last:border-0 last:pb-0">
+                <div key={e._id} className="border-b border-line pb-3 last:border-0 last:pb-0">
                   <p className="text-sm font-medium text-ink">{e.customerName}</p>
-                  <p className="text-[11px] sm:text-xs text-body">
-                    {e.carSnapshot ? `${e.carSnapshot.brand} ${e.carSnapshot.model}` : 'General enquiry'}
-                  </p>
+                  <p className="text-xs text-body">{e.carSnapshot ? `${e.carSnapshot.brand} ${e.carSnapshot.model}` : 'General enquiry'}</p>
                 </div>
               ))
             ) : (
-              <p className="text-sm text-body py-6 sm:py-8 text-center">No enquiries yet.</p>
+              <p className="text-sm text-body">No enquiries yet.</p>
             )}
           </div>
         </div>
       </div>
 
-      {/* Recent Uploads - Mobile: 2 columns, Tablet: 3 columns, Desktop: 5 columns */}
-      <div className="bg-white rounded-2xl shadow-card p-4 sm:p-6 mt-4 sm:mt-5">
-        <div className="flex items-center justify-between mb-3 sm:mb-4">
+      <div className="bg-white rounded-2xl sm:rounded-card shadow-card p-4 sm:p-6 mt-3 sm:mt-5">
+        <div className="flex items-center justify-between mb-4">
           <h3 className="font-display font-semibold text-ink text-sm sm:text-base">Recent Uploads</h3>
-          <Link to="/admin/cars" className="text-[10px] sm:text-xs text-navy font-medium hover:underline">Manage all cars</Link>
+          <Link to="/admin/cars" className="text-xs text-navy font-medium hover:underline">Manage all cars</Link>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4">
           {data?.recentUploads.map((car) => (
             <Link key={car._id} to={`/admin/edit/${car._id}`} className="group">
-              <div className="aspect-square rounded-xl overflow-hidden bg-surface mb-1.5 sm:mb-2">
-                <img 
-                  src={car.images?.[0]?.url} 
-                  alt="" 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform" 
-                  loading="lazy"
-                />
+              <div className="aspect-square rounded-xl overflow-hidden bg-surface mb-2">
+                <img src={car.images?.[0]?.url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
               </div>
-              <p className="text-[10px] sm:text-xs font-medium text-ink truncate">{car.brand} {car.model}</p>
-              <p className="text-[10px] sm:text-xs text-emerald font-semibold">₹{(car.price / 100000).toFixed(2)}L</p>
+              <p className="text-xs font-medium text-ink truncate">{car.brand} {car.model}</p>
+              <p className="text-xs text-emerald font-semibold">₹{(car.price / 100000).toFixed(2)}L</p>
             </Link>
           ))}
         </div>

@@ -68,24 +68,24 @@ export default function UploadCar() {
 
   return (
     <AdminLayout title="Upload Car">
-      <form onSubmit={handleSubmit(onSubmit)} className="max-w-4xl space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="max-w-4xl space-y-4 sm:space-y-6">
         {/* Drag & drop images */}
         <Section title="Images">
           <div
             onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
             onDragLeave={() => setDragActive(false)}
             onDrop={(e) => { e.preventDefault(); setDragActive(false); if (e.dataTransfer.files) addFiles(e.dataTransfer.files); }}
-            className={`border-2 border-dashed rounded-2xl p-8 text-center transition-colors ${dragActive ? 'border-emerald bg-emerald/5' : 'border-line'}`}
+            className={`border-2 border-dashed rounded-2xl p-6 sm:p-8 text-center transition-colors ${dragActive ? 'border-emerald bg-emerald/5' : 'border-line'}`}
           >
-            <UploadCloud size={28} className="mx-auto text-body mb-2" />
+            <UploadCloud size={26} className="mx-auto text-body mb-2" />
             <p className="text-sm text-body">Drag & drop images here, or</p>
             <label className="inline-block mt-2 text-sm font-medium text-navy cursor-pointer hover:underline">
-              browse files
+              <span className="inline-block py-1">browse files</span>
               <input type="file" multiple accept="image/*" className="hidden" onChange={(e) => e.target.files && addFiles(e.target.files)} />
             </label>
           </div>
           {previews.length > 0 && (
-            <div className="grid grid-cols-4 sm:grid-cols-6 gap-3 mt-4">
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2.5 sm:gap-3 mt-4">
               {previews.map((src, i) => (
                 <div key={i} className="relative aspect-square rounded-xl overflow-hidden group">
                   <img src={src} alt="" className="w-full h-full object-cover" />
@@ -99,7 +99,7 @@ export default function UploadCar() {
         </Section>
 
         <Section title="Basic Details">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Field label="Brand"><input {...register('brand', { required: true })} className="input" /></Field>
             <Field label="Model"><input {...register('model', { required: true })} className="input" /></Field>
             <Field label="Variant"><input {...register('variant')} className="input" /></Field>
@@ -159,7 +159,7 @@ export default function UploadCar() {
         </Section>
 
         <Section title="Public Contact Options">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-4">
             <Field label="WhatsApp Number"><input {...register('whatsappNumber')} placeholder="+91XXXXXXXXXX" className="input" /></Field>
             <Field label="Phone Number"><input {...register('phoneNumber')} className="input" /></Field>
             <Field label="Instagram URL"><input {...register('instagramUrl')} className="input" /></Field>
@@ -167,8 +167,8 @@ export default function UploadCar() {
         </Section>
 
         <Section title="Status">
-          <div className="flex items-center gap-6 flex-wrap">
-            <select {...register('status')} className="input max-w-xs">
+          <div className="flex items-center gap-4 sm:gap-6 flex-wrap">
+            <select {...register('status')} className="input w-full sm:max-w-xs">
               {['Available', 'Sold', 'Reserved'].map((s) => <option key={s}>{s}</option>)}
             </select>
             <label className="flex items-center gap-2 text-sm text-ink cursor-pointer">
@@ -178,7 +178,7 @@ export default function UploadCar() {
           </div>
         </Section>
 
-        <button type="submit" disabled={isSubmitting} className="btn-primary bg-emerald hover:bg-emerald-dark disabled:opacity-60">
+        <button type="submit" disabled={isSubmitting} className="btn-primary bg-emerald hover:bg-emerald-dark disabled:opacity-60 w-full sm:w-auto !h-12 sm:!h-auto">
           {isSubmitting ? 'Uploading...' : 'Upload Car'}
         </button>
       </form>
@@ -188,8 +188,8 @@ export default function UploadCar() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-card shadow-card p-6">
-      <h3 className="font-display font-semibold text-ink mb-4">{title}</h3>
+    <div className="bg-white rounded-2xl sm:rounded-card shadow-card p-4 sm:p-6">
+      <h3 className="font-display font-semibold text-ink mb-3 sm:mb-4 text-sm sm:text-base">{title}</h3>
       {children}
     </div>
   );

@@ -94,9 +94,9 @@ export default function EditCar() {
 
   return (
     <AdminLayout title={`Edit: ${car.brand} ${car.model}`}>
-      <form onSubmit={handleSubmit(onSubmit)} className="max-w-4xl space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="max-w-4xl space-y-4 sm:space-y-6">
         <Section title="Images">
-          <div className="grid grid-cols-4 sm:grid-cols-6 gap-3 mb-4">
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2.5 sm:gap-3 mb-4">
             {existingImages.map((img) => (
               <div key={img.url} className="relative aspect-square rounded-xl overflow-hidden">
                 <img src={img.url} alt="" className="w-full h-full object-cover" />
@@ -118,7 +118,7 @@ export default function EditCar() {
             onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
             onDragLeave={() => setDragActive(false)}
             onDrop={(e) => { e.preventDefault(); setDragActive(false); if (e.dataTransfer.files) addFiles(e.dataTransfer.files); }}
-            className={`border-2 border-dashed rounded-2xl p-6 text-center transition-colors ${dragActive ? 'border-emerald bg-emerald/5' : 'border-line'}`}
+            className={`border-2 border-dashed rounded-2xl p-5 sm:p-6 text-center transition-colors ${dragActive ? 'border-emerald bg-emerald/5' : 'border-line'}`}
           >
             <UploadCloud size={24} className="mx-auto text-body mb-2" />
             <p className="text-sm text-body">Drag & drop to add more images, or</p>
@@ -130,7 +130,7 @@ export default function EditCar() {
         </Section>
 
         <Section title="Basic Details">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Field label="Brand"><input {...register('brand', { required: true })} className="input" /></Field>
             <Field label="Model"><input {...register('model', { required: true })} className="input" /></Field>
             <Field label="Variant"><input {...register('variant')} className="input" /></Field>
@@ -197,8 +197,8 @@ export default function EditCar() {
         </Section>
 
         <Section title="Status">
-          <div className="flex items-center gap-6 flex-wrap">
-            <select {...register('status')} className="input max-w-xs">
+          <div className="flex items-center gap-4 sm:gap-6 flex-wrap">
+            <select {...register('status')} className="input w-full sm:max-w-xs">
               {['Available', 'Sold', 'Reserved'].map((s) => <option key={s}>{s}</option>)}
             </select>
             <label className="flex items-center gap-2 text-sm text-ink cursor-pointer">
@@ -208,11 +208,11 @@ export default function EditCar() {
           </div>
         </Section>
 
-        <div className="flex gap-3">
-          <button type="submit" disabled={isSubmitting} className="btn-primary bg-emerald hover:bg-emerald-dark disabled:opacity-60">
+        <div className="flex flex-col-reverse sm:flex-row gap-2.5 sm:gap-3">
+          <button type="button" onClick={() => navigate('/admin/cars')} className="btn-outline w-full sm:w-auto !h-12 sm:!h-auto">Cancel</button>
+          <button type="submit" disabled={isSubmitting} className="btn-primary bg-emerald hover:bg-emerald-dark disabled:opacity-60 w-full sm:w-auto !h-12 sm:!h-auto">
             {isSubmitting ? 'Saving...' : 'Save Changes'}
           </button>
-          <button type="button" onClick={() => navigate('/admin/cars')} className="btn-outline">Cancel</button>
         </div>
       </form>
     </AdminLayout>
@@ -221,8 +221,8 @@ export default function EditCar() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-card shadow-card p-6">
-      <h3 className="font-display font-semibold text-ink mb-4">{title}</h3>
+    <div className="bg-white rounded-2xl sm:rounded-card shadow-card p-4 sm:p-6">
+      <h3 className="font-display font-semibold text-ink mb-3 sm:mb-4 text-sm sm:text-base">{title}</h3>
       {children}
     </div>
   );

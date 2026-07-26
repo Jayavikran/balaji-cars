@@ -19,7 +19,7 @@ export default function FloatingContacts({ settings }: { settings?: SiteSettings
           key: 'instagram',
           href: settings.instagramUrl,
           icon: Instagram,
-          tooltip: 'Follow us',
+          tooltip: 'Follow us on Instagram',
           gradient: 'from-pink-500 via-red-500 to-yellow-400',
         },
         {
@@ -35,20 +35,20 @@ export default function FloatingContacts({ settings }: { settings?: SiteSettings
           key: 'phone',
           href: settings.phoneNumber ? `tel:${settings.phoneNumber}` : undefined,
           icon: Phone,
-          tooltip: 'Call us',
+          tooltip: 'Call the dealership',
           gradient: 'from-navy-light to-navy',
         },
       ].filter((b) => b.href)
     : [];
 
   return (
-    <div className="floating-buttons fixed right-4 sm:right-5 bottom-6 z-40 flex flex-col gap-2.5 sm:gap-3">
+    <div className="fixed right-3 sm:right-5 bottom-4 sm:bottom-6 z-40 flex flex-col gap-2.5 sm:gap-3">
       {showBackToTop && (
         <button
           type="button"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           aria-label="Back to top"
-          className="w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg bg-navy dark:bg-white/10 dark:backdrop-blur-sm hover:scale-110 transition-transform duration-200"
+          className="w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white shadow-cardHover backdrop-blur-sm bg-navy/90 dark:bg-white/10 sm:hover:scale-110 transition-transform duration-200"
         >
           <ArrowUp size={18} />
         </button>
@@ -62,11 +62,11 @@ export default function FloatingContacts({ settings }: { settings?: SiteSettings
           href={b.href}
           target="_blank"
           rel="noreferrer"
-          className="group relative w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform duration-200"
+          className="group relative w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white shadow-cardHover backdrop-blur-sm sm:hover:scale-110 transition-transform duration-200"
         >
-          <span className={`absolute inset-0 rounded-full bg-gradient-to-br ${b.gradient}`} />
+          <span className={`absolute inset-0 rounded-full bg-gradient-to-br ${b.gradient} opacity-95`} />
           <b.icon size={19} className="relative z-10" />
-          <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap bg-navy text-white text-xs px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none hidden sm:block">
+          <span className="hidden sm:block absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap bg-navy text-white text-xs px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
             {b.tooltip}
           </span>
         </a>

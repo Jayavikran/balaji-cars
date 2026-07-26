@@ -19,9 +19,9 @@ export default function ThemeToggle() {
       onClick={cycleMode}
       aria-label={`Theme: ${LABELS[mode]}. Click to change.`}
       title={LABELS[mode]}
-      className="w-12 h-12 rounded-full flex items-center justify-center text-white shadow-cardHover bg-navy dark:bg-white dark:text-navy hover:scale-110 transition-transform duration-200"
+      className="w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white shadow-cardHover backdrop-blur-sm bg-navy/90 dark:bg-white dark:text-navy sm:hover:scale-110 transition-transform duration-200"
     >
-      <Icon size={19} />
+      <Icon size={18} />
     </button>
   );
 }

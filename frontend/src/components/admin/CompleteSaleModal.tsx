@@ -90,7 +90,7 @@ export default function CompleteSaleModal({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Complete Sale">
+      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-label="Complete Sale">
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           className="absolute inset-0 bg-black/60" onClick={saving ? undefined : onClose}
@@ -100,9 +100,9 @@ export default function CompleteSaleModal({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 12 }}
           transition={{ duration: 0.2 }}
-          className="relative bg-white rounded-card w-full max-w-lg max-h-[90vh] overflow-y-auto"
+          className="relative bg-white rounded-t-3xl sm:rounded-card w-full max-w-lg max-h-[92vh] sm:max-h-[90vh] overflow-y-auto"
         >
-          <div className="flex items-center justify-between px-6 py-4 border-b border-line sticky top-0 bg-white z-10">
+          <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-line sticky top-0 bg-white z-10">
             <div>
               <h3 className="font-display text-lg font-bold text-ink">Complete Sale</h3>
               <p className="text-xs text-body">{car.brand} {car.model} {car.variant}</p>
@@ -112,8 +112,8 @@ export default function CompleteSaleModal({
             </button>
           </div>
 
-          <div className="p-6 space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+          <div className="p-4 sm:p-6 space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <label className="text-sm">
                 <span className="block mb-1.5 font-medium text-ink">Selling Price *</span>
                 <input
@@ -137,7 +137,7 @@ export default function CompleteSaleModal({
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <label className="text-sm">
                 <span className="block mb-1.5 font-medium text-ink">Buyer Name *</span>
                 <input className="input" value={form.buyerName} onChange={(e) => set('buyerName', e.target.value)} />
@@ -148,7 +148,7 @@ export default function CompleteSaleModal({
               </label>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <label className="text-sm">
                 <span className="block mb-1.5 font-medium text-ink">Sale Date</span>
                 <input type="date" className="input" value={form.saleDate} onChange={(e) => set('saleDate', e.target.value)} />
@@ -179,9 +179,9 @@ export default function CompleteSaleModal({
             </label>
           </div>
 
-          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-line sticky bottom-0 bg-white">
-            <button onClick={onClose} disabled={saving} className="btn-outline">Cancel</button>
-            <button onClick={handleSubmit} disabled={saving} className="btn-primary">
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 sm:gap-3 px-4 sm:px-6 py-3.5 sm:py-4 border-t border-line sticky bottom-0 bg-white">
+            <button onClick={onClose} disabled={saving} className="btn-outline w-full sm:w-auto !h-12 sm:!h-auto">Cancel</button>
+            <button onClick={handleSubmit} disabled={saving} className="btn-primary w-full sm:w-auto !h-12 sm:!h-auto">
               {saving ? 'Saving...' : 'Complete Sale'}
             </button>
           </div>

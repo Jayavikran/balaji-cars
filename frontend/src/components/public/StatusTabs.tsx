@@ -30,7 +30,7 @@ export default function StatusTabs({ active, onChange }: StatusTabsProps) {
             type="button"
             onClick={() => onChange(tab.value)}
             aria-pressed={isActive}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+            className={`px-2.5 sm:px-3.5 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold transition-colors whitespace-nowrap ${
               isActive ? 'bg-navy dark:bg-emerald text-white shadow-card' : 'text-body hover:text-ink dark:hover:text-white'
             }`}
           >

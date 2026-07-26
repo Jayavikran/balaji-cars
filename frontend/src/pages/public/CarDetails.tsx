@@ -142,14 +142,14 @@ export default function CarDetails() {
       />
       <Header settings={settings} search="" onSearchChange={() => {}} sort="newest" onSortChange={() => {}} onOpenFilters={() => {}} />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-6">
         <Breadcrumbs items={breadcrumbItems} />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-6 grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-8">
         <div className="lg:col-span-2">
           {/* Gallery */}
-          <div className="relative rounded-2xl overflow-hidden bg-gray-50" style={{ height: 'min(600px, 70vh)' }}>
+          <div className="relative rounded-2xl overflow-hidden bg-gray-50 h-[42vh] sm:h-[min(600px,70vh)]">
             <AnimatePresence mode="wait">
               <motion.div
                 key={imgIndex}
@@ -260,9 +260,9 @@ export default function CarDetails() {
           )}
 
           {/* Title & actions */}
-          <div className="mt-6 flex items-start justify-between gap-4 flex-wrap">
+          <div className="mt-4 sm:mt-6 flex items-start justify-between gap-4 flex-wrap">
             <div>
-              <h1 className="font-display text-2xl sm:text-3xl font-bold text-ink dark:text-white">{car.brand} {car.model} {car.variant}</h1>
+              <h1 className="font-display text-xl sm:text-3xl font-bold text-ink dark:text-white">{car.brand} {car.model} {car.variant}</h1>
               <div className="flex items-center gap-2 mt-2">
                 <p className="price-tag text-2xl">{formatPrice(car.price)}</p>
                 {car.previousPrice && car.previousPrice > car.price && (
@@ -307,7 +307,7 @@ export default function CarDetails() {
           </div>
 
           {/* Spec strip */}
-          <div className="mt-5 grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="mt-4 sm:mt-5 grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
             {specs.map((s) => (
               <div key={s.label} className="flex items-center gap-2.5 bg-surface dark:bg-white/5 rounded-2xl px-3.5 py-3">
                 <s.icon size={17} className="text-navy dark:text-emerald shrink-0" />
@@ -346,7 +346,7 @@ export default function CarDetails() {
 
         {/* Sidebar: contact actions + enquiry form + EMI calculator */}
         <div className="space-y-4">
-          <div className="surface-card rounded-card p-5 space-y-3">
+          <div className="surface-card rounded-2xl sm:rounded-card p-4 sm:p-5 space-y-2.5 sm:space-y-3">
             <h4 className="font-display font-semibold text-ink dark:text-white">Contact Dealer</h4>
             {whatsapp && (
               <a href={`https://wa.me/${whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`Hi, I'm interested in the ${car.brand} ${car.model}`)}`} target="_blank" rel="noreferrer" className="btn-primary w-full bg-emerald hover:bg-emerald-dark">
