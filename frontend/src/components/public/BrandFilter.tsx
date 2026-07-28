@@ -1,6 +1,15 @@
 const BRANDS = [
-  'All', 'Maruti Suzuki', 'Mahindra', 'Hyundai', 'Toyota', 'Honda',
-  'BMW', 'Audi', 'Kia', 'MG', 'Volkswagen',
+  { value: 'All', label: 'All Brands' },
+  { value: 'Maruti Suzuki', label: 'Maruti Suzuki' },
+  { value: 'Hyundai', label: 'Hyundai' },
+  { value: 'Mahindra', label: 'Mahindra' },
+  { value: 'Toyota', label: 'Toyota' },
+  { value: 'Honda', label: 'Honda' },
+  { value: 'BMW', label: 'BMW' },
+  { value: 'Audi', label: 'Audi' },
+  { value: 'Kia', label: 'Kia' },
+  { value: 'Volkswagen', label: 'Volkswagen' },
+  { value: 'MG', label: 'MG' },
 ];
 
 interface BrandFilterProps {
@@ -10,22 +19,27 @@ interface BrandFilterProps {
 
 export default function BrandFilter({ active, onSelect }: BrandFilterProps) {
   return (
-    <div className="mobile-brand-section max-w-7xl lg:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-3 sm:py-5 lg:py-6">
-      <div className="mobile-brand-strip flex gap-2 sm:gap-2.5 lg:gap-3 overflow-x-auto pb-1 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0 lg:justify-center">
-        {BRANDS.map((brand) => (
-          <button
-            key={brand}
-            onClick={() => onSelect(brand)}
-            className={`shrink-0 px-3.5 sm:px-4 lg:px-5 py-1.5 sm:py-2 lg:py-2.5 rounded-full text-xs sm:text-sm font-medium border transition-colors whitespace-nowrap lg:h-10 lg:flex lg:items-center ${
-              active === brand
-                ? 'bg-navy dark:bg-emerald text-white border-navy dark:border-emerald'
-                : 'bg-white dark:bg-transparent text-ink dark:text-white/80 border-line dark:border-white/15 hover:border-navy dark:hover:border-white/40'
-            }`}
-          >
-            {brand}
-          </button>
-        ))}
+    <section className="mobile-brand-section premium-shell py-3 sm:py-5 lg:py-6">
+      <div className="mobile-brand-strip flex gap-2 overflow-x-auto pb-0 scrollbar-hide lg:justify-center">
+        {BRANDS.map((brand) => {
+          const isActive = active === brand.value;
+
+          return (
+            <button
+              key={brand.value}
+              type="button"
+              onClick={() => onSelect(brand.value)}
+              className={`shrink-0 rounded-full border px-3.5 py-1.5 text-sm font-medium whitespace-nowrap transition-all duration-300 sm:px-4 sm:py-2 ${
+                isActive
+                  ? 'border-[#F4B400] bg-[#0F0F10] text-white shadow-card'
+                  : 'border-line bg-white text-ink hover:border-[#F4B400] hover:shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-white/80'
+              }`}
+            >
+              {brand.label}
+            </button>
+          );
+        })}
       </div>
-    </div>
+    </section>
   );
 }

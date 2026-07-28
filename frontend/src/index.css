@@ -5,22 +5,24 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    background: #ffffff;
   }
   body {
-    @apply font-body text-ink bg-white antialiased transition-colors duration-200 dark:bg-[#0B1220] dark:text-white/90;
+    @apply font-body text-ink bg-white antialiased transition-colors duration-200 dark:bg-[#09090A] dark:text-white/90;
+    background-image:
+      radial-gradient(circle at top left, rgba(244, 180, 0, 0.06), transparent 28%),
+      radial-gradient(circle at top right, rgba(0, 0, 0, 0.04), transparent 30%);
   }
   h1, h2, h3, h4 {
     @apply font-display;
   }
   :focus-visible {
-    outline: 2px solid #0E9F6E;
+    outline: 2px solid #F4B400;
     outline-offset: 2px;
   }
 }
 
 @layer components {
-  /* Signature element: a dashboard-style spec readout, evoking a car's
-     instrument cluster. Used on car cards and the details page. */
   .spec-strip {
     @apply flex items-center gap-x-3 gap-y-1 flex-wrap font-mono text-[11px] uppercase tracking-wider text-white/90 bg-navy rounded-full px-3 py-1.5;
   }
@@ -43,14 +45,14 @@
   .badge-price-drop { @apply bg-red-500 text-white; }
 
   .price-tag {
-    @apply font-display font-bold text-emerald text-xl;
+    @apply font-display font-bold text-[#F4B400] text-xl;
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-navy text-white font-medium px-5 py-2.5 transition-transform duration-200 hover:scale-[1.02] hover:bg-navy-light dark:bg-emerald dark:hover:bg-emerald-dark;
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-navy text-white font-medium px-5 py-2.5 transition-all duration-300 hover:scale-[1.01] hover:bg-[#1E1E20] shadow-card;
   }
   .btn-outline {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-line text-ink font-medium px-5 py-2.5 transition-colors duration-200 hover:border-navy dark:border-white/15 dark:text-white/90 dark:hover:border-white/40;
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-line text-ink font-medium px-5 py-2.5 transition-all duration-300 hover:border-navy dark:border-white/15 dark:text-white/90 dark:hover:border-white/40;
   }
 
   /* Shared form control style used across admin forms (Upload/Edit Car, Settings) */
@@ -62,6 +64,18 @@
      white card/panel to its dark-mode equivalent consistently. */
   .surface-card {
     @apply bg-white dark:bg-[#111a2c] border border-line dark:border-white/10;
+  }
+
+  .premium-shell {
+    @apply max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12;
+  }
+
+  .premium-chip {
+    @apply inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2 text-sm font-medium text-ink shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-card dark:border-white/10 dark:bg-white/5 dark:text-white;
+  }
+
+  .glass-card {
+    @apply rounded-[22px] border border-white/60 bg-white/80 shadow-[0_12px_40px_rgba(0,0,0,.08)] backdrop-blur-md dark:border-white/10 dark:bg-white/5;
   }
 }
 
@@ -195,9 +209,13 @@
     font-size: 0.8125rem;
   }
 
+  .mobile-nav-drawer {
+    max-width: 100vw;
+  }
+
   .mobile-brand-section {
-    padding-top: 12px;
-    padding-bottom: 12px;
+    padding-top: 8px;
+    padding-bottom: 8px;
     overflow: hidden;
   }
 
@@ -218,8 +236,8 @@
   }
 
   .mobile-listings {
-    padding-top: 20px;
-    padding-bottom: 32px;
+    padding-top: 16px;
+    padding-bottom: 24px;
   }
 
   .mobile-listings > div:first-child {
@@ -264,13 +282,13 @@
   .mobile-footer {
     width: 100%;
     max-width: 100%;
-    margin-top: 32px;
+    margin-top: 24px;
   }
 
   .mobile-footer > .md\:hidden {
     width: 100%;
     max-width: 100%;
-    padding: 20px 16px;
+    padding: 16px;
   }
 
   .mobile-footer .border-t {
@@ -285,4 +303,13 @@
     max-width: 100%;
     overflow-wrap: anywhere;
   }
+}
+
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

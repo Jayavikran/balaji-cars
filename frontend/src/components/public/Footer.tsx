@@ -1,68 +1,98 @@
-import { useState } from 'react';
-import { Facebook, Instagram, MessageCircle, MapPin, Phone, Mail, ChevronDown } from 'lucide-react';
+import { Facebook, Instagram, MessageCircle, MapPin, Phone, Mail, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import type { SiteSettings } from '@/types';
 
-const EXPLORE_LINKS = ['Featured Cars', 'Latest Arrivals', 'Available Cars', 'Customer Reviews', 'FAQ'];
-const FALLBACK_DESCRIPTION = 'A premium marketplace for certified used cars — transparent pricing, verified listings, and direct dealer contact.';
+const QUICK_LINKS = [
+  { label: 'Home', href: '/' },
+  { label: 'About', href: '/about' },
+  { label: 'Cars', href: '/#car-listings' },
+  { label: 'Contact', href: '/contact' },
+];
 
 export default function Footer({ settings }: { settings?: SiteSettings }) {
-  const [openSection, setOpenSection] = useState<string | null>(null);
   const companyName = settings?.companyName || 'BALAJI CARS';
-  const description = settings?.seoDescription?.trim() || FALLBACK_DESCRIPTION;
-  const whatsappUrl = settings?.whatsappNumber ? `https://wa.me/${settings.whatsappNumber.replace(/\D/g, '')}` : undefined;
-  const hasSocial = !!(settings?.facebookUrl || settings?.instagramUrl || whatsappUrl);
-  const toggle = (id: string) => setOpenSection((current) => (current === id ? null : id));
+  const description =
+    settings?.seoDescription?.trim() ||
+    'A premium dealership for verified used cars, trusted pricing, and a smooth buying experience.';
+  const whatsappUrl = settings?.whatsappNumber
+    ? `https://wa.me/${settings.whatsappNumber.replace(/\D/g, '')}`
+    : undefined;
 
   return (
-    <footer className="mobile-footer w-full max-w-full overflow-hidden bg-navy text-white/80 mt-10 sm:mt-16">
-      <div className="hidden md:grid max-w-7xl lg:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-12 lg:py-16 grid-cols-3 gap-10 lg:gap-16">
-        <div>
-          <h4 className="font-display font-bold text-white text-lg mb-3">{companyName}</h4>
-          <p className="text-sm leading-relaxed">{description}</p>
-          <div className="flex gap-3 mt-4">
-            {settings?.facebookUrl && <a href={settings.facebookUrl} target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20"><Facebook size={16} /></a>}
-            {settings?.instagramUrl && <a href={settings.instagramUrl} target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20"><Instagram size={16} /></a>}
-            {whatsappUrl && <a href={whatsappUrl} target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20"><MessageCircle size={16} /></a>}
+    <footer className="mobile-footer mt-8 bg-[#0A0A0B] text-white sm:mt-12">
+      <div className="premium-shell py-8 sm:py-14 lg:py-16">
+        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr_0.8fr] lg:gap-10">
+          <div>
+            <div className="flex flex-col leading-none">
+              <span className="text-2xl font-extrabold tracking-[0.18em] text-white">
+                BALAJI <span className="text-[#F4B400]">CARS</span>
+              </span>
+              <span className="mt-1.5 text-[0.65rem] tracking-[0.45em] text-white/70 sm:mt-2 sm:text-xs sm:tracking-[0.5em]">TIRUNELVELI</span>
+            </div>
+            <p className="mt-4 max-w-xl text-sm leading-6 text-white/68 sm:mt-5 sm:leading-7">{description}</p>
+
+            <div className="mt-5 flex items-center gap-2.5 sm:mt-6 sm:gap-3">
+              {settings?.facebookUrl && (
+                <a href={settings.facebookUrl} target="_blank" rel="noreferrer" className="flex h-10 w-10 items-center justify-center rounded-full bg-white/8 text-white transition-colors hover:bg-white/15">
+                  <Facebook size={16} />
+                </a>
+              )}
+              {settings?.instagramUrl && (
+                <a href={settings.instagramUrl} target="_blank" rel="noreferrer" className="flex h-10 w-10 items-center justify-center rounded-full bg-white/8 text-white transition-colors hover:bg-white/15">
+                  <Instagram size={16} />
+                </a>
+              )}
+              {whatsappUrl && (
+                <a href={whatsappUrl} target="_blank" rel="noreferrer" className="flex h-10 w-10 items-center justify-center rounded-full bg-white/8 text-white transition-colors hover:bg-white/15">
+                  <MessageCircle size={16} />
+                </a>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-semibold uppercase tracking-[0.22em] text-[#F4B400]">Quick Links</h4>
+            <ul className="mt-4 space-y-2.5 text-sm text-white/75 sm:mt-5 sm:space-y-3">
+              {QUICK_LINKS.map((item) => (
+                <li key={item.label}>
+                  <Link to={item.href} className="inline-flex items-center gap-2 transition-colors hover:text-white">
+                    <ChevronRight size={14} className="text-[#F4B400]" />
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-semibold uppercase tracking-[0.22em] text-[#F4B400]">Contact</h4>
+            <ul className="mt-4 space-y-2.5 text-sm text-white/75 sm:mt-5 sm:space-y-3">
+              {settings?.phoneNumber && (
+                <li className="flex items-start gap-3">
+                  <Phone size={16} className="mt-0.5 text-[#F4B400]" />
+                  <span>{settings.phoneNumber}</span>
+                </li>
+              )}
+              {settings?.email && (
+                <li className="flex items-start gap-3">
+                  <Mail size={16} className="mt-0.5 text-[#F4B400]" />
+                  <span>{settings.email}</span>
+                </li>
+              )}
+              {settings?.address && (
+                <li className="flex items-start gap-3">
+                  <MapPin size={16} className="mt-0.5 text-[#F4B400]" />
+                  <span>{settings.address}</span>
+                </li>
+              )}
+            </ul>
           </div>
         </div>
-        <div>
-          <h4 className="font-display font-semibold text-white mb-3">Contact</h4>
-          <ul className="space-y-2.5 text-sm">
-            {settings?.phoneNumber && <li className="flex items-center gap-2"><Phone size={15} /> {settings.phoneNumber}</li>}
-            {settings?.email && <li className="flex items-center gap-2"><Mail size={15} /> {settings.email}</li>}
-            {settings?.googleMapsLink && <li><a href={settings.googleMapsLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-white"><MapPin size={15} /> {companyName}</a></li>}
-          </ul>
-        </div>
-        <div>
-          <h4 className="font-display font-semibold text-white mb-3">Explore</h4>
-          <ul className="space-y-2.5 text-sm">{EXPLORE_LINKS.map((label) => <li key={label}>{label}</li>)}</ul>
+
+        <div className="mt-8 border-t border-white/10 pt-4 text-center text-xs text-white/45 sm:mt-12 sm:pt-5">
+          Copyright {new Date().getFullYear()} {companyName}. All rights reserved.
         </div>
       </div>
-
-      <div className="md:hidden px-4 py-5">
-        <h4 className="font-display font-bold text-white text-base mb-1">{companyName}</h4>
-        <p className="text-xs text-white/60 mb-3">{description}</p>
-        <AccordionRow id="about" open={openSection === 'about'} onToggle={toggle} title="About"><p className="text-xs leading-relaxed text-white/70">{description}</p></AccordionRow>
-        <AccordionRow id="contact" open={openSection === 'contact'} onToggle={toggle} title="Contact">
-          <ul className="space-y-2 text-xs">
-            {settings?.phoneNumber && <li className="flex items-center gap-2"><Phone size={13} /> {settings.phoneNumber}</li>}
-            {settings?.email && <li className="flex items-center gap-2"><Mail size={13} /> {settings.email}</li>}
-            {settings?.googleMapsLink && <li><a href={settings.googleMapsLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 active:text-white"><MapPin size={13} /> {companyName}</a></li>}
-          </ul>
-        </AccordionRow>
-        <AccordionRow id="links" open={openSection === 'links'} onToggle={toggle} title="Quick Links"><ul className="space-y-2 text-xs text-white/70">{EXPLORE_LINKS.map((label) => <li key={label}>{label}</li>)}</ul></AccordionRow>
-        {hasSocial && <AccordionRow id="social" open={openSection === 'social'} onToggle={toggle} title="Social"><div className="flex gap-2.5 pt-1">
-          {settings?.facebookUrl && <a href={settings.facebookUrl} target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center active:bg-white/20"><Facebook size={15} /></a>}
-          {settings?.instagramUrl && <a href={settings.instagramUrl} target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center active:bg-white/20"><Instagram size={15} /></a>}
-          {whatsappUrl && <a href={whatsappUrl} target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center active:bg-white/20"><MessageCircle size={15} /></a>}
-        </div></AccordionRow>}
-      </div>
-
-      <div className="border-t border-white/10 py-4 sm:py-5 text-center text-[11px] sm:text-xs text-white/50">© {new Date().getFullYear()} {companyName}. All rights reserved.</div>
     </footer>
   );
-}
-
-function AccordionRow({ id, title, open, onToggle, children }: { id: string; title: string; open: boolean; onToggle: (id: string) => void; children: React.ReactNode; }) {
-  return <div className="border-b border-white/10 py-1"><button type="button" onClick={() => onToggle(id)} aria-expanded={open} className="w-full flex items-center justify-between py-3 text-sm font-medium text-white">{title}<ChevronDown size={16} className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`} /></button>{open && <div className="pb-4 animate-fadeIn">{children}</div>}</div>;
 }

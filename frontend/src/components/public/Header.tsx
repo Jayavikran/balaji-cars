@@ -1,207 +1,347 @@
-import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Search, SlidersHorizontal, ArrowUpDown, Heart, MapPin, X, Trash2 } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowUpDown, ChevronRight, Menu, MapPin, Search, SlidersHorizontal, X } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchSearchSuggestions } from '@/api/cars';
-import { useFavorites } from '@/hooks/useFavorites';
 import type { SiteSettings } from '@/types';
+
+const NAV_LINKS = [
+  { label: 'Home', href: '/' },
+  { label: 'About', href: '/about' },
+  { label: 'Cars', href: '/#car-listings' },
+  { label: 'Contact', href: '/contact' },
+];
 
 const SORT_OPTIONS = [
   { value: 'newest', label: 'Newest First' },
-  { value: 'oldest', label: 'Oldest First' },
   { value: 'price_low_high', label: 'Price: Low to High' },
   { value: 'price_high_low', label: 'Price: High to Low' },
   { value: 'km_low_high', label: 'Kilometers: Low to High' },
-  { value: 'km_high_low', label: 'Kilometers: High to Low' },
   { value: 'year_newest', label: 'Year: Newest' },
-  { value: 'year_oldest', label: 'Year: Oldest' },
-  { value: 'recently_added', label: 'Recently Added' },
-  { value: 'most_viewed', label: 'Most Viewed' },
   { value: 'featured_first', label: 'Featured First' },
 ];
 
 interface HeaderProps {
   settings?: SiteSettings;
-  search: string;
-  onSearchChange: (v: string) => void;
-  sort: string;
-  onSortChange: (v: string) => void;
-  onOpenFilters: () => void;
+  search?: string;
+  onSearchChange?: (v: string) => void;
+  sort?: string;
+  onSortChange?: (v: string) => void;
+  onOpenFilters?: () => void;
+  showSearchBar?: boolean;
 }
 
-export default function Header({ settings, search, onSearchChange, sort, onSortChange, onOpenFilters }: HeaderProps) {
+export default function Header({
+  settings,
+  search = '',
+  onSearchChange,
+  sort = 'newest',
+  onSortChange,
+  onOpenFilters,
+  showSearchBar = true,
+}: HeaderProps) {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
-  const [favOpen, setFavOpen] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const navigate = useNavigate();
-  const { favorites, removeFavorite } = useFavorites();
   const searchRef = useRef<HTMLDivElement>(null);
   const sortRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const companyName = settings?.companyName || 'BALAJI CARS';
 
   const { data: suggestions = [] } = useQuery({
     queryKey: ['suggestions', search],
     queryFn: () => fetchSearchSuggestions(search),
-    enabled: search.trim().length > 1,
+    enabled: !!showSearchBar && search.trim().length > 1,
   });
 
   useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 8);
     const onClickOutside = (e: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) setShowSuggestions(false);
       if (sortRef.current && !sortRef.current.contains(e.target as Node)) setSortOpen(false);
     };
+
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
     document.addEventListener('click', onClickOutside);
-    return () => document.removeEventListener('click', onClickOutside);
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      document.removeEventListener('click', onClickOutside);
+    };
   }, []);
+
+  const activePath = useMemo(() => location.pathname, [location.pathname]);
+
+  const goLocation = () => {
+    if (settings?.googleMapsLink) {
+      window.open(settings.googleMapsLink, '_blank', 'noopener,noreferrer');
+      return;
+    }
+    navigate('/contact');
+  };
 
   return (
     <>
-      {/* Sticky, glassmorphism header. Mobile: compact 56px logo row + a
-          persistent 48px search bar underneath, both part of the same
-          sticky block so search stays pinned while scrolling. No
-          hamburger — filter/sort/favourites live as icon buttons that
-          scale down to icon-only on small screens. */}
-      <header className="sticky top-0 z-40 bg-white/80 dark:bg-[#0B1220]/80 backdrop-blur-md border-b border-line dark:border-white/10">
-        <div className="max-w-7xl lg:max-w-[1450px] mx-auto px-3 sm:px-6 lg:px-[70px] h-14 md:h-16 lg:h-20 flex items-center gap-2 md:gap-4">
-          <Link to="/" className="flex items-center gap-2 min-w-0 shrink">
-            <div className="w-8 h-8 md:w-9 md:h-9 lg:w-11 lg:h-11 rounded-lg bg-navy flex items-center justify-center text-white font-display font-bold text-xs md:text-sm lg:text-base">
-              {(settings?.companyName || 'BC').slice(0, 2).toUpperCase()}
-            </div>
-            <span className="font-display font-bold text-ink dark:text-white text-sm sm:text-base md:text-lg lg:text-xl truncate min-w-0 max-w-[92px] sm:max-w-[190px] lg:max-w-none">
-              {settings?.companyName || 'BALAJI CARS'}
-            </span>
-          </Link>
-
-          <div ref={searchRef} className="relative flex-1 max-w-xl lg:max-w-[520px] mx-auto hidden md:block">
-            <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-body" />
-            <input
-              value={search}
-              onChange={(e) => onSearchChange(e.target.value)}
-              onFocus={() => setShowSuggestions(true)}
-              type="text"
-              placeholder="Search by Brand, Model, Variant, Registration Number or Year..."
-              className="w-full bg-surface dark:bg-white/5 rounded-full pl-10 pr-4 py-2.5 text-sm text-ink dark:text-white placeholder:text-body/70 border border-transparent focus:border-navy dark:focus:border-emerald focus:bg-white dark:focus:bg-white/10 transition-colors"
-            />
-            {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute top-full mt-2 left-0 right-0 bg-white dark:bg-[#111a2c] rounded-2xl shadow-cardHover border border-line dark:border-white/10 overflow-hidden animate-slideUp">
-                {suggestions.map((s) => (
-                  <button
-                    key={s.slug}
-                    onClick={() => { navigate(`/cars/${s.slug}`); setShowSuggestions(false); }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-ink dark:text-white/90 hover:bg-surface dark:hover:bg-white/5 transition-colors flex items-center gap-2"
-                  >
-                    <Search size={13} className="text-body" /> {s.label}
-                  </button>
-                ))}
+      <header
+        className={`sticky top-0 z-50 border-b border-white/10 ${
+          isScrolled ? 'bg-black shadow-[0_6px_20px_rgba(0,0,0,.25)]' : 'bg-black'
+        }`}
+        style={{ background: '#000000', opacity: 1, backdropFilter: 'none' }}
+      >
+        <div className="premium-shell h-20 sm:h-24 flex items-center justify-between gap-4">
+          <Link to="/" className="flex items-center gap-3 min-w-0 shrink-0">
+            {settings?.companyLogo ? (
+              <img
+                src={settings.companyLogo}
+                alt={companyName}
+                className="h-12 w-auto object-contain drop-shadow-[0_8px_24px_rgba(244,180,0,.12)]"
+                loading="eager"
+              />
+            ) : (
+              <div className="flex flex-col leading-none">
+                <span className="text-[1.45rem] sm:text-[1.7rem] font-extrabold tracking-[0.18em] text-white">
+                  BALAJI <span className="text-[#F4B400]">CARS</span>
+                </span>
+                <span className="mt-1 text-[0.67rem] sm:text-[0.72rem] tracking-[0.45em] text-white/80">TIRUNELVELI</span>
               </div>
             )}
-          </div>
+          </Link>
 
-          {/* Unified action toolbar — icon-only on mobile, icon+label on desktop. */}
-          <div className="flex items-center gap-0.5 sm:gap-1.5 md:gap-2 shrink-0 ml-auto md:ml-0">
-            <div ref={sortRef} className="relative">
-              <button
-                onClick={() => setSortOpen((v) => !v)}
-                aria-label="Sort"
-                className="flex items-center justify-center gap-1.5 text-sm font-medium text-ink dark:text-white/90 w-10 h-10 md:w-auto md:h-auto md:px-3 md:py-2 rounded-full hover:bg-surface dark:hover:bg-white/5 transition-colors"
-              >
-                <ArrowUpDown size={16} className="md:hidden" />
-                <ArrowUpDown size={15} className="hidden md:block" />
-                <span className="hidden md:inline">Sort</span>
-              </button>
-              {sortOpen && (
-                <div className="absolute right-0 top-full mt-2 w-56 max-w-[calc(100vw-2rem)] bg-white dark:bg-[#111a2c] rounded-2xl shadow-cardHover border border-line dark:border-white/10 py-2 z-50">
-                  {SORT_OPTIONS.map((opt) => (
+          <nav className="hidden md:flex items-center justify-center gap-10 flex-1">
+            {NAV_LINKS.map((item) => {
+              const isActive =
+                item.href === '/'
+                  ? activePath === '/'
+                  : activePath === item.href || (item.href === '/#car-listings' && activePath === '/');
+              return (
+                <NavLink
+                  key={item.label}
+                  to={item.href}
+                  className={`relative py-2 text-base font-semibold transition-colors ${
+                    isActive ? 'text-[#F4B400]' : 'text-white hover:text-white/90'
+                  }`}
+                >
+                  {item.label}
+                  <span
+                    className={`absolute left-0 right-0 -bottom-1 h-0.5 rounded-full transition-all duration-300 ${
+                      isActive ? 'bg-[#F4B400]' : 'bg-transparent'
+                    }`}
+                  />
+                </NavLink>
+              );
+            })}
+          </nav>
+
+          <div className="flex items-center gap-2 md:gap-0">
+            <button
+              type="button"
+              onClick={() => setDrawerOpen(true)}
+              className="md:hidden inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-colors hover:bg-white/10"
+              aria-label="Open menu"
+            >
+              <Menu size={20} />
+            </button>
+          </div>
+        </div>
+
+        {showSearchBar && (
+          <div className="border-t border-white/10 bg-white">
+            <div className="premium-shell py-1 sm:py-2">
+              <div className="glass-card px-3 py-2 sm:px-4 sm:py-3">
+                <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
+                  <div ref={searchRef} className="relative flex-1">
+                    <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-body" />
+                    <input
+                      value={search}
+                      onChange={(e) => onSearchChange?.(e.target.value)}
+                      onFocus={() => setShowSuggestions(true)}
+                      type="text"
+                      placeholder="Search by Brand, Model, Variant, Registration Number or Year..."
+                      className="w-full h-14 rounded-2xl border border-line bg-white pl-11 pr-4 text-sm font-medium text-ink placeholder:text-body/70 outline-none transition-all focus:border-[#F4B400] focus:shadow-[0_0_0_4px_rgba(244,180,0,.1)]"
+                    />
+
+                    <AnimatePresence>
+                      {showSuggestions && suggestions.length > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 8 }}
+                          className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-line bg-white shadow-cardHover"
+                        >
+                          {suggestions.map((item) => (
+                            <button
+                              key={item.slug}
+                              type="button"
+                              onClick={() => {
+                                navigate(`/cars/${item.slug}`);
+                                setShowSuggestions(false);
+                              }}
+                              className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm font-medium text-ink transition-colors hover:bg-surface"
+                            >
+                              <Search size={14} className="text-body" />
+                              {item.label}
+                            </button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  <div className="flex items-center gap-2 overflow-x-auto pb-0 lg:pb-0 scrollbar-hide">
+                    <div ref={sortRef} className="relative shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => setSortOpen((v) => !v)}
+                        className="premium-chip whitespace-nowrap"
+                      >
+                        <ArrowUpDown size={16} />
+                        <span>Sort</span>
+                      </button>
+                      <AnimatePresence>
+                        {sortOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 8 }}
+                            className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-2xl border border-line bg-white shadow-cardHover"
+                          >
+                            {SORT_OPTIONS.map((option) => (
+                              <button
+                                key={option.value}
+                                type="button"
+                                onClick={() => {
+                                  onSortChange?.(option.value);
+                                  setSortOpen(false);
+                                }}
+                                className={`flex w-full items-center justify-between px-4 py-3 text-left text-sm transition-colors hover:bg-surface ${
+                                  sort === option.value ? 'font-semibold text-[#F4B400]' : 'text-ink'
+                                }`}
+                              >
+                                {option.label}
+                                {sort === option.value && <ChevronRight size={14} />}
+                              </button>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
                     <button
-                      key={opt.value}
-                      onClick={() => { onSortChange(opt.value); setSortOpen(false); }}
-                      className={`w-full text-left px-4 py-2.5 md:py-2 text-sm hover:bg-surface dark:hover:bg-white/5 transition-colors ${sort === opt.value ? 'text-emerald font-semibold' : 'text-ink dark:text-white/90'}`}
+                      type="button"
+                      onClick={onOpenFilters}
+                      className="premium-chip whitespace-nowrap"
                     >
-                      {opt.label}
+                      <SlidersHorizontal size={16} />
+                      <span>Filter</span>
                     </button>
-                  ))}
+
+                    <button
+                      type="button"
+                      onClick={goLocation}
+                      className="premium-chip whitespace-nowrap"
+                    >
+                      <MapPin size={16} />
+                      <span>Location</span>
+                    </button>
+                  </div>
                 </div>
-              )}
+              </div>
             </div>
-
-            <button
-              onClick={onOpenFilters}
-              aria-label="Filters"
-              className="flex items-center justify-center gap-1.5 text-sm font-medium text-ink dark:text-white/90 w-10 h-10 md:w-auto md:h-auto md:px-3 md:py-2 rounded-full hover:bg-surface dark:hover:bg-white/5 transition-colors"
-            >
-              <SlidersHorizontal size={16} className="md:hidden" />
-              <SlidersHorizontal size={15} className="hidden md:block" />
-              <span className="hidden md:inline">Filter</span>
-            </button>
-
-            <button
-              onClick={() => setFavOpen(true)}
-              className="relative flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface dark:hover:bg-white/5 transition-colors"
-              aria-label="Favourites"
-            >
-              <Heart size={17} className="text-ink dark:text-white/90" />
-              {favorites.length > 0 && (
-                <span className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-emerald text-white text-[10px] flex items-center justify-center font-semibold">
-                  {favorites.length}
-                </span>
-              )}
-            </button>
-
-            <button className="hidden md:flex items-center gap-1 text-sm font-medium text-ink dark:text-white/90 px-3 py-2 rounded-full hover:bg-surface dark:hover:bg-white/5 transition-colors">
-              <MapPin size={15} /> {settings?.address?.split(',')[0] || 'Location'}
-            </button>
           </div>
-        </div>
-
-        {/* Mobile search bar — part of the sticky header, so it stays
-            pinned under the logo row while scrolling. */}
-        <div className="md:hidden px-4 pb-3">
-          <div className="relative">
-            <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-body" />
-            <input
-              value={search}
-              onChange={(e) => onSearchChange(e.target.value)}
-              type="text"
-              placeholder="Search cars..."
-              className="w-full h-12 bg-surface dark:bg-white/5 rounded-full pl-10 pr-4 text-sm text-ink dark:text-white border border-transparent shadow-sm focus:border-navy dark:focus:border-emerald focus:bg-white dark:focus:bg-white/10 transition-colors"
-            />
-          </div>
-        </div>
+        )}
       </header>
 
-      {/* Favourites modal */}
-      {favOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setFavOpen(false)} />
-          <div className="relative bg-white dark:bg-[#111a2c] rounded-card shadow-cardHover w-full max-w-lg max-h-[80vh] overflow-y-auto p-5 sm:p-6 animate-slideUp">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-display font-bold text-lg text-ink dark:text-white">My Favourite Cars</h3>
-              <button onClick={() => setFavOpen(false)} aria-label="Close" className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface dark:hover:bg-white/5"><X size={20} /></button>
-            </div>
-            {favorites.length === 0 ? (
-              <p className="text-body text-sm py-10 text-center">No favourite cars yet.</p>
-            ) : (
-              <div className="space-y-3">
-                {favorites.map((f) => (
-                  <div key={f._id} className="flex items-center gap-3 border border-line dark:border-white/10 rounded-2xl p-3">
-                    <img src={f.images?.[0]?.url} alt={f.model} className="w-16 h-16 rounded-xl object-cover shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm truncate text-ink dark:text-white">{f.brand} {f.model} {f.variant}</p>
-                      <p className="text-emerald font-semibold text-sm">₹{(f.price / 100000).toFixed(2)} Lakh</p>
-                      <p className="text-xs text-body">{f.manufacturingYear} · {f.location}</p>
-                    </div>
-                    <div className="flex flex-col gap-1.5 shrink-0">
-                      <Link to={`/cars/${f.slug}`} onClick={() => setFavOpen(false)} className="text-xs btn-outline !px-3 !py-1.5">View</Link>
-                      <button onClick={() => removeFavorite(f._id)} className="text-xs text-red-500 flex items-center gap-1 justify-center">
-                        <Trash2 size={12} /> Remove
+      <AnimatePresence>
+        {drawerOpen && (
+          <div className="fixed inset-0 z-[60] md:hidden">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/70"
+              onClick={() => setDrawerOpen(false)}
+            />
+
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'tween', duration: 0.28 }}
+              className="mobile-nav-drawer absolute right-0 top-0 h-full w-full bg-black text-white shadow-[0_24px_80px_rgba(0,0,0,.35)]"
+            >
+              <div className="flex h-full flex-col px-5 py-5">
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col leading-none">
+                    <span className="text-lg font-extrabold tracking-[0.18em] text-white">
+                      BALAJI <span className="text-[#F4B400]">CARS</span>
+                    </span>
+                    <span className="mt-1 text-[0.62rem] tracking-[0.45em] text-white/70">TIRUNELVELI</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setDrawerOpen(false)}
+                    className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5"
+                    aria-label="Close menu"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                <div className="mt-8 space-y-2">
+                  {NAV_LINKS.map((item) => (
+                    <Link
+                      key={item.label}
+                      to={item.href}
+                      onClick={() => setDrawerOpen(false)}
+                      className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-base font-semibold transition-colors hover:bg-white/10"
+                    >
+                      {item.label}
+                      <ChevronRight size={18} className="text-[#F4B400]" />
+                    </Link>
+                  ))}
+                </div>
+
+                {showSearchBar && (
+                  <div className="mt-5 rounded-[22px] border border-white/10 bg-white/5 p-4">
+                    <p className="text-sm font-semibold text-white">Search inventory</p>
+                    <input
+                      value={search}
+                      onChange={(e) => onSearchChange?.(e.target.value)}
+                      type="text"
+                      placeholder="Search by brand, model or year"
+                      className="mt-3 h-12 w-full rounded-2xl border border-white/10 bg-black/30 px-4 text-sm text-white placeholder:text-white/50 outline-none"
+                    />
+                    <div className="mt-3 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                      <button type="button" onClick={onOpenFilters} className="premium-chip shrink-0 bg-white text-ink">
+                        <SlidersHorizontal size={16} />
+                        Filter
+                      </button>
+                      <button type="button" onClick={() => setSortOpen(false)} className="premium-chip shrink-0 bg-white text-ink">
+                        <ArrowUpDown size={16} />
+                        Sort
+                      </button>
+                      <button type="button" onClick={goLocation} className="premium-chip shrink-0 bg-white text-ink">
+                        <MapPin size={16} />
+                        Location
                       </button>
                     </div>
                   </div>
-                ))}
+                )}
+
+                <div className="mt-auto border-t border-white/10 pt-5 text-sm text-white/70">
+                  <p className="font-semibold text-white">{companyName}</p>
+                  <p className="mt-2">{settings?.address || 'Premium used car dealership'}</p>
+                </div>
               </div>
-            )}
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </>
   );
 }

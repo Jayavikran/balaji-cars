@@ -5,41 +5,46 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: '#12161C',       // headings / primary text
-        body: '#4B5563',      // secondary text
+        ink: '#0F0F10',       // headings / primary text
+        body: '#5E636B',      // secondary text
         navy: {
-          DEFAULT: '#0F1B2D', // admin sidebar, dark accents, dashboard strip
-          light: '#1C2E47',
+          DEFAULT: '#0F0F10', // luxury dealership dark base
+          light: '#1E1E20',
         },
         emerald: {
-          DEFAULT: '#0E9F6E', // pricing
-          dark: '#087A56',
+          DEFAULT: '#F4B400', // dealership gold
+          dark: '#D39B00',
         },
         amber: {
-          DEFAULT: '#D97706', // featured / premium badges
+          DEFAULT: '#F4B400', // featured / premium badges
         },
-        line: '#E6E9EE',      // hairline borders
-        surface: '#F7F8FA',   // section backgrounds
+        line: '#E9E9E9',      // hairline borders
+        surface: '#F8F8F8',   // section backgrounds
       },
       fontFamily: {
-        display: ['Outfit', 'sans-serif'],
-        body: ['Inter', 'sans-serif'],
+        display: ['Poppins', 'sans-serif'],
+        body: ['Poppins', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'monospace'],
       },
       borderRadius: {
-        card: '20px',
+        card: '22px',
       },
       boxShadow: {
-        card: '0 2px 8px rgba(15, 27, 45, 0.06)',
-        cardHover: '0 16px 40px rgba(15, 27, 45, 0.14)',
+        card: '0 12px 40px rgba(0, 0, 0, 0.08)',
+        cardHover: '0 18px 46px rgba(0, 0, 0, 0.12)',
       },
       keyframes: {
         fadeIn: { '0%': { opacity: 0 }, '100%': { opacity: 1 } },
         slideUp: { '0%': { opacity: 0, transform: 'translateY(10px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-8px)' },
+        },
       },
       animation: {
         fadeIn: 'fadeIn 0.5s ease-out forwards',
         slideUp: 'slideUp 0.4s ease-out forwards',
+        float: 'float 6s ease-in-out infinite',
       },
     },
   },

@@ -65,7 +65,7 @@ export default function Compare() {
         description="Compare vehicle specs, pricing, and features side by side."
         noindex
       />
-      <Header settings={settings} search="" onSearchChange={() => {}} sort="newest" onSortChange={() => {}} onOpenFilters={() => {}} />
+      <Header settings={settings} showSearchBar={false} />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex-1 w-full">
         <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-body hover:text-navy dark:hover:text-white mb-4">

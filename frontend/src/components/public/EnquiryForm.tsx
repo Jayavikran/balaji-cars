@@ -24,30 +24,41 @@ export default function EnquiryForm({ carId }: { carId: string }) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="bg-white border border-line rounded-card p-5 space-y-3">
-      <h4 className="font-display font-semibold text-ink">Interested in this car?</h4>
+    <form onSubmit={handleSubmit(onSubmit)} className="rounded-[28px] border border-line bg-white p-5 shadow-card">
+      <div className="rounded-2xl bg-[#0F0F10] px-4 py-4 text-white">
+        <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#F4B400]">Enquiry</p>
+        <h4 className="mt-2 font-display text-lg font-bold">Interested in this car?</h4>
+        <p className="mt-2 text-sm leading-6 text-white/70">Send your details and our team will get back to you shortly.</p>
+      </div>
+
+      <div className="mt-4 space-y-3">
       <input
         {...register('customerName', { required: true })}
         placeholder="Your name"
-        className="w-full border border-line rounded-xl px-3 py-2.5 text-sm"
+        className="input"
       />
       {errors.customerName && <p className="text-xs text-red-500">Name is required.</p>}
       <input
         {...register('phone', { required: true })}
         placeholder="Phone number"
-        className="w-full border border-line rounded-xl px-3 py-2.5 text-sm"
+        className="input"
       />
       {errors.phone && <p className="text-xs text-red-500">Phone number is required.</p>}
-      <input {...register('email')} placeholder="Email (optional)" className="w-full border border-line rounded-xl px-3 py-2.5 text-sm" />
+      <input {...register('email')} placeholder="Email (optional)" className="input" />
       <textarea
         {...register('message')}
         placeholder="Message (optional)"
         rows={3}
-        className="w-full border border-line rounded-xl px-3 py-2.5 text-sm resize-none"
+        className="input resize-none"
       />
-      <button type="submit" disabled={isSubmitting} className="btn-primary w-full bg-emerald hover:bg-emerald-dark disabled:opacity-60">
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="inline-flex w-full items-center justify-center rounded-full bg-[#F4B400] px-5 py-3 text-sm font-semibold text-black transition-all hover:scale-[1.01] disabled:opacity-60"
+      >
         {isSubmitting ? 'Sending...' : 'Send Enquiry'}
       </button>
+      </div>
     </form>
   );
 }

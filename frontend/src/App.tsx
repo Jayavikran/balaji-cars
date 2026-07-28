@@ -9,6 +9,8 @@ import CompareBar from '@/components/public/CompareBar';
 // download admin dashboard/chart/form code, and vice versa. Each import()
 // becomes its own chunk that Vite loads only when that route is visited.
 const Home = lazy(() => import('@/pages/public/Home'));
+const About = lazy(() => import('@/pages/public/About'));
+const Contact = lazy(() => import('@/pages/public/Contact'));
 const CarDetails = lazy(() => import('@/pages/public/CarDetails'));
 const Compare = lazy(() => import('@/pages/public/Compare'));
 
@@ -40,6 +42,8 @@ export default function App() {
         <Routes>
           {/* ---------------- Public website ---------------- */}
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/cars/:idOrSlug" element={<CarDetails />} />
           <Route path="/compare" element={<Compare />} />
 

@@ -1,15 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
-import { BadgeCheck, CarFront, Handshake, Users, Loader2 } from 'lucide-react';
+import { BadgeCheck, CarFront, Handshake, Loader2, Users } from 'lucide-react';
 import { fetchCars, type CarFilters } from '@/api/cars';
 import Header from '@/components/public/Header';
 import Footer from '@/components/public/Footer';
 import HeroBanner from '@/components/public/HeroBanner';
 import BrandFilter from '@/components/public/BrandFilter';
-import StatusTabs from '@/components/public/StatusTabs';
 import FilterDrawer from '@/components/public/FilterDrawer';
-import FloatingContacts from '@/components/public/FloatingContacts';
 import CarCard from '@/components/public/CarCard';
 import CardSkeleton from '@/components/public/CardSkeleton';
 import Seo from '@/components/shared/Seo';
@@ -19,14 +17,9 @@ import { advancedFiltersFromParams, paramsFromFilters } from '@/utils/filterPara
 export default function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Every filter initializes FROM the URL on first render, so a refresh
-  // (or a shared/bookmarked link) restores exactly what was selected.
   const [search, setSearch] = useState(searchParams.get('q') || '');
   const [sort, setSort] = useState(searchParams.get('sort') || 'newest');
   const [brand, setBrand] = useState(searchParams.get('brand') || 'All');
-  const [status, setStatus] = useState<CarFilters['status'] | undefined>(
-    (searchParams.get('status') as CarFilters['status'] | null) || undefined
-  );
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [draftFilters, setDraftFilters] = useState<CarFilters>(() => advancedFiltersFromParams(searchParams));
@@ -37,15 +30,12 @@ export default function Home() {
   const siteName = settings?.companyName || 'BALAJI CARS';
   const siteOrigin = typeof window !== 'undefined' ? window.location.origin : '';
   const seoTitle = `${siteName} | Premium Certified Used Cars`;
-  const seoDescription = `Browse ${siteName}'s certified used car inventory. Compare vehicles, calculate EMI, and connect with our dealership over WhatsApp or phone — every listing verified.`;
-
-  const seoDescriptionFromSettings = settings?.seoDescription?.trim() || seoDescription;
+  const seoDescription = `Browse ${siteName}'s certified used car inventory. Compare vehicles, calculate EMI, and connect with our dealership over WhatsApp or phone - every listing verified.`;
 
   const autoDealerJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'AutoDealer',
     name: siteName,
-    description: seoDescriptionFromSettings,
     url: siteOrigin,
     telephone: settings?.phoneNumber,
     email: settings?.email,
@@ -58,22 +48,19 @@ export default function Home() {
       ...appliedFilters,
       q: search || undefined,
       brand: brand !== 'All' ? brand : appliedFilters.brand,
-      status,
       sort,
       page,
       pageSize: 12,
+      availableOnly: true,
     }),
-    [appliedFilters, search, brand, status, sort, page]
+    [appliedFilters, search, brand, sort, page]
   );
 
-  // Keep the URL in sync with every filter so state survives a refresh and
-  // is shareable. Uses `replace` so typing in the search box doesn't spam
-  // the browser history stack.
   useEffect(() => {
-    const params = paramsFromFilters({ q: search, sort, brand, status, page, advanced: appliedFilters });
+    const params = paramsFromFilters({ q: search, sort, brand, page, advanced: appliedFilters });
     setSearchParams(params, { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, sort, brand, status, page, appliedFilters]);
+  }, [search, sort, brand, page, appliedFilters]);
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ['cars', combinedFilters],
@@ -81,111 +68,141 @@ export default function Home() {
     placeholderData: keepPreviousData,
   });
 
-  const featured = useMemo(() => data?.cars.filter((c) => c.isFeatured) ?? [], [data]);
   const showBackgroundSpinner = isFetching && !isLoading;
+  const orderedCars = useMemo(() => {
+    if (!data?.cars.length) return [];
+    const firstFeatured = data.cars.find((car) => car.isFeatured);
+    if (!firstFeatured) return data.cars;
+    return [firstFeatured, ...data.cars.filter((car) => car._id !== firstFeatured._id)];
+  }, [data]);
 
   const resultsHeading = () => {
     if (search) return `Results for "${search}"`;
-    if (status) return `${status} Cars`;
+    if (brand !== 'All') return `${brand} Cars`;
     return 'Available Cars';
   };
 
   return (
     <div className="mobile-page min-h-screen flex flex-col">
-      <Seo title={seoTitle} description={seoDescriptionFromSettings} jsonLd={autoDealerJsonLd} />
+      <Seo title={seoTitle} description={seoDescription} jsonLd={autoDealerJsonLd} />
       <Header
         settings={settings}
         search={search}
-        onSearchChange={(v) => { setSearch(v); setPage(1); }}
+        onSearchChange={(v) => {
+          setSearch(v);
+          setPage(1);
+        }}
         sort={sort}
-        onSortChange={(v) => { setSort(v); setPage(1); }}
+        onSortChange={(v) => {
+          setSort(v);
+          setPage(1);
+        }}
         onOpenFilters={() => setDrawerOpen(true)}
+        showSearchBar
       />
 
       <HeroBanner />
 
-      <section className="hidden lg:block relative z-20 max-w-[1400px] mx-auto -mt-10 px-6">
-        <div className="h-[108px] rounded-3xl bg-white dark:bg-[#111a2c] shadow-2xl border border-line/70 dark:border-white/10 flex items-center justify-around">
-          {[
-            { value: '500+', label: 'Cars Available', icon: CarFront },
-            { value: '1000+', label: 'Happy Customers', icon: Users },
-            { value: '100%', label: 'Verified Cars', icon: BadgeCheck },
-            { value: 'Easy', label: 'Loan Facility', icon: Handshake },
-          ].map(({ value, label, icon: Icon }, index) => (
-            <div key={label} className="flex items-center gap-4 px-8 flex-1 justify-center border-r border-line dark:border-white/10 last:border-r-0">
-              <span className="w-14 h-14 rounded-full bg-emerald/10 text-emerald flex items-center justify-center"><Icon size={25} /></span>
-              <span><strong className="block font-display text-2xl leading-none text-emerald">{value}</strong><span className="block mt-1.5 text-sm font-medium text-body dark:text-white/70">{label}</span></span>
-            </div>
-          ))}
+      <section className="relative z-20 -mt-8 sm:-mt-12">
+        <div className="premium-shell">
+          <div className="glass-card grid grid-cols-2 gap-0 overflow-hidden lg:grid-cols-4">
+            {[
+              { value: '500+', label: 'Cars Available', icon: CarFront },
+              { value: '1000+', label: 'Happy Customers', icon: Users },
+              { value: '100%', label: 'Verified Cars', icon: BadgeCheck },
+              { value: 'Easy', label: 'Loan Facility', icon: Handshake },
+            ].map(({ value, label, icon: Icon }) => (
+              <div key={label} className="flex items-center gap-3 px-4 py-4 sm:px-6 sm:py-6 lg:px-8 border-r border-line/70 dark:border-white/10 last:border-r-0">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#F4B400]/15 text-[#F4B400]">
+                  <Icon size={24} />
+                </div>
+                <div>
+                  <strong className="block text-xl font-extrabold leading-none text-[#F4B400] sm:text-3xl">{value}</strong>
+                  <span className="mt-1 block text-xs font-medium text-body dark:text-white/70 sm:text-sm">{label}</span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      <BrandFilter active={brand} onSelect={(b) => { setBrand(b); setPage(1); }} />
+      <BrandFilter active={brand} onSelect={(b) => {
+        setBrand(b);
+        setPage(1);
+      }} />
 
-      {featured.length > 0 && (
-        <section className="max-w-7xl lg:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 pb-4 lg:pt-[60px] lg:pb-[60px]">
-          <h2 className="font-display text-[22px] lg:text-[32px] font-bold text-ink dark:text-white mb-4 lg:mb-6">Featured Cars</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-8">
-            {featured.slice(0, 4).map((car) => <CarCard key={car._id} car={car} />)}
-          </div>
-        </section>
-      )}
-
-      <section id="car-listings" className="mobile-listings scroll-mt-24 sm:scroll-mt-20 max-w-7xl lg:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-8 lg:py-[60px] flex-1">
-        <div className="flex items-center justify-between mb-5 lg:mb-8 flex-wrap gap-3 lg:flex-nowrap lg:gap-4 lg:bg-surface/60 dark:lg:bg-white/5 lg:rounded-2xl lg:px-5 lg:py-3.5">
-          <div className="flex items-center gap-3 flex-wrap">
-            <h2 className="font-display text-[22px] lg:text-[32px] font-bold text-ink dark:text-white">{resultsHeading()}</h2>
-            {showBackgroundSpinner && <Loader2 size={16} className="animate-spin text-navy dark:text-emerald" aria-label="Updating results" />}
-          </div>
-          <div className="flex items-center gap-3 lg:gap-4">
-            {data && <span className="text-sm text-body whitespace-nowrap">{data.pagination.total} vehicles</span>}
-            <StatusTabs active={status} onChange={(v) => { setStatus(v); setPage(1); }} />
-          </div>
-        </div>
-
-        {isLoading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-8">
-            {Array.from({ length: 8 }).map((_, i) => <CardSkeleton key={i} />)}
-          </div>
-        ) : data && data.cars.length > 0 ? (
-          <>
-            <div className={`grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-8 transition-opacity duration-200 ${showBackgroundSpinner ? 'opacity-60' : 'opacity-100'}`}>
-              {data.cars.map((car) => <CarCard key={car._id} car={car} />)}
+      <section id="car-listings" className="mobile-listings scroll-mt-28 flex-1 py-6 sm:py-10 lg:py-14">
+        <div className="premium-shell">
+          <div className="mb-4 flex flex-wrap items-end justify-between gap-3 lg:mb-8">
+            <div className="flex items-end gap-2 sm:gap-3">
+              <div>
+                <h2 className="text-[1.55rem] font-extrabold leading-tight text-ink sm:text-[2.2rem]">
+                  {resultsHeading()}
+                </h2>
+                <p className="mt-1 text-xs text-body sm:text-sm">Only verified available cars are shown here.</p>
+              </div>
+              {showBackgroundSpinner && <Loader2 size={16} className="mb-2 animate-spin text-[#F4B400]" aria-label="Updating results" />}
             </div>
+            <div className="text-xs font-medium text-body sm:text-sm">
+              {data ? `${data.pagination.total} vehicles` : ''}
+            </div>
+          </div>
 
-            {data.pagination.totalPages > 1 && (
-              <div className="flex justify-center gap-2 mt-10 lg:mt-14">
-                {Array.from({ length: data.pagination.totalPages }).map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setPage(i + 1)}
-                    className={`w-9 h-9 lg:w-10 lg:h-10 rounded-full text-sm font-medium transition-colors ${
-                      page === i + 1 ? 'bg-navy text-white dark:bg-emerald' : 'bg-surface dark:bg-white/5 text-ink dark:text-white/80 hover:bg-line dark:hover:bg-white/10'
-                    }`}
-                  >
-                    {i + 1}
-                  </button>
+          {isLoading ? (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4 xl:gap-6">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <CardSkeleton key={i} />
+              ))}
+            </div>
+          ) : data && data.cars.length > 0 ? (
+            <>
+              <div className={`grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4 xl:gap-6 transition-opacity duration-200 ${showBackgroundSpinner ? 'opacity-60' : 'opacity-100'}`}>
+                {orderedCars.map((car, index) => (
+                  <CarCard key={car._id} car={car} badge={index === 0 && car.isFeatured ? 'Featured' : undefined} />
                 ))}
               </div>
-            )}
-          </>
-        ) : (
-          <div className="text-center py-16 border border-dashed border-line dark:border-white/10 rounded-card">
-            <p className="text-body">No cars matched your search. Try adjusting your filters.</p>
-          </div>
-        )}
+
+              {data.pagination.totalPages > 1 && (
+                <div className="mt-8 flex justify-center gap-2 lg:mt-14">
+                  {Array.from({ length: data.pagination.totalPages }).map((_, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setPage(i + 1)}
+                      className={`h-10 w-10 rounded-full text-sm font-semibold transition-all ${
+                        page === i + 1 ? 'bg-[#F4B400] text-black shadow-card' : 'bg-white text-ink shadow-sm hover:bg-surface'
+                      }`}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="rounded-[22px] border border-dashed border-line bg-white px-6 py-10 text-center shadow-sm">
+              <p className="text-body">No cars matched your search. Try adjusting your filters.</p>
+            </div>
+          )}
+        </div>
       </section>
 
       <Footer settings={settings} />
-      <FloatingContacts settings={settings} />
 
       <FilterDrawer
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         filters={draftFilters}
         onChange={setDraftFilters}
-        onApply={() => { setAppliedFilters(draftFilters); setPage(1); }}
-        onReset={() => { setDraftFilters({}); setAppliedFilters({}); setPage(1); }}
+        onApply={() => {
+          setAppliedFilters(draftFilters);
+          setPage(1);
+        }}
+        onReset={() => {
+          setDraftFilters({});
+          setAppliedFilters({});
+          setPage(1);
+        }}
       />
     </div>
   );

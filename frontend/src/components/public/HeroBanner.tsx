@@ -1,141 +1,113 @@
-import { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight, ShieldCheck, BadgeIndianRupee, FileText, BadgeCheck, ArrowRight } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { BadgeCheck, CarFront, Handshake, ShieldCheck, ArrowRight } from 'lucide-react';
 
-const slides = [
-  {
-    title: "BALAJI CARS",
-    subtitle: "Buy & Sell Premium Used Cars with Confidence.",
-    image: "/images/banner1.jpeg"
-  },
-  {
-    title: "Best Deals on Used Cars",
-    subtitle: "Quality Cars • Best Price • Trusted Dealer",
-    image: "/images/banner2.jpeg",
-  },
-  {
-    title: "Drive Your Dream Car",
-    subtitle: "100+ Certified Cars Available",
-    image: "/images/banner3.jpeg",
-  },
+const FEATURES = [
+  { label: 'Certified Cars', icon: ShieldCheck },
+  { label: 'Loan Facility', icon: Handshake },
+  { label: 'RC Transfer', icon: BadgeCheck },
+  { label: 'Best Price', icon: CarFront },
 ];
 
 export default function HeroBanner() {
-  const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
-
-  useEffect(() => {
-    if (paused) return;
-    const timer = setInterval(() => setIndex((i) => (i + 1) % slides.length), 5000);
-    return () => clearInterval(timer);
-  }, [paused]);
-
-  const goto = (i: number) => {
-    const newIndex = (i + slides.length) % slides.length;
-    setIndex(newIndex);
-  };
-
   return (
-    <section
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      className="mobile-hero relative h-[172px] sm:h-[340px] lg:h-[400px] xl:h-[440px] overflow-hidden bg-gray-900 mx-0 mt-0 rounded-none"
-    >
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={index}
-          initial={{ opacity: 0, scale: 1.05 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 1.05 }}
-          transition={{ duration: 0.8, ease: 'easeInOut' }}
-          className="mobile-hero-media absolute inset-0 flex items-center justify-center"
-        >
-          <img 
-            src={slides[index].image} 
-            alt={slides[index].title} 
-            className="mobile-hero-image w-full h-full object-cover lg:object-center"
-            style={{
-              maxWidth: '100%',
-              maxHeight: '100%',
-            }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20 lg:bg-gradient-to-r lg:from-black/80 lg:via-black/45 lg:to-transparent" />
-        </motion.div>
-      </AnimatePresence>
-
-      <div className="mobile-hero-content relative z-10 h-full max-w-7xl lg:max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-[70px] flex flex-col items-start justify-center">
-        <motion.div 
-          key={`text-${index}`} 
-          initial={{ opacity: 0, y: 20 }} 
-          animate={{ opacity: 1, y: 0 }} 
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="max-w-[calc(100%-3.5rem)] sm:max-w-2xl lg:max-w-[46%]"
-        >
-          <h1 className="font-display text-xl sm:text-4xl lg:text-6xl xl:text-7xl font-black tracking-tight text-white leading-tight lg:leading-none break-words">
-            {slides[index].title}
-          </h1>
-          <p className="mt-1.5 sm:mt-4 lg:mt-4 text-white/90 max-w-md lg:max-w-[560px] text-xs sm:text-base lg:text-lg lg:leading-[1.6] line-clamp-2 sm:line-clamp-none">
-            {slides[index].subtitle}
-          </p>
-          <div className="hidden lg:flex mt-8 items-center gap-0 text-white">
-            {[
-              { label: 'Certified Cars', icon: ShieldCheck },
-              { label: 'Loan Facility', icon: BadgeIndianRupee },
-              { label: 'RC Transfer', icon: FileText },
-              { label: 'Best Price', icon: BadgeCheck },
-            ].map(({ label, icon: Icon }, itemIndex) => (
-              <div key={label} className="flex items-center gap-3 pr-6 mr-6 border-r border-white/30 last:border-r-0 last:mr-0 last:pr-0">
-                <Icon size={28} strokeWidth={1.8} />
-                <span className="text-sm font-medium whitespace-nowrap">{label}</span>
-              </div>
-            ))}
-          </div>
-          <button
-            type="button"
-            onClick={() =>
-              document.getElementById('car-listings')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-            }
-            className="mt-3 sm:mt-8 w-full sm:w-auto inline-flex items-center justify-center gap-3 px-5 sm:px-8 py-2.5 sm:py-3 lg:h-14 lg:px-10 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl lg:rounded-2xl transition-all duration-200 text-sm sm:text-base lg:shadow-xl lg:hover:scale-105"
-          >
-            Explore Cars <ArrowRight className="hidden lg:block" size={24} />
-          </button>
-        </motion.div>
+    <section className="relative overflow-hidden bg-black text-white">
+      <div className="absolute inset-0">
+        <img
+          src="/images/banner1.jpeg"
+          alt="Balaji Cars dealership showroom"
+          className="h-full w-full object-cover object-center opacity-75"
+          loading="eager"
+          decoding="async"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,.78)_0%,rgba(0,0,0,.48)_50%,rgba(0,0,0,.72)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(244,180,0,.08),transparent_30%)]" />
       </div>
 
-      {/* Navigation Buttons */}
-      {slides.length > 1 && (
-        <>
-          <button
-            onClick={() => goto(index - 1)}
-            aria-label="Previous slide"
-            className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 lg:w-[60px] lg:h-[60px] rounded-full bg-white/20 lg:bg-white/15 hover:bg-white/30 lg:hover:bg-white/25 backdrop-blur-sm text-white flex items-center justify-center transition-all duration-200 hover:scale-105 lg:shadow-xl"
+      <div className="premium-shell relative z-10 py-12 sm:py-16 lg:py-20 xl:py-24">
+        <div className="grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12">
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+            className="max-w-[690px]"
           >
-            <ChevronLeft size={20} className="sm:w-6 sm:h-6" />
-          </button>
-          <button
-            onClick={() => goto(index + 1)}
-            aria-label="Next slide"
-            className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 lg:w-[60px] lg:h-[60px] rounded-full bg-white/20 lg:bg-white/15 hover:bg-white/30 lg:hover:bg-white/25 backdrop-blur-sm text-white flex items-center justify-center transition-all duration-200 hover:scale-105 lg:shadow-xl"
-          >
-            <ChevronRight size={20} className="sm:w-6 sm:h-6" />
-          </button>
-        </>
-      )}
+            <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[#F4B400] sm:text-sm">
+              TRUSTED USED CAR DEALERSHIP
+            </p>
+            <h1 className="mt-4 text-[2.05rem] font-semibold leading-[1.04] tracking-[-0.04em] text-white sm:mt-5 sm:text-[3.1rem] lg:text-[3.7rem] xl:text-[4rem]">
+              Find Your Perfect
+              <span className="block">Pre-Owned Car</span>
+            </h1>
+            <p className="mt-5 max-w-[620px] text-sm leading-7 text-white/82 sm:mt-6 sm:text-base lg:text-lg">
+              Explore certified used cars with transparent pricing, verified quality, and flexible loan options.
+            </p>
 
-      {/* Dots */}
-      <div className="absolute bottom-3 sm:bottom-6 lg:bottom-7 left-0 right-0 flex justify-center gap-2 z-20">
-        {slides.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => goto(i)}
-            aria-label={`Go to slide ${i + 1}`}
-            className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 ${
-              i === index 
-                ? 'w-8 sm:w-10 lg:w-12 bg-white' 
-                : 'w-2 sm:w-2.5 lg:w-3 bg-white/50 hover:bg-white/80'
-            }`}
-          />
-        ))}
+            <div className="mt-7 flex flex-wrap items-center gap-2 text-xs text-white/88 sm:mt-8 sm:gap-3 sm:text-sm">
+              {FEATURES.map(({ label, icon: Icon }) => (
+                <span
+                  key={label}
+                  className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-3 py-1.5 backdrop-blur-md sm:px-4 sm:py-2"
+                >
+                  <Icon size={15} className="text-[#F4B400]" />
+                  {label}
+                </span>
+              ))}
+            </div>
+
+            <div className="mt-8 flex flex-wrap items-center gap-3 sm:mt-10">
+              <button
+                type="button"
+                onClick={() => document.getElementById('car-listings')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                className="inline-flex items-center gap-3 rounded-full bg-[#F4B400] px-5 py-3 text-sm font-semibold text-black shadow-[0_16px_40px_rgba(244,180,0,.2)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#f7c233] sm:px-6 sm:py-3.5"
+              >
+                Browse Cars
+                <ArrowRight size={18} />
+              </button>
+              <Link
+                to="/contact"
+                className="inline-flex items-center justify-center rounded-full border border-white/14 bg-white/6 px-5 py-3 text-sm font-semibold text-white backdrop-blur-md transition-all duration-300 hover:border-white/30 hover:bg-white/10 sm:px-6 sm:py-3.5"
+              >
+                Contact Us
+              </Link>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 24, scale: 0.98 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            transition={{ duration: 0.7, ease: 'easeOut', delay: 0.05 }}
+            className="relative w-full aspect-[4/3] lg:max-w-[40rem] lg:justify-self-end"
+          >
+            <div className="absolute inset-0 rounded-[28px] border border-white/12 bg-white/5 shadow-[0_18px_60px_rgba(0,0,0,.3)] backdrop-blur-sm" />
+            <div className="absolute inset-0 overflow-hidden rounded-[28px]">
+              <img
+                src="/images/banner2.jpeg"
+                alt="Premium Balaji Cars vehicle showcase"
+                className="h-full w-full object-cover object-center transition-transform duration-700 hover:scale-[1.03]"
+                loading="eager"
+                decoding="async"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/12" />
+            </div>
+
+            <motion.div
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute -bottom-4 left-4 right-4 rounded-[24px] border border-white/10 bg-white/92 p-3.5 text-ink shadow-card lg:left-auto lg:bottom-6 lg:w-[22rem] lg:p-4"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#F4B400]">Luxury inventory</p>
+                  <p className="mt-1 text-base font-bold sm:text-lg">Premium cars with verified history</p>
+                </div>
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#F4B400]/15 text-[#F4B400] sm:h-12 sm:w-12">
+                  <CarFront size={22} />
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );

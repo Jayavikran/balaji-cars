@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { calculateEmi, DEFAULT_EMI_ASSUMPTIONS } from '@/utils/emi';
 
 const TENURE_OPTIONS = [12, 24, 36, 48, 60, 72, 84];
-const COLORS = ['#0E9F6E', '#0F1B2D'];
+const COLORS = ['#F4B400', '#0F0F10'];
 
 function formatINR(n: number) {
   return `₹${Math.round(n).toLocaleString('en-IN')}`;
@@ -27,11 +27,14 @@ export default function EMICalculator({ carPrice }: { carPrice: number }) {
   ];
 
   return (
-    <div className="surface-card rounded-card p-5 sm:p-6">
-      <h3 className="font-display font-semibold text-lg text-ink dark:text-white mb-1">EMI Calculator</h3>
-      <p className="text-xs text-body mb-5">Estimate your monthly payment. Actual rates depend on your lender and credit profile.</p>
+    <div className="rounded-[28px] border border-line bg-white p-5 shadow-card">
+      <div className="rounded-2xl bg-surface px-4 py-4">
+        <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#F4B400]">Finance</p>
+        <h3 className="mt-2 font-display text-lg font-bold text-ink">EMI Calculator</h3>
+        <p className="mt-1 text-xs leading-6 text-body">Estimate your monthly payment. Actual rates depend on your lender and credit profile.</p>
+      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div className="mt-5 grid grid-cols-1 gap-6 sm:grid-cols-2">
         <div className="space-y-5">
           <FieldSlider
             label="Vehicle Price" value={price} min={50000} max={10000000} step={5000}
@@ -55,7 +58,7 @@ export default function EMICalculator({ carPrice }: { carPrice: number }) {
                   onClick={() => setTenure(months)}
                   className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
                     tenure === months
-                      ? 'bg-navy dark:bg-emerald text-white border-navy dark:border-emerald'
+                      ? 'bg-[#F4B400] text-black border-[#F4B400]'
                       : 'bg-white dark:bg-transparent text-ink dark:text-white/80 border-line dark:border-white/15'
                   }`}
                 >
@@ -67,7 +70,7 @@ export default function EMICalculator({ carPrice }: { carPrice: number }) {
         </div>
 
         <div className="flex flex-col items-center justify-center">
-          <div className="w-full h-44 relative">
+          <div className="relative h-44 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -93,18 +96,18 @@ export default function EMICalculator({ carPrice }: { carPrice: number }) {
               >
                 {formatINR(result.monthlyEmi)}
               </motion.p>
-              <p className="text-[10px] text-body uppercase tracking-wide">per month</p>
+              <p className="text-[10px] uppercase tracking-wide text-body">per month</p>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 w-full mt-4 text-center">
-            <div className="bg-surface dark:bg-white/5 rounded-xl py-2.5">
+          <div className="mt-4 grid w-full grid-cols-2 gap-3 text-center">
+            <div className="rounded-2xl bg-surface py-2.5">
               <p className="text-[10px] text-body uppercase tracking-wide">Total Interest</p>
-              <p className="text-sm font-semibold text-ink dark:text-white">{formatINR(result.totalInterest)}</p>
+              <p className="text-sm font-semibold text-ink">{formatINR(result.totalInterest)}</p>
             </div>
-            <div className="bg-surface dark:bg-white/5 rounded-xl py-2.5">
+            <div className="rounded-2xl bg-surface py-2.5">
               <p className="text-[10px] text-body uppercase tracking-wide">Total Amount</p>
-              <p className="text-sm font-semibold text-ink dark:text-white">{formatINR(result.totalAmount)}</p>
+              <p className="text-sm font-semibold text-ink">{formatINR(result.totalAmount)}</p>
             </div>
           </div>
         </div>
@@ -122,13 +125,13 @@ function FieldSlider({
   return (
     <div>
       <div className="flex items-center justify-between mb-1.5">
-        <label className="text-xs font-medium text-body">{label}</label>
-        <span className="text-sm font-semibold text-ink dark:text-white">{format(value)}</span>
+      <label className="text-xs font-medium text-body">{label}</label>
+        <span className="text-sm font-semibold text-ink">{format(value)}</span>
       </div>
       <input
         type="range" min={min} max={max} step={step} value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full accent-emerald"
+        className="w-full accent-[#F4B400]"
         aria-label={label}
       />
     </div>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Sparkles } from 'lucide-react';
 import { fetchSimilarCars, fetchCars } from '@/api/cars';
 import CarCard from './CarCard';
 import type { Car } from '@/types';
@@ -31,47 +32,54 @@ export default function SimilarCars({ car }: SimilarCarsProps) {
   });
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
-      <div className="flex items-end justify-between mb-6 flex-wrap gap-3">
+    <section className="premium-shell py-12 sm:py-16">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="font-display text-2xl font-bold text-ink">🚗 Similar Cars You Might Like</h2>
-          <p className="text-body text-sm mt-1">Based on your current selection</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#F4B400]">More Options</p>
+          <h2 className="mt-2 flex items-center gap-2 text-2xl font-extrabold text-ink sm:text-3xl">
+            <Sparkles size={20} className="text-[#F4B400]" />
+            Similar Cars You Might Like
+          </h2>
+          <p className="mt-1 text-sm text-body">Based on your current selection</p>
         </div>
         {!!data?.total && (
-          <p className="text-sm font-medium text-emerald-dark bg-emerald/10 rounded-full px-3 py-1.5">
+          <p className="rounded-full border border-[#F4B400]/20 bg-[#F4B400]/10 px-3 py-1.5 text-sm font-medium text-[#8A5A00]">
             {data.total} Similar Vehicle{data.total === 1 ? '' : 's'} Available
           </p>
         )}
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="rounded-card bg-surface h-80 animate-pulse" />
+            <div key={i} className="h-80 animate-pulse rounded-[22px] bg-surface" />
           ))}
         </div>
       ) : data && data.cars.length > 0 ? (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:overflow-visible overflow-x-auto snap-x">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {data.cars.slice(0, visibleCount).map((c) => (
-              <div key={c._id} className="sm:w-auto w-[85vw] shrink-0 snap-start">
+              <div key={c._id}>
                 <CarCard car={c} badge={computeBadge(c, car)} />
               </div>
             ))}
           </div>
           {visibleCount < data.cars.length && (
-            <div className="mt-6 text-center">
-              <button onClick={() => setVisibleCount((v) => v + 8)} className="btn-outline">
+            <div className="mt-8 text-center">
+              <button
+                onClick={() => setVisibleCount((v) => v + 8)}
+                className="inline-flex items-center justify-center rounded-full border border-line bg-white px-5 py-3 text-sm font-semibold text-ink transition-colors hover:border-[#F4B400] hover:text-[#F4B400]"
+              >
                 Load More
               </button>
             </div>
           )}
         </>
       ) : (
-        <div className="text-center py-10 border border-dashed border-line rounded-card">
-          <p className="text-body mb-4">No similar vehicles found.</p>
+        <div className="rounded-[28px] border border-dashed border-line bg-white py-10 text-center shadow-card">
+          <p className="text-body">No similar vehicles found.</p>
           {fallback && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-4">
+            <div className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {fallback.cars.map((c) => <CarCard key={c._id} car={c} />)}
             </div>
           )}
