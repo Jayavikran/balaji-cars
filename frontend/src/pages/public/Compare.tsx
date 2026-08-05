@@ -204,7 +204,8 @@ export default function Compare() {
       staleTime: 5 * 60 * 1000,
       gcTime: 10 * 60 * 1000,
       retry: 3,
-      retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
+      // FIXED: added type annotation for 'attempt'
+      retryDelay: (attempt: number) => Math.min(1000 * 2 ** attempt, 10000),
     })),
   });
 

@@ -88,7 +88,8 @@ const HeroImageSlider = memo(() => {
   const [direction, setDirection] = useState(0);
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  // FIXED: replaced NodeJS.Timeout with ReturnType<typeof setTimeout>
+  const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [preloadedImages, setPreloadedImages] = useState<Set<number>>(new Set());
 
   const totalSlides = SLIDER_IMAGES.length;

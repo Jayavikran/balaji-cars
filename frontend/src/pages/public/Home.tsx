@@ -106,10 +106,11 @@ export default function Home() {
     setPage(1);
   }, []);
 
-  const handleApplyFilters = useCallback((filters: CarFilters) => {
-    setAppliedFilters(filters);
+  // FIXED: handleApplyFilters now takes no arguments and uses draftFilters
+  const handleApplyFilters = useCallback(() => {
+    setAppliedFilters(draftFilters);
     setPage(1);
-  }, []);
+  }, [draftFilters]);
 
   const handleResetFilters = useCallback(() => {
     setDraftFilters({});
@@ -187,10 +188,10 @@ export default function Home() {
 
           {/* ─── Car List ────────────────────────────────────────────────── */}
           {!isError && (
+            // FIXED: removed isFetching prop (not expected by CarList)
             <CarList
               cars={data?.cars || []}
               isLoading={isInitialLoading}
-              isFetching={isRefreshing}
               totalCount={totalCount}
               loadMore={loadMore}
               hasMore={hasMore}
@@ -206,7 +207,7 @@ export default function Home() {
         onClose={() => setDrawerOpen(false)}
         filters={draftFilters}
         onChange={setDraftFilters}
-        onApply={handleApplyFilters}
+        onApply={handleApplyFilters}   // now matches () => void
         onReset={handleResetFilters}
       />
     </div>
