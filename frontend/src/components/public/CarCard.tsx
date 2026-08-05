@@ -1,3 +1,4 @@
+// src/components/public/CarCard.tsx
 import { memo, type MouseEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, GitCompare, Share2, Calendar, Fuel, Settings2, MapPin, ArrowRight } from 'lucide-react';
@@ -7,26 +8,51 @@ import type { Car } from '@/types';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useCompare } from '@/hooks/useCompare';
 import { optimizeImage } from '@/utils/optimizeImage';
+import LazyImage from '@/components/shared/LazyImage';
+
+// ============================================
+// 1. PROPS TYPE
+// ============================================
 
 interface CarCardProps {
   car: Car;
   badge?: string;
+  priority?: boolean; // preload this card's image (for first few cards)
 }
+
+// ============================================
+// 2. HELPER: format price
+// ============================================
 
 function formatPrice(price: number) {
   if (price >= 100000) return `Rs ${(price / 100000).toFixed(2)} Lakh`;
   return `Rs ${price.toLocaleString('en-IN')}`;
 }
 
-function CarCard({ car, badge }: CarCardProps) {
+// ============================================
+// 3. MAIN COMPONENT
+// ============================================
+
+function CarCard({ car, badge, priority = false }: CarCardProps) {
   const { isFavorite, toggleFavorite } = useFavorites();
   const { isComparing, toggleCompare } = useCompare();
 
   const fav = isFavorite(car._id);
   const comparing = isComparing(car._id);
-  const images = car.images?.length ? car.images : [{ url: 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=1200&auto=format&fit=crop' }];
-  const cover = optimizeImage(images[0]?.url, 900);
 
+  // --- IMAGE HANDLING (FIXED) ---
+  // Ensure we always have at least one image
+  const defaultImage = {
+    url: 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=1200&auto=format&fit=crop'
+  };
+  const images = car.images?.length ? car.images : [defaultImage];
+
+  // Get the first image URL, fallback to empty string
+  const rawUrl = images[0]?.url || '';
+  // Optimize only if we have a valid URL; otherwise use placeholder
+  const cover = rawUrl ? optimizeImage(rawUrl, 900) : '/images/placeholder-car.jpg';
+
+  // --- EVENT HANDLERS ---
   const handleToggleCompare = (e: MouseEvent) => {
     e.preventDefault();
     const result = toggleCompare(car);
@@ -45,6 +71,7 @@ function CarCard({ car, badge }: CarCardProps) {
     }
   };
 
+  // --- RENDER ---
   return (
     <motion.article
       initial={{ opacity: 0, y: 18 }}
@@ -54,12 +81,13 @@ function CarCard({ car, badge }: CarCardProps) {
       className="car-card group relative overflow-hidden rounded-[24px] border border-line bg-white shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-cardHover dark:border-white/10 dark:bg-[#111a2c]"
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-black/5">
-        <img
+        <LazyImage
           src={cover}
           alt={`${car.brand} ${car.model}`}
-          loading="lazy"
-          decoding="async"
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+          fallback="/images/placeholder-car.jpg"
+          rootMargin="200px"
+          preload={priority}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent opacity-85" />
 
@@ -141,12 +169,14 @@ function CarCard({ car, badge }: CarCardProps) {
         <div className="mt-4 flex items-center justify-between gap-4 border-t border-line pt-4 dark:border-white/10">
           <div className="min-w-0 flex-1">
             <p className="text-xs font-medium uppercase tracking-[0.18em] text-body dark:text-white/50">Price</p>
-            <p className="mt-1 break-words text-[1.15rem] font-extrabold leading-tight text-[#F4B400] sm:text-xl">{formatPrice(car.price)}</p>
+            <p className="mt-1 break-words text-[1.15rem] font-extrabold leading-tight text-[#F4B400] sm:text-xl">
+              {formatPrice(car.price)}
+            </p>
           </div>
 
           <Link
             to={`/cars/${car.slug}`}
-            className="inline-flex h-11 w-[156px] shrink-0 items-center justify-between rounded-full bg-black px-5 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#F4B400] hover:text-black sm:h-[52px] sm:w-[170px] sm:px-6"
+            className="inline-flex h-11 w-[156px] shrink-0 items-center justify-between rounded-full bg-white px-5 text-sm font-semibold text-black transition-all duration-300 hover:bg-[#F4B400] hover:text-black sm:h-[52px] sm:w-[170px] sm:px-6"
           >
             <span>View Details</span>
             <ArrowRight size={15} className="transition-transform duration-300 group-hover:translate-x-1" />

@@ -4,7 +4,7 @@ export type ThemeMode = 'light' | 'dark' | 'system';
 
 interface ThemeContextValue {
   mode: ThemeMode;
-  resolvedTheme: 'light' | 'dark'; // what's actually applied, after resolving 'system'
+  resolvedTheme: 'light';
   setMode: (mode: ThemeMode) => void;
   cycleMode: () => void;
 }
@@ -12,53 +12,32 @@ interface ThemeContextValue {
 const STORAGE_KEY = 'BALAJI CARS_theme';
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
-function getSystemPreference(): 'light' | 'dark' {
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
-
-function applyThemeClass(theme: 'light' | 'dark') {
+function applyThemeClass() {
   const root = document.documentElement;
-  root.classList.toggle('dark', theme === 'dark');
-  root.style.colorScheme = theme;
+  root.classList.remove('dark');
+  root.style.colorScheme = 'light';
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [mode, setModeState] = useState<ThemeMode>(() => {
     const stored = localStorage.getItem(STORAGE_KEY) as ThemeMode | null;
-    return stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'system';
+    return stored === 'light' ? stored : 'light';
   });
 
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>(() =>
-    mode === 'system' ? getSystemPreference() : mode
-  );
+  const [resolvedTheme] = useState<'light'>('light');
 
   useEffect(() => {
-    const theme = mode === 'system' ? getSystemPreference() : mode;
-    setResolvedTheme(theme);
-    applyThemeClass(theme);
-  }, [mode]);
-
-  // Live-update when the OS theme changes, but only while following "system".
-  useEffect(() => {
-    if (mode !== 'system') return;
-    const mql = window.matchMedia('(prefers-color-scheme: dark)');
-    const listener = () => {
-      const theme = getSystemPreference();
-      setResolvedTheme(theme);
-      applyThemeClass(theme);
-    };
-    mql.addEventListener('change', listener);
-    return () => mql.removeEventListener('change', listener);
-  }, [mode]);
+    applyThemeClass();
+  }, []);
 
   const setMode = useCallback((next: ThemeMode) => {
-    localStorage.setItem(STORAGE_KEY, next);
-    setModeState(next);
+    localStorage.setItem(STORAGE_KEY, 'light');
+    setModeState('light');
   }, []);
 
   const cycleMode = useCallback(() => {
-    setMode(mode === 'light' ? 'dark' : mode === 'dark' ? 'system' : 'light');
-  }, [mode, setMode]);
+    setMode('light');
+  }, [setMode]);
 
   return (
     <ThemeContext.Provider value={{ mode, resolvedTheme, setMode, cycleMode }}>

@@ -38,6 +38,7 @@ export interface Car {
   fuelType: FuelType;
   transmission: Transmission;
   engineCC?: number;
+  power?: number; // ✅ added for comparison
   mileage?: number;
   kilometersDriven: number;
   owner: string;

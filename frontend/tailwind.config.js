@@ -5,21 +5,21 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: '#0F0F10',       // headings / primary text
-        body: '#5E636B',      // secondary text
+        ink: '#0F0F10',       
+        body: '#5E636B',      
         navy: {
-          DEFAULT: '#0F0F10', // luxury dealership dark base
+          DEFAULT: '#0F0F10', 
           light: '#1E1E20',
         },
         emerald: {
-          DEFAULT: '#F4B400', // dealership gold
+          DEFAULT: '#F4B400', 
           dark: '#D39B00',
         },
         amber: {
-          DEFAULT: '#F4B400', // featured / premium badges
+          DEFAULT: '#F4B400', 
         },
-        line: '#E9E9E9',      // hairline borders
-        surface: '#F8F8F8',   // section backgrounds
+        line: '#E9E9E9',      
+        surface: '#F8F8F8',   
       },
       fontFamily: {
         display: ['Poppins', 'sans-serif'],
@@ -40,13 +40,35 @@ export default {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-8px)' },
         },
+        'gradient-x': {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+        },
+        shine: {
+          '0%': { backgroundPosition: '200% 0' },
+          '100%': { backgroundPosition: '-200% 0' },
+        },
+        'pulse-slow': {
+          '0%, 100%': { opacity: '0.4' },
+          '50%': { opacity: '0.8' },
+        },
+        'spin-slow': {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
+        },
       },
       animation: {
         fadeIn: 'fadeIn 0.5s ease-out forwards',
         slideUp: 'slideUp 0.4s ease-out forwards',
         float: 'float 6s ease-in-out infinite',
+        'gradient-x': 'gradient-x 4s ease infinite',
+        shine: 'shine 2s linear infinite',
+        'pulse-slow': 'pulse-slow 6s ease-in-out infinite',
+        'spin-slow': 'spin-slow 20s linear infinite',
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms'),
+  ],
 };
