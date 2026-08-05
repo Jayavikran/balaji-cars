@@ -7,10 +7,6 @@ import { memo, useMemo, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { SiteSettings } from '@/types';
 
-// ============================================
-// 1. TYPES & CONSTANTS
-// ============================================
-
 interface QuickLink {
   label: string;
   href: string;
@@ -75,10 +71,6 @@ const FOOTER_BADGES = [
   { icon: Sparkles, label: 'Verified Vehicles' },
 ] as const;
 
-// ============================================
-// 2. SUB-COMPONENTS
-// ============================================
-
 const SocialIconButton = memo(({ 
   icon: Icon, 
   url, 
@@ -100,7 +92,7 @@ const SocialIconButton = memo(({
       aria-label={`Visit our ${label} page`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-white transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50"
+      className="relative flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-white/5 text-white transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50"
       whileHover={{ scale: 1.15, y: -2 }}
       whileTap={{ scale: 0.9 }}
     >
@@ -114,7 +106,7 @@ const SocialIconButton = memo(({
         transition={{ duration: 0.3 }}
         style={{ background: color }}
       />
-      <Icon size={16} className="relative z-10" />
+      <Icon size={15} className="relative z-10" />
     </motion.a>
   );
 });
@@ -153,8 +145,8 @@ const ContactItem = memo(({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Icon size={15} className={`mt-0.5 flex-shrink-0 transition-colors duration-300 ${isHovered ? 'text-[#F4B400]' : 'text-[#F4B400]'}`} aria-hidden="true" />
-      <span className="transition-colors duration-300 hover:text-white">{children}</span>
+      <Icon size={14} className={`mt-0.5 flex-shrink-0 transition-colors duration-300 ${isHovered ? 'text-[#F4B400]' : 'text-[#F4B400]'}`} aria-hidden="true" />
+      <span className="text-sm transition-colors duration-300 hover:text-white">{children}</span>
     </motion.li>
   );
 
@@ -174,10 +166,6 @@ const FooterBadge = memo(({ icon: Icon, label }: { icon: LucideIcon; label: stri
 ));
 
 FooterBadge.displayName = 'FooterBadge';
-
-// ============================================
-// 3. MAIN COMPONENT
-// ============================================
 
 const Footer = memo(function Footer({ settings, className = '' }: FooterProps) {
   const [isYearVisible, setIsYearVisible] = useState(true);
@@ -219,9 +207,8 @@ const Footer = memo(function Footer({ settings, className = '' }: FooterProps) {
       aria-label="Footer"
     >
       <div className="container mx-auto px-4 py-6 sm:py-10 lg:py-14">
-        <div className="grid gap-8 md:gap-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
+        <div className="grid gap-6 sm:gap-8 md:gap-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
           
-          {/* Brand Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -233,13 +220,13 @@ const Footer = memo(function Footer({ settings, className = '' }: FooterProps) {
                 <motion.img
                   src={settings.companyLogo}
                   alt={companyName}
-                  className="h-12 sm:h-14 w-auto object-contain"
+                  className="h-10 sm:h-12 lg:h-14 w-auto object-contain"
                   whileHover={{ scale: 1.05 }}
                   transition={{ type: 'spring', stiffness: 300 }}
                 />
               ) : (
                 <>
-                  <span className="text-xl sm:text-2xl font-extrabold tracking-[0.18em] text-white">
+                  <span className="text-lg sm:text-xl lg:text-2xl font-extrabold tracking-[0.18em] text-white">
                     BALAJI <span className="text-[#F4B400]">CARS</span>
                   </span>
                   <span className="mt-1 text-[0.6rem] tracking-[0.45em] text-white/70 sm:mt-1.5 sm:text-xs">
@@ -276,7 +263,7 @@ const Footer = memo(function Footer({ settings, className = '' }: FooterProps) {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
               viewport={{ once: true }}
-              className="mt-5 flex items-center gap-2 sm:mt-6 sm:gap-2.5"
+              className="mt-4 flex items-center gap-2 sm:mt-6 sm:gap-2.5"
             >
               {activeSocialIcons.map(({ id, icon, getUrl, label, color }) => {
                 const url = getUrl(settings as SiteSettings);
@@ -294,7 +281,6 @@ const Footer = memo(function Footer({ settings, className = '' }: FooterProps) {
             </motion.div>
           </motion.div>
 
-          {/* Quick Links */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -304,7 +290,7 @@ const Footer = memo(function Footer({ settings, className = '' }: FooterProps) {
             <h4 className="text-xs font-semibold uppercase tracking-[0.22em] text-[#F4B400] sm:text-sm">
               Quick Links
             </h4>
-            <ul className="mt-3 space-y-2.5 text-sm text-white/75 sm:mt-4">
+            <ul className="mt-3 space-y-2 text-sm text-white/75 sm:mt-4">
               {QUICK_LINKS.map((item) => (
                 <FooterLink key={item.label} to={item.href}>
                   {item.label}
@@ -313,7 +299,6 @@ const Footer = memo(function Footer({ settings, className = '' }: FooterProps) {
             </ul>
           </motion.div>
 
-          {/* Contact Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -323,7 +308,7 @@ const Footer = memo(function Footer({ settings, className = '' }: FooterProps) {
             <h4 className="text-xs font-semibold uppercase tracking-[0.22em] text-[#F4B400] sm:text-sm">
               Contact Us
             </h4>
-            <ul className="mt-3 space-y-2.5 text-sm text-white/75 sm:mt-4">
+            <ul className="mt-3 space-y-2 text-sm text-white/75 sm:mt-4">
               {contactInfo.phone && (
                 <ContactItem 
                   icon={Phone}
@@ -374,7 +359,7 @@ const Footer = memo(function Footer({ settings, className = '' }: FooterProps) {
           whileInView={{ scaleX: 1 }}
           transition={{ duration: 0.8, delay: 0.5 }}
           viewport={{ once: true }}
-          className="relative mt-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent sm:mt-10"
+          className="relative mt-6 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent sm:mt-8"
         />
 
         <motion.div 
@@ -382,11 +367,11 @@ const Footer = memo(function Footer({ settings, className = '' }: FooterProps) {
           whileInView={{ opacity: 1 }}
           transition={{ delay: 0.6, duration: 0.6 }}
           viewport={{ once: true }}
-          className="mt-6 flex flex-col items-center justify-between gap-3 text-center text-xs text-white/40 sm:mt-7 sm:flex-row sm:text-left"
+          className="mt-4 flex flex-col items-center justify-between gap-2 text-center text-xs text-white/40 sm:mt-6 sm:flex-row sm:text-left"
         >
           <p>&copy; {currentYear} {companyName}. All rights reserved.</p>
           
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-3">
             <motion.a 
               href="#" 
               className="transition-colors hover:text-white/60 hover:underline focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 rounded px-1"

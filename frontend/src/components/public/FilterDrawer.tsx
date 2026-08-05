@@ -39,13 +39,16 @@ export default function FilterDrawer({ open, onClose, filters, onChange, onApply
             initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
             transition={{ type: 'tween', duration: 0.3 }}
             className="absolute right-0 top-0 h-full w-full sm:w-[420px] bg-white dark:bg-[#111a2c] overflow-y-auto"
+            style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
           >
-            <div className="sticky top-0 bg-white dark:bg-[#111a2c] border-b border-line dark:border-white/10 px-6 py-4 flex items-center justify-between z-10">
+            <div className="sticky top-0 bg-white dark:bg-[#111a2c] border-b border-line dark:border-white/10 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between z-10">
               <h3 className="font-display font-bold text-lg text-ink dark:text-white">Advanced Filters</h3>
-              <button onClick={onClose} aria-label="Close filters"><X size={22} /></button>
+              <button onClick={onClose} aria-label="Close filters" className="p-2 hover:bg-surface rounded-full transition-colors">
+                <X size={22} />
+              </button>
             </div>
 
-            <div className="p-6 space-y-7">
+            <div className="p-4 sm:p-6 space-y-6">
               <FilterGroup title="Price Range">
                 <RangeInputs
                   min={filters.minPrice} max={filters.maxPrice}

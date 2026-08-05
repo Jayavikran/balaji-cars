@@ -88,13 +88,11 @@ const HeroImageSlider = memo(() => {
   const [direction, setDirection] = useState(0);
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
-  // FIXED: replaced NodeJS.Timeout with ReturnType<typeof setTimeout>
   const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [preloadedImages, setPreloadedImages] = useState<Set<number>>(new Set());
 
   const totalSlides = SLIDER_IMAGES.length;
 
-  // Preload images
   useEffect(() => {
     SLIDER_IMAGES.forEach((src, index) => {
       const img = new Image();
@@ -108,14 +106,12 @@ const HeroImageSlider = memo(() => {
     });
   }, []);
 
-  // Preload next image for smooth transition
   useEffect(() => {
     const nextIndex = (currentIndex + 1) % totalSlides;
     const img = new Image();
     img.src = SLIDER_IMAGES[nextIndex];
   }, [currentIndex, totalSlides]);
 
-  // Navigation functions
   const goToSlide = useCallback((index: number) => {
     const newIndex = ((index % totalSlides) + totalSlides) % totalSlides;
     setDirection(newIndex > currentIndex ? 1 : -1);
@@ -130,7 +126,6 @@ const HeroImageSlider = memo(() => {
     goToSlide(currentIndex - 1);
   }, [currentIndex, goToSlide]);
 
-  // Autoplay
   useEffect(() => {
     if (prefersReducedMotion) return;
 
@@ -146,7 +141,6 @@ const HeroImageSlider = memo(() => {
     };
   }, [isPaused, nextSlide, prefersReducedMotion]);
 
-  // Touch handlers
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
     touchEndX.current = null;
@@ -178,7 +172,6 @@ const HeroImageSlider = memo(() => {
     setTimeout(() => setIsPaused(false), 3000);
   };
 
-  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft') {
@@ -203,7 +196,7 @@ const HeroImageSlider = memo(() => {
       initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, x: 24, scale: 0.98 }}
       animate={{ opacity: 1, x: 0, scale: 1 }}
       transition={{ duration: 0.7, ease: 'easeOut', delay: prefersReducedMotion ? 0 : 0.05 }}
-      className="relative w-full aspect-[4/3] max-w-sm mx-auto lg:max-w-[30rem] xl:max-w-[35rem] 2xl:max-w-[40rem] lg:mx-0 lg:justify-self-end"
+      className="relative w-full max-w-sm mx-auto lg:max-w-[30rem] xl:max-w-[35rem] 2xl:max-w-[40rem] lg:mx-0 lg:justify-self-end"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
@@ -212,13 +205,10 @@ const HeroImageSlider = memo(() => {
       role="region"
       aria-label="Luxury vehicle showcase slider"
     >
-      {/* Gold glow on hover */}
       <div className="absolute -inset-0.5 rounded-[24px] bg-gradient-to-r from-[#F4B400]/0 via-[#F4B400]/0 to-[#F4B400]/0 group-hover:from-[#F4B400]/20 group-hover:via-[#F4B400]/30 group-hover:to-[#F4B400]/20 blur-xl transition-all duration-700 opacity-0 group-hover:opacity-100" />
       
-      {/* Main Image Container */}
       <div className="relative overflow-hidden rounded-[20px] sm:rounded-[24px] lg:rounded-[28px] border border-white/12 bg-white/5 shadow-[0_18px_60px_rgba(0,0,0,0.3)] backdrop-blur-sm group">
         
-        {/* Image Slider */}
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={currentIndex}
@@ -257,13 +247,11 @@ const HeroImageSlider = memo(() => {
               priority={currentIndex === 0}
             />
             
-            {/* Soft gradient overlay */}
             <div 
               className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10"
               aria-hidden="true"
             />
             
-            {/* Subtle parallax light sweep */}
             <motion.div
               initial={{ x: '-100%' }}
               animate={{ x: '100%' }}
@@ -281,7 +269,6 @@ const HeroImageSlider = memo(() => {
           </motion.div>
         </AnimatePresence>
 
-        {/* Navigation Arrows */}
         <div className="absolute inset-0 flex items-center justify-between px-2 sm:px-3 pointer-events-none">
           <button
             onClick={(e) => {
@@ -310,7 +297,6 @@ const HeroImageSlider = memo(() => {
           </button>
         </div>
 
-        {/* Pagination Dots */}
         <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 pointer-events-none">
           {SLIDER_IMAGES.map((_, index) => (
             <button
@@ -333,7 +319,6 @@ const HeroImageSlider = memo(() => {
           ))}
         </div>
 
-        {/* Floating Info Card - Fixed on top */}
         <motion.div
           animate={prefersReducedMotion ? { y: 0 } : { y: [0, -6, 0] }}
           transition={prefersReducedMotion ? { duration: 0 } : { duration: 4, repeat: Infinity, ease: 'easeInOut' }}
@@ -370,20 +355,6 @@ HeroImageSlider.displayName = 'HeroImageSlider';
 // ============================================
 const HeroBanner = memo(function HeroBanner() {
   const prefersReducedMotion = useReducedMotion();
-  const [viewportHeight, setViewportHeight] = useState('100vh');
-
-  // Dynamic viewport height with fallback
-  useEffect(() => {
-    const updateHeight = () => {
-      const vh = window.innerHeight;
-      setViewportHeight(`${vh}px`);
-    };
-
-    updateHeight();
-    window.addEventListener('resize', updateHeight);
-    
-    return () => window.removeEventListener('resize', updateHeight);
-  }, []);
 
   const handleScrollToCars = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -397,13 +368,12 @@ const HeroBanner = memo(function HeroBanner() {
     <section 
       className="relative w-full overflow-hidden bg-black text-white"
       style={{ 
-        minHeight: viewportHeight,
-        height: '100dvh',
+        minHeight: '55vh',
+        height: 'auto',
         maxHeight: '100vh'
       }}
       aria-label="Hero banner showcasing premium used cars"
     >
-      {/* ===== BACKGROUND IMAGE ===== */}
       <div className="absolute inset-0">
         <HeroImage
           src="/images/banner1.jpeg"
@@ -414,7 +384,6 @@ const HeroBanner = memo(function HeroBanner() {
           priority={true}
         />
         
-        {/* Gradient Overlays */}
         <div 
           className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,.78)_0%,rgba(0,0,0,.48)_50%,rgba(0,0,0,.72)_100%)]"
           aria-hidden="true"
@@ -424,7 +393,6 @@ const HeroBanner = memo(function HeroBanner() {
           aria-hidden="true"
         />
         
-        {/* Decorative animated grid */}
         <div 
           className="absolute inset-0 opacity-[0.03]"
           style={{
@@ -435,33 +403,30 @@ const HeroBanner = memo(function HeroBanner() {
         />
       </div>
 
-      {/* ===== MAIN CONTENT ===== */}
-      <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center py-6 sm:py-8 lg:py-0">
-        <div className="w-full grid items-center gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-8 xl:gap-12">
+      <div className="container relative z-10 mx-auto px-4 h-full flex items-center py-8 sm:py-12 lg:py-0">
+        <div className="w-full grid items-center gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-8 xl:gap-12">
           
-          {/* ===== LEFT CONTENT (UNCHANGED) ===== */}
           <motion.div
             initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: 'easeOut' }}
-            className="max-w-[690px]"
+            className="max-w-[690px] text-center lg:text-left"
           >
-            {/* Premium Badge */}
             <motion.div
               initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full bg-gradient-to-r from-[#F4B400]/20 to-[#F4B400]/5 border border-[#F4B400]/20 px-2.5 py-0.5 sm:px-3 sm:py-1 lg:px-4 lg:py-1.5 mb-1.5 sm:mb-2 lg:mb-3"
+              className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#F4B400]/20 to-[#F4B400]/5 border border-[#F4B400]/20 px-2.5 py-1 sm:px-3 sm:py-1.5 lg:px-4 lg:py-1.5 mb-2"
             >
-              <Sparkles size={10} className="text-[#F4B400] sm:size-[12px] lg:size-[14px]" />
-              <span className="text-[8px] sm:text-[10px] lg:text-xs font-medium text-[#F4B400] tracking-wide">PREMIUM SELECTION</span>
+              <Sparkles size={12} className="text-[#F4B400] sm:size-[14px]" />
+              <span className="text-[9px] sm:text-[10px] lg:text-xs font-medium text-[#F4B400] tracking-wide">PREMIUM SELECTION</span>
             </motion.div>
 
             <motion.p 
               initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
-              className="text-[8px] sm:text-[10px] lg:text-xs font-semibold uppercase tracking-[0.32em] text-[#F4B400]"
+              className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.32em] text-[#F4B400]"
             >
               TRUSTED USED CAR DEALERSHIP
             </motion.p>
@@ -470,7 +435,7 @@ const HeroBanner = memo(function HeroBanner() {
               initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.7 }}
-              className="mt-1 sm:mt-1.5 lg:mt-2 text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold leading-[1.08] sm:leading-[1.06] lg:leading-[1.04] tracking-[-0.04em] text-white"
+              className="mt-1 sm:mt-1.5 lg:mt-2 text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.1] tracking-[-0.04em] text-white"
             >
               Find Your Perfect
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#F4B400] to-[#F59E0B]">
@@ -482,50 +447,48 @@ const HeroBanner = memo(function HeroBanner() {
               initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.6 }}
-              className="mt-1 sm:mt-1.5 lg:mt-2 max-w-[620px] text-[10px] sm:text-xs md:text-sm lg:text-base xl:text-lg leading-5 sm:leading-6 lg:leading-7 text-white/80"
+              className="mt-2 sm:mt-3 max-w-[620px] text-sm sm:text-base lg:text-lg leading-relaxed text-white/80 mx-auto lg:mx-0"
             >
               Explore certified used cars with transparent pricing, verified quality, and flexible loan options.
             </motion.p>
 
-            {/* Feature Pills */}
             <motion.div 
               initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
-              className="mt-1.5 sm:mt-2 lg:mt-3 flex flex-wrap items-center gap-1 sm:gap-1.5 lg:gap-2 text-[8px] sm:text-[10px] lg:text-xs text-white/88"
+              className="mt-3 flex flex-wrap items-center justify-center lg:justify-start gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-white/88"
               role="list"
             >
               {FEATURES.map(({ label, icon: Icon }) => (
                 <span
                   key={label}
-                  className="inline-flex items-center gap-1 sm:gap-1.5 rounded-full border border-white/10 bg-white/5 px-1.5 py-0.5 sm:px-2 sm:py-1 lg:px-3 lg:py-1.5 backdrop-blur-md transition-all duration-300 hover:bg-white/10 hover:border-[#F4B400]/30 hover:scale-105 touch-manipulation"
+                  className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-1 sm:px-3 sm:py-1.5 backdrop-blur-md transition-all duration-300 hover:bg-white/10 hover:border-[#F4B400]/30 active:scale-95"
                   role="listitem"
                 >
-                  <Icon size={10} className="text-[#F4B400] flex-shrink-0 sm:size-[12px] lg:size-[15px]" aria-hidden="true" />
+                  <Icon size={12} className="text-[#F4B400] flex-shrink-0" aria-hidden="true" />
                   <span className="whitespace-nowrap">{label}</span>
                 </span>
               ))}
             </motion.div>
 
-            {/* CTA Buttons */}
             <motion.div 
               initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7, duration: 0.6 }}
-              className="mt-2.5 sm:mt-3 lg:mt-4 xl:mt-5 flex flex-wrap items-center gap-2 sm:gap-2.5 lg:gap-3"
+              className="mt-4 sm:mt-5 lg:mt-6 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3"
             >
               <Link
                 to="#car-listings"
                 onClick={handleScrollToCars}
-                className="group relative inline-flex items-center gap-1.5 sm:gap-2 rounded-full bg-gradient-to-r from-[#F4B400] to-[#F59E0B] px-3.5 py-1.5 sm:px-4 sm:py-2 lg:px-5 lg:py-2.5 xl:px-6 xl:py-3 text-[10px] sm:text-xs lg:text-sm font-semibold text-black shadow-[0_16px_40px_rgba(244,180,0,.25)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(244,180,0,.35)] focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 focus:ring-offset-2 focus:ring-offset-black active:scale-[0.98] touch-manipulation"
+                className="group inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#F4B400] to-[#F59E0B] px-6 py-3 text-sm font-semibold text-black shadow-[0_16px_40px_rgba(244,180,0,.25)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(244,180,0,.35)] active:scale-[0.98]"
                 aria-label="Browse our inventory of premium used cars"
               >
                 <span>Browse Cars</span>
-                <ArrowRight size={12} className="transition-transform group-hover:translate-x-1 sm:size-[14px] lg:size-[16px] xl:size-[18px]" aria-hidden="true" />
+                <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" aria-hidden="true" />
               </Link>
               <Link
                 to="/contact"
-                className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/5 px-3.5 py-1.5 sm:px-4 sm:py-2 lg:px-5 lg:py-2.5 xl:px-6 xl:py-3 text-[10px] sm:text-xs lg:text-sm font-semibold text-white backdrop-blur-md transition-all duration-300 hover:border-white/40 hover:bg-white/10 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-black active:scale-[0.98] touch-manipulation"
+                className="inline-flex w-full sm:w-auto items-center justify-center rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white backdrop-blur-md transition-all duration-300 hover:border-white/40 hover:bg-white/10 hover:-translate-y-1 active:scale-[0.98]"
                 aria-label="Contact Balaji Cars dealership"
               >
                 Contact Us
@@ -533,12 +496,10 @@ const HeroBanner = memo(function HeroBanner() {
             </motion.div>
           </motion.div>
 
-          {/* ===== RIGHT CONTENT - PREMIUM IMAGE SLIDER ===== */}
           <HeroImageSlider />
         </div>
       </div>
 
-      {/* ===== ANIMATED SCROLL INDICATOR ===== */}
       <motion.div
         animate={{ y: [0, 10, 0] }}
         transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}

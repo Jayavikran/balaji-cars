@@ -55,13 +55,10 @@
     @apply inline-flex items-center justify-center gap-2 rounded-full border border-line text-ink font-medium px-5 py-2.5 transition-all duration-300 hover:border-navy dark:border-white/15 dark:text-white/90 dark:hover:border-white/40;
   }
 
-  /* Shared form control style used across admin forms (Upload/Edit Car, Settings) */
   .input {
     @apply w-full border border-line rounded-xl px-3.5 py-2.5 text-sm text-ink bg-white transition-colors focus:border-navy outline-none dark:bg-white/5 dark:border-white/15 dark:text-white dark:focus:border-emerald;
   }
 
-  /* Surfaces used throughout the public site — a single class to flip a
-     white card/panel to its dark-mode equivalent consistently. */
   .surface-card {
     @apply bg-white dark:bg-[#111a2c] border border-line dark:border-white/10;
   }
@@ -77,6 +74,47 @@
   .glass-card {
     @apply rounded-[22px] border border-white/60 bg-white/80 shadow-[0_12px_40px_rgba(0,0,0,.08)] backdrop-blur-md dark:border-white/10 dark:bg-white/5;
   }
+
+  /* --- NEW MOBILE-FIRST UTILITY COMPONENTS --- */
+
+  .mobile-container {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
+
+  .card {
+    @apply bg-white dark:bg-[#111a2c] border border-line dark:border-white/10 rounded-2xl shadow-card;
+  }
+
+  .section-spacing {
+    @apply py-6 sm:py-8 lg:py-12;
+  }
+
+  .input-field {
+    @apply w-full h-12 rounded-xl border border-line dark:border-white/15 bg-white dark:bg-white/5 px-4 text-sm text-ink dark:text-white placeholder:text-body/60 outline-none transition-all focus:border-[#F4B400] focus:ring-2 focus:ring-[#F4B400]/20;
+  }
+
+  .btn-primary-mobile {
+    @apply inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[#F4B400] px-5 text-sm font-semibold text-black transition-all active:scale-[0.98] disabled:opacity-60 sm:w-auto sm:rounded-full sm:px-6;
+  }
+
+  .btn-secondary-mobile {
+    @apply inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-line dark:border-white/15 px-5 text-sm font-semibold text-ink dark:text-white transition-all active:scale-[0.98] sm:w-auto sm:rounded-full sm:border-white/20 sm:px-6;
+  }
+}
+
+/* --- MOBILE OVERRIDES --- */
+@media (max-width: 1023px) {
+  .mobile-page {
+    @apply min-h-screen flex flex-col overflow-x-hidden;
+  }
+
+  .mobile-page > * {
+    @apply w-full max-w-full;
+  }
+
+  .container {
+    @apply px-4 sm:px-6;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -88,228 +126,10 @@
   }
 }
 
-/* Mobile-only public-site layout. Desktop and laptop styles remain defined by
-   the component Tailwind classes above. */
-@media (max-width: 767px) {
-  *, *::before, *::after {
-    box-sizing: border-box;
-  }
-
-  html, body, #root, #root > *, .app-shell, .app-shell > * {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    overflow-x: hidden;
-  }
-
-  .mobile-page {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    overflow-x: hidden;
-  }
-
-  .mobile-page > :not(.fixed),
-  .mobile-page header,
-  .mobile-page header > div,
-  .mobile-page section,
-  .mobile-page footer {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-  }
-
-  .mobile-page .fixed {
-    max-width: 100%;
-    min-width: 0;
-  }
-
-  .mobile-page > section:not(.mobile-hero),
-  .mobile-brand-section {
-    width: 100%;
-    max-width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-
-  .mobile-hero {
-    display: block;
-    position: relative;
-    flex: none;
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    min-height: 180px;
-    height: clamp(180px, 48vw, 220px);
-    margin: 0;
-    border-radius: 0;
-    overflow: hidden;
-    visibility: visible;
-  }
-
-  .mobile-hero-media {
-    display: flex;
-    width: 100%;
-    min-width: 0;
-    height: 100%;
-    min-height: 100%;
-  }
-
-  .mobile-hero-image {
-    display: block;
-    width: 100%;
-    max-width: 100%;
-    height: 100%;
-    min-height: 100%;
-    object-fit: cover;
-  }
-
-  .mobile-hero-content {
-    width: 100%;
-    max-width: 100%;
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-
-  .mobile-page img,
-  .mobile-page video,
-  .mobile-page canvas {
-    max-width: 100%;
-    height: auto;
-  }
-
-  .mobile-hero img,
-  .car-card img {
-    width: 100%;
-    max-width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .mobile-hero h1 {
-    font-size: 1.25rem;
-    line-height: 1.2;
-  }
-
-  .mobile-hero p {
-    font-size: 0.75rem;
-    line-height: 1.35;
-  }
-
-  .mobile-hero button[type='button'] {
-    max-width: calc(100% - 56px);
-  }
-
-  .mobile-hero-content > div > button {
-    width: 100%;
-    min-height: 40px;
-    padding: 0.625rem 1rem;
-    font-size: 0.8125rem;
-  }
-
-  .mobile-nav-drawer {
-    max-width: 100vw;
-  }
-
-  .mobile-brand-section {
-    padding-top: 8px;
-    padding-bottom: 8px;
-    overflow: hidden;
-  }
-
-  .mobile-brand-strip {
-    width: 100%;
-    max-width: 100%;
-    margin-left: 0;
-    margin-right: 0;
-    padding: 0 0 4px;
-    gap: 8px;
-    flex-wrap: nowrap;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-
-  .mobile-brand-strip::-webkit-scrollbar {
-    display: none;
-  }
-
-  .mobile-listings {
-    padding-top: 16px;
-    padding-bottom: 24px;
-  }
-
-  .mobile-listings > div:first-child {
-    margin-bottom: 16px;
-    gap: 10px;
-  }
-
-  .mobile-listings h2 {
-    font-size: 1.25rem;
-    line-height: 1.25;
-  }
-
-  .car-card {
-    min-width: 0;
-    max-width: 100%;
-  }
-
-  .car-card-body {
-    min-width: 0;
-    padding: 10px;
-  }
-
-  .car-card h3 {
-    font-size: 0.8125rem;
-    line-height: 1.25;
-    min-height: 2.05rem;
-  }
-
-  .car-card .aspect-\[4\/3\] {
-    aspect-ratio: 4 / 3;
-  }
-
-  .car-card img {
-    object-fit: cover;
-  }
-
-  .car-card a,
-  .car-card button {
-    min-width: 0;
-  }
-
-  .mobile-footer {
-    width: 100%;
-    max-width: 100%;
-    margin-top: 24px;
-  }
-
-  .mobile-footer > .md\:hidden {
-    width: 100%;
-    max-width: 100%;
-    padding: 16px;
-  }
-
-  .mobile-footer .border-t {
-    padding-left: 16px;
-    padding-right: 16px;
-    text-align: center;
-  }
-
-  .mobile-footer button,
-  .mobile-footer p,
-  .mobile-footer li {
-    max-width: 100%;
-    overflow-wrap: anywhere;
-  }
-}
-
 .scrollbar-hide {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }

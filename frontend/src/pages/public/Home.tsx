@@ -22,7 +22,6 @@ const DEBOUNCE_DELAY = 300;
 export default function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // ─── State ────────────────────────────────────────────────────────────────────
   const [search, setSearch] = useState(searchParams.get('q') || '');
   const [sort, setSort] = useState<SortOption>((searchParams.get('sort') as SortOption) || 'newest');
   const [brand, setBrand] = useState(searchParams.get('brand') || 'All');
@@ -33,10 +32,8 @@ export default function Home() {
 
   const { data: settings } = useSiteSettings();
 
-  // ─── Debounced Search ──────────────────────────────────────────────────────
   const [debouncedSearch] = useDebounce(search, DEBOUNCE_DELAY);
 
-  // ─── SEO ──────────────────────────────────────────────────────────────────
   const siteName = settings?.companyName || 'BALAJI CARS';
   const siteOrigin = typeof window !== 'undefined' ? window.location.origin : '';
   const seoTitle = `${siteName} | Premium Certified Used Cars`;
@@ -53,7 +50,6 @@ export default function Home() {
     sameAs: [settings?.facebookUrl, settings?.instagramUrl, settings?.youtubeUrl].filter(Boolean),
   };
 
-  // ─── Filters ──────────────────────────────────────────────────────────────
   const combinedFilters: CarFilters = useMemo(
     () => ({
       ...appliedFilters,
@@ -67,7 +63,6 @@ export default function Home() {
     [appliedFilters, debouncedSearch, brand, sort, page]
   );
 
-  // ─── React Query ───────────────────────────────────────────────────────────
   const { data, isLoading, isFetching, isError, error, refetch } = useQuery({
     queryKey: ['cars', combinedFilters],
     queryFn: () => fetchCars(combinedFilters),
@@ -78,7 +73,6 @@ export default function Home() {
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
   });
 
-  // ─── URL Sync ──────────────────────────────────────────────────────────────
   useEffect(() => {
     const params = paramsFromFilters({
       q: search,
@@ -89,7 +83,6 @@ export default function Home() {
     setSearchParams(params, { replace: true });
   }, [search, sort, brand, appliedFilters, setSearchParams]);
 
-  // ─── Handlers ──────────────────────────────────────────────────────────────
   const loadMore = useCallback(() => {
     if (data?.pagination && page < data.pagination.totalPages) {
       setPage((p) => p + 1);
@@ -106,7 +99,6 @@ export default function Home() {
     setPage(1);
   }, []);
 
-  // FIXED: handleApplyFilters now takes no arguments and uses draftFilters
   const handleApplyFilters = useCallback(() => {
     setAppliedFilters(draftFilters);
     setPage(1);
@@ -118,13 +110,11 @@ export default function Home() {
     setPage(1);
   }, []);
 
-  // ─── Derived ──────────────────────────────────────────────────────────────
   const totalCount = data?.pagination?.total || 0;
   const hasMore = data?.pagination ? page < data.pagination.totalPages : false;
   const isInitialLoading = isLoading && !data;
   const isRefreshing = isFetching && !isLoading;
 
-  // ─── Render ──────────────────────────────────────────────────────────────
   return (
     <div className="mobile-page min-h-screen flex flex-col">
       <Seo title={seoTitle} description={seoDescription} jsonLd={autoDealerJsonLd} />
@@ -143,13 +133,12 @@ export default function Home() {
 
       <BrandFilter active={brand} onSelect={handleBrandSelect} />
 
-      <section id="car-listings" className="scroll-mt-28 flex-1 py-6 sm:py-10 lg:py-14">
+      <section id="car-listings" className="scroll-mt-28 flex-1 py-4 sm:py-6 lg:py-10">
         <div className="premium-shell">
-          {/* ─── Header ──────────────────────────────────────────────────── */}
           <div className="mb-4 flex flex-wrap items-end justify-between gap-3 lg:mb-8">
             <div className="flex items-center gap-3">
               <div>
-                <h2 className="text-[1.55rem] font-extrabold leading-tight text-ink sm:text-[2.2rem]">
+                <h2 className="text-xl sm:text-2xl lg:text-[1.55rem] font-extrabold leading-tight text-ink sm:text-[2.2rem]">
                   {search ? `Results for "${search}"` : brand !== 'All' ? `${brand} Cars` : 'Available Cars'}
                 </h2>
                 <p className="mt-1 text-xs text-body sm:text-sm">Only verified available cars are shown here.</p>
@@ -165,7 +154,6 @@ export default function Home() {
             )}
           </div>
 
-          {/* ─── Error State ────────────────────────────────────────────── */}
           {isError && (
             <div className="rounded-2xl border border-red-200 bg-red-50 dark:border-red-800/30 dark:bg-red-950/20 p-8 text-center">
               <p className="text-red-600 dark:text-red-400 font-medium">
@@ -186,9 +174,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* ─── Car List ────────────────────────────────────────────────── */}
           {!isError && (
-            // FIXED: removed isFetching prop (not expected by CarList)
             <CarList
               cars={data?.cars || []}
               isLoading={isInitialLoading}
@@ -207,7 +193,7 @@ export default function Home() {
         onClose={() => setDrawerOpen(false)}
         filters={draftFilters}
         onChange={setDraftFilters}
-        onApply={handleApplyFilters}   // now matches () => void
+        onApply={handleApplyFilters}
         onReset={handleResetFilters}
       />
     </div>

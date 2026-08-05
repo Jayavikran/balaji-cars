@@ -138,10 +138,6 @@ const SuggestionItem = ({
   </motion.button>
 );
 
-// ============================================================
-//  FULLY FIXED SORT DROPDOWN - USES FIXED POSITIONING
-//  TO AVOID CSS CLIPPING AND OVERFLOW ISSUES
-// ============================================================
 const SortDropdown = ({
   sort,
   onSortChange,
@@ -167,9 +163,9 @@ const SortDropdown = ({
         aria-expanded={isOpen}
         aria-haspopup="listbox"
         aria-label="Sort cars"
-        className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2 text-xs sm:text-sm font-medium text-ink transition-all hover:border-[#F4B400]/30 hover:bg-[#F4B400]/5 focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 whitespace-nowrap"
+        className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink transition-all hover:border-[#F4B400]/30 hover:bg-[#F4B400]/5 focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 whitespace-nowrap sm:rounded-full sm:px-4 sm:py-2 sm:text-sm"
       >
-        <ArrowUpDown size={15} aria-hidden="true" />
+        <ArrowUpDown size={14} aria-hidden="true" />
         <span className="hidden sm:inline">Sort</span>
         {sort && (
           <span className="hidden sm:inline text-[#F4B400] font-semibold">
@@ -178,7 +174,6 @@ const SortDropdown = ({
         )}
       </motion.button>
       
-      {/* USES PLAIN DIV WITH FIXED POSITION. NO ANIMATE PRESENCE TO RULE OUT MOTION BUGS */}
       {isOpen && (
         <div 
           style={{
@@ -387,17 +382,17 @@ export default function Header({
         role="banner"
         aria-label="Main header"
       >
-        <div className="container mx-auto px-4 h-16 sm:h-20 flex items-center justify-between gap-4">
+        <div className="container mx-auto px-4 h-14 sm:h-16 lg:h-20 flex items-center justify-between gap-3">
           <Link 
             to="/" 
-            className="flex items-center gap-3 shrink-0 group focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 rounded-lg px-2 py-1"
+            className="flex items-center gap-2 shrink-0 group focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 rounded-lg px-1 py-1"
             aria-label={`${companyName} - Go to homepage`}
           >
             {settings?.companyLogo ? (
               <motion.img
                 src={settings.companyLogo}
                 alt={companyName}
-                className="h-10 sm:h-12 w-auto object-contain"
+                className="h-8 sm:h-10 lg:h-12 w-auto object-contain"
                 loading="eager"
                 decoding="async"
                 whileHover={{ scale: 1.05 }}
@@ -405,10 +400,10 @@ export default function Header({
               />
             ) : (
               <div className="flex flex-col leading-none">
-                <span className="text-xl sm:text-2xl font-extrabold tracking-[0.18em] text-white">
+                <span className="text-base sm:text-xl lg:text-2xl font-extrabold tracking-[0.18em] text-white">
                   BALAJI <span className="text-[#F4B400]">CARS</span>
                 </span>
-                <span className="mt-0.5 text-[0.6rem] sm:text-[0.65rem] tracking-[0.45em] text-white/70">
+                <span className="mt-0.5 text-[0.5rem] sm:text-[0.6rem] lg:text-[0.65rem] tracking-[0.45em] text-white/70">
                   TIRUNELVELI
                 </span>
               </div>
@@ -458,9 +453,9 @@ export default function Header({
             aria-expanded={drawerOpen}
             aria-controls="mobile-menu"
             aria-label={drawerOpen ? 'Close navigation menu' : 'Open navigation menu'}
-            className="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50"
+            className="md:hidden inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50"
           >
-            {drawerOpen ? <X size={20} /> : <Menu size={20} />}
+            {drawerOpen ? <X size={18} /> : <Menu size={18} />}
           </motion.button>
         </div>
 
@@ -470,8 +465,8 @@ export default function Header({
               <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
                 <div ref={searchRef} className="relative flex-1">
                   <Search 
-                    size={18} 
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-body/60 pointer-events-none" 
+                    size={16} 
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-body/60 pointer-events-none" 
                     aria-hidden="true"
                   />
                   
@@ -488,8 +483,8 @@ export default function Header({
                     onBlur={handleSearchBlur}
                     onKeyDown={handleKeyDown}
                     type="text"
-                    placeholder="Search by Brand, Model, Variant, Registration Number or Year... (⌘K)"
-                    className="w-full h-12 rounded-2xl border border-line bg-white pl-11 pr-4 text-sm font-medium text-ink placeholder:text-body/60 outline-none transition-all focus:border-[#F4B400] focus:shadow-[0_0_0_4px_rgba(244,180,0,.08)] focus:ring-1 focus:ring-[#F4B400]"
+                    placeholder="Search cars..."
+                    className="w-full h-10 sm:h-12 rounded-xl border border-line bg-white pl-9 pr-3 text-sm font-medium text-ink placeholder:text-body/60 outline-none transition-all focus:border-[#F4B400] focus:shadow-[0_0_0_4px_rgba(244,180,0,.08)] focus:ring-1 focus:ring-[#F4B400]"
                     aria-label="Search cars"
                     aria-autocomplete="list"
                     aria-controls="suggestions-list"
@@ -565,7 +560,7 @@ export default function Header({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-hide">
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-hide">
                   <SortDropdown
                     sort={sort}
                     onSortChange={handleSortSelect}
@@ -578,10 +573,10 @@ export default function Header({
                     whileTap={{ scale: 0.95 }}
                     type="button"
                     onClick={onOpenFilters}
-                    className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2 text-xs sm:text-sm font-medium text-ink transition-all hover:border-[#F4B400]/30 hover:bg-[#F4B400]/5 focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 whitespace-nowrap"
+                    className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink transition-all hover:border-[#F4B400]/30 hover:bg-[#F4B400]/5 focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 whitespace-nowrap sm:rounded-full sm:px-4 sm:py-2 sm:text-sm"
                     aria-label="Open filters"
                   >
-                    <SlidersHorizontal size={15} aria-hidden="true" />
+                    <SlidersHorizontal size={14} aria-hidden="true" />
                     <span className="hidden sm:inline">Filter</span>
                   </motion.button>
 
@@ -590,10 +585,10 @@ export default function Header({
                     whileTap={{ scale: 0.95 }}
                     type="button"
                     onClick={goLocation}
-                    className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2 text-xs sm:text-sm font-medium text-ink transition-all hover:border-[#F4B400]/30 hover:bg-[#F4B400]/5 focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 whitespace-nowrap"
+                    className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink transition-all hover:border-[#F4B400]/30 hover:bg-[#F4B400]/5 focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 whitespace-nowrap sm:rounded-full sm:px-4 sm:py-2 sm:text-sm"
                     aria-label="Find our location"
                   >
-                    <MapPin size={15} aria-hidden="true" />
+                    <MapPin size={14} aria-hidden="true" />
                     <span className="hidden sm:inline">Location</span>
                   </motion.button>
                 </div>
@@ -616,20 +611,21 @@ export default function Header({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
               onClick={toggleDrawer}
               aria-hidden="true"
             />
 
             <motion.div
               id="mobile-menu"
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="absolute right-0 top-0 h-full w-full max-w-sm bg-gradient-to-b from-black to-[#0a0a0a] text-white shadow-2xl"
+              className="absolute bottom-0 left-0 right-0 max-h-[85vh] rounded-t-3xl bg-gradient-to-b from-black to-[#0a0a0a] text-white shadow-2xl overflow-y-auto"
+              style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
             >
-              <div className="flex h-full flex-col px-5 py-5">
+              <div className="flex h-full flex-col px-5 pt-5 pb-6">
                 <div className="flex items-center justify-between">
                   <div className="flex flex-col leading-none">
                     <span className="text-lg font-extrabold tracking-[0.18em] text-white">
@@ -651,7 +647,7 @@ export default function Header({
                   </motion.button>
                 </div>
 
-                <nav className="mt-8 space-y-2" aria-label="Mobile navigation">
+                <nav className="mt-6 space-y-2" aria-label="Mobile navigation">
                   {NAV_LINKS.map((item, index) => (
                     <motion.div
                       key={item.label}
@@ -662,7 +658,7 @@ export default function Header({
                       <Link
                         to={item.href}
                         onClick={toggleDrawer}
-                        className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-base font-semibold transition-all hover:bg-white/10 hover:border-[#F4B400]/30 focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50"
+                        className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3.5 text-base font-semibold transition-all hover:bg-white/10 hover:border-[#F4B400]/30"
                       >
                         {item.label}
                         <ChevronRight size={18} className="text-[#F4B400]" aria-hidden="true" />
@@ -732,7 +728,7 @@ export default function Header({
                           onOpenFilters?.();
                           toggleDrawer();
                         }} 
-                        className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm text-white transition-colors hover:bg-white/20 whitespace-nowrap"
+                        className="inline-flex items-center justify-center gap-2 rounded-full bg-white/10 px-4 py-2.5 text-sm text-white transition-colors hover:bg-white/20 whitespace-nowrap flex-1"
                       >
                         <SlidersHorizontal size={14} aria-hidden="true" />
                         Filter
@@ -745,7 +741,7 @@ export default function Header({
                           goLocation();
                           toggleDrawer();
                         }}
-                        className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm text-white transition-colors hover:bg-white/20 whitespace-nowrap"
+                        className="inline-flex items-center justify-center gap-2 rounded-full bg-white/10 px-4 py-2.5 text-sm text-white transition-colors hover:bg-white/20 whitespace-nowrap flex-1"
                       >
                         <MapPin size={14} aria-hidden="true" />
                         Location
@@ -758,7 +754,7 @@ export default function Header({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="mt-auto border-t border-white/10 pt-5 text-sm text-white/60"
+                  className="mt-auto border-t border-white/10 pt-4 text-sm text-white/60"
                 >
                   <p className="font-semibold text-white">{companyName}</p>
                   <p className="mt-1 text-xs">{settings?.address || 'Premium used car dealership'}</p>

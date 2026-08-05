@@ -40,10 +40,8 @@ import { optimizeImage } from '@/utils/optimizeImage';
 
 const EMICalculator = lazy(() => import('@/components/public/EMICalculator'));
 
-// Constants
 const MAX_COMPARE_LIMIT = 3;
 
-// Utility Functions
 function formatPrice(price: number) {
   if (price >= 10000000) return `₹${(price / 10000000).toFixed(2)} Crore`;
   return `₹${(price / 100000).toFixed(2)} Lakh`;
@@ -67,26 +65,25 @@ function getStatusColor(status: string) {
   }
 }
 
-// Loading Skeleton Component
 const CarDetailsSkeleton = function CarDetailsSkeleton() {
   return (
     <div className="min-h-screen bg-[#F8F8F8] dark:bg-black">
-      <div className="container mx-auto px-4 py-4 sm:px-6 sm:py-6">
-        <div className="h-6 w-48 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+      <div className="container mx-auto px-4 py-3 sm:px-6 sm:py-6">
+        <div className="h-5 sm:h-6 w-36 sm:w-48 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
       </div>
-      <div className="container mx-auto px-4 pb-10 sm:px-6 sm:pb-14">
-        <div className="grid grid-cols-1 gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(360px,0.75fr)]">
+      <div className="container mx-auto px-4 pb-6 sm:pb-10 sm:px-6 sm:pb-14">
+        <div className="grid grid-cols-1 gap-6 sm:gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(360px,0.75fr)]">
           <div className="min-w-0">
-            <div className="aspect-[4/3] sm:aspect-[16/10] bg-gray-200 dark:bg-gray-700 rounded-[28px] animate-pulse" />
-            <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3">
+            <div className="aspect-[4/3] sm:aspect-[16/10] bg-gray-200 dark:bg-gray-700 rounded-2xl sm:rounded-[28px] animate-pulse" />
+            <div className="mt-4 sm:mt-6 grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-24 bg-gray-200 dark:bg-gray-700 rounded-[22px] animate-pulse" />
+                <div key={i} className="h-16 sm:h-24 bg-gray-200 dark:bg-gray-700 rounded-2xl sm:rounded-[22px] animate-pulse" />
               ))}
             </div>
           </div>
           <div className="space-y-4">
-            <div className="h-[300px] bg-gray-200 dark:bg-gray-700 rounded-[28px] animate-pulse" />
-            <div className="h-[200px] bg-gray-200 dark:bg-gray-700 rounded-[28px] animate-pulse" />
+            <div className="h-[250px] sm:h-[300px] bg-gray-200 dark:bg-gray-700 rounded-2xl sm:rounded-[28px] animate-pulse" />
+            <div className="h-[180px] sm:h-[200px] bg-gray-200 dark:bg-gray-700 rounded-2xl sm:rounded-[28px] animate-pulse" />
           </div>
         </div>
       </div>
@@ -94,7 +91,6 @@ const CarDetailsSkeleton = function CarDetailsSkeleton() {
   );
 };
 
-// Image Lightbox Component
 const ImageLightbox = function ImageLightbox({
   images,
   currentIndex,
@@ -135,43 +131,42 @@ const ImageLightbox = function ImageLightbox({
     >
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+        className="absolute top-3 sm:top-4 right-3 sm:right-4 z-10 p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
         aria-label="Close lightbox"
       >
-        <X size={24} />
+        <X size={20} className="sm:size-[24px]" />
       </button>
 
       <button
         onClick={(e) => { e.stopPropagation(); onPrev(); }}
-        className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
         aria-label="Previous image"
       >
-        <ChevronLeft size={24} />
+        <ChevronLeft size={20} className="sm:size-[24px]" />
       </button>
 
       <img
         src={optimizeImage(images[currentIndex]?.url, 1600)}
         alt={images[currentIndex]?.alt || `Image ${currentIndex + 1}`}
-        className="max-h-[90vh] max-w-[90vw] object-contain"
+        className="max-h-[85vh] sm:max-h-[90vh] max-w-[90vw] object-contain"
         onClick={(e) => e.stopPropagation()}
       />
 
       <button
         onClick={(e) => { e.stopPropagation(); onNext(); }}
-        className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
         aria-label="Next image"
       >
-        <ChevronRight size={24} />
+        <ChevronRight size={20} className="sm:size-[24px]" />
       </button>
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-black/50 text-white text-sm">
+      <div className="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-black/50 text-white text-xs sm:text-sm">
         {currentIndex + 1} / {images.length}
       </div>
     </motion.div>
   );
 };
 
-// Main Component
 export default function CarDetails() {
   const { idOrSlug = '' } = useParams();
   const [imgIndex, setImgIndex] = useState(0);
@@ -255,13 +250,13 @@ export default function CarDetails() {
 
   if (error || !car) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F8F8F8] dark:bg-black">
-        <div className="text-center max-w-md p-8 bg-white dark:bg-surface-dark rounded-2xl shadow-card">
-          <AlertCircle size={48} className="mx-auto text-red-500 mb-4" />
-          <h2 className="text-xl font-bold text-ink dark:text-white mb-2">Car Not Found</h2>
-          <p className="text-body dark:text-white/60 mb-6">The vehicle you're looking for doesn't exist or has been removed.</p>
-          <Link to="/" className="inline-flex items-center gap-2 bg-[#F4B400] text-black px-6 py-3 rounded-full font-semibold hover:bg-[#f7c233] transition-colors">
-            Browse Cars <ArrowRight size={16} />
+      <div className="min-h-screen flex items-center justify-center bg-[#F8F8F8] dark:bg-black px-4">
+        <div className="text-center max-w-md p-6 sm:p-8 bg-white dark:bg-surface-dark rounded-2xl shadow-card">
+          <AlertCircle size={40} className="mx-auto text-red-500 mb-3 sm:mb-4 sm:size-[48px]" />
+          <h2 className="text-lg sm:text-xl font-bold text-ink dark:text-white mb-2">Car Not Found</h2>
+          <p className="text-sm sm:text-base text-body dark:text-white/60 mb-4 sm:mb-6">The vehicle you're looking for doesn't exist or has been removed.</p>
+          <Link to="/" className="inline-flex items-center gap-2 bg-[#F4B400] text-black px-5 sm:px-6 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-[#f7c233] transition-colors text-sm sm:text-base">
+            Browse Cars <ArrowRight size={14} className="sm:size-[16px]" />
           </Link>
         </div>
       </div>
@@ -323,7 +318,7 @@ export default function CarDetails() {
   const instagram = car.instagramUrl || settings?.instagramUrl;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8F8F8] dark:bg-black">
+    <div className="mobile-page min-h-screen flex flex-col bg-[#F8F8F8] dark:bg-black">
       <Seo
         title={seoTitle}
         description={seoDescription}
@@ -333,18 +328,18 @@ export default function CarDetails() {
       />
       <Header settings={settings} showSearchBar={false} />
 
-      <div className="container mx-auto px-4 py-4 sm:px-6 sm:py-6">
+      <div className="container mx-auto px-4 py-3 sm:px-6 sm:py-6">
         <Breadcrumbs items={breadcrumbItems} />
       </div>
 
-      <main className="container mx-auto px-4 pb-10 sm:px-6 sm:pb-14 flex-1">
-        <div className="grid grid-cols-1 gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(360px,0.75fr)]">
+      <main className="container mx-auto px-4 pb-6 sm:pb-10 sm:px-6 sm:pb-14 flex-1">
+        <div className="grid grid-cols-1 gap-6 sm:gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(360px,0.75fr)]">
           {/* Left Column */}
           <div className="min-w-0">
             {/* Main Image */}
             <div 
               ref={galleryRef}
-              className="relative overflow-hidden rounded-[28px] bg-black shadow-[0_18px_60px_rgba(0,0,0,.18)]"
+              className="relative overflow-hidden rounded-2xl sm:rounded-[28px] bg-black shadow-[0_18px_60px_rgba(0,0,0,.18)]"
             >
               <AnimatePresence mode="wait">
                 <motion.div
@@ -356,7 +351,7 @@ export default function CarDetails() {
                   className="relative aspect-[4/3] sm:aspect-[16/10]"
                 >
                   <img
-                    src={optimizeImage(images[imgIndex]?.url, 1200)}
+                    src={optimizeImage(images[imgIndex]?.url, 800)}
                     alt={`${carName} - Image ${imgIndex + 1}`}
                     loading="eager"
                     decoding="async"
@@ -367,32 +362,32 @@ export default function CarDetails() {
                   
                   <button
                     onClick={() => setIsLightboxOpen(true)}
-                    className="absolute bottom-4 right-4 z-10 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+                    className="absolute bottom-3 sm:bottom-4 right-3 sm:right-4 z-10 p-1.5 sm:p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
                     aria-label="Zoom image"
                   >
-                    <Maximize2 size={16} />
+                    <Maximize2 size={14} className="sm:size-[16px]" />
                   </button>
                 </motion.div>
               </AnimatePresence>
 
               {/* Badges */}
-              <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+              <div className="absolute left-3 sm:left-4 top-3 sm:top-4 flex flex-wrap gap-1.5 sm:gap-2">
                 {car.isFeatured && (
-                  <span className="rounded-full bg-white/92 backdrop-blur-sm px-3 py-1 text-[11px] font-semibold text-ink shadow-sm">
+                  <span className="rounded-full bg-white/92 backdrop-blur-sm px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-[11px] font-semibold text-ink shadow-sm">
                     ⭐ Featured
                   </span>
                 )}
                 {isNew && (
-                  <span className="rounded-full bg-blue-50/92 backdrop-blur-sm px-3 py-1 text-[11px] font-semibold text-blue-700 shadow-sm border border-blue-200/50">
+                  <span className="rounded-full bg-blue-50/92 backdrop-blur-sm px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-[11px] font-semibold text-blue-700 shadow-sm border border-blue-200/50">
                     New Arrival
                   </span>
                 )}
                 {hasPriceDrop && (
-                  <span className="rounded-full bg-[#F4B400]/92 backdrop-blur-sm px-3 py-1 text-[11px] font-semibold text-black shadow-sm">
+                  <span className="rounded-full bg-[#F4B400]/92 backdrop-blur-sm px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-[11px] font-semibold text-black shadow-sm">
                     🔥 Price Dropped
                   </span>
                 )}
-                <span className={`rounded-full border px-3 py-1 text-[11px] font-semibold backdrop-blur-sm shadow-sm ${statusColor}`}>
+                <span className={`rounded-full border px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-[11px] font-semibold backdrop-blur-sm shadow-sm ${statusColor}`}>
                   {car.status}
                 </span>
               </div>
@@ -402,30 +397,30 @@ export default function CarDetails() {
                 <>
                   <button
                     onClick={prevImage}
-                    className="absolute left-4 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-white/85 text-ink shadow-card transition-all hover:scale-105 hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50"
+                    className="absolute left-2 sm:left-4 top-1/2 z-10 flex h-9 w-9 sm:h-11 sm:w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-white/85 text-ink shadow-card transition-all hover:scale-105 hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50"
                     aria-label="Previous image"
                   >
-                    <ChevronLeft size={20} />
+                    <ChevronLeft size={16} className="sm:size-[20px]" />
                   </button>
                   <button
                     onClick={nextImage}
-                    className="absolute right-4 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-white/85 text-ink shadow-card transition-all hover:scale-105 hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50"
+                    className="absolute right-2 sm:right-4 top-1/2 z-10 flex h-9 w-9 sm:h-11 sm:w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-white/85 text-ink shadow-card transition-all hover:scale-105 hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50"
                     aria-label="Next image"
                   >
-                    <ChevronRight size={20} />
+                    <ChevronRight size={16} className="sm:size-[20px]" />
                   </button>
                 </>
               )}
 
               {/* Image Counter */}
-              <div className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/10 bg-black/50 px-4 py-2 text-white backdrop-blur-md">
-                <span className="text-xs font-semibold">{imgIndex + 1} / {images.length}</span>
+              <div className="absolute bottom-3 sm:bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/10 bg-black/50 px-3 sm:px-4 py-1 sm:py-2 text-white backdrop-blur-md">
+                <span className="text-[10px] sm:text-xs font-semibold">{imgIndex + 1} / {images.length}</span>
               </div>
             </div>
 
             {/* Thumbnails */}
             {images.length > 1 && (
-              <div className="mt-3 flex gap-3 overflow-x-auto pb-1 scrollbar-hide">
+              <div className="mt-3 flex gap-2 sm:gap-3 overflow-x-auto pb-1 scrollbar-hide">
                 {images.map((img, i) => (
                   <button
                     key={i}
@@ -435,7 +430,7 @@ export default function CarDetails() {
                       setImgIndex(i);
                       setTimeout(() => setIsTransitioning(false), 300);
                     }}
-                    className={`relative h-20 w-28 shrink-0 overflow-hidden rounded-2xl border-2 transition-all duration-200 ${
+                    className={`relative h-14 w-20 sm:h-20 sm:w-28 shrink-0 overflow-hidden rounded-xl sm:rounded-2xl border-2 transition-all duration-200 ${
                       i === imgIndex 
                         ? 'border-[#F4B400] shadow-card' 
                         : 'border-line hover:border-[#F4B400]/60'
@@ -444,7 +439,7 @@ export default function CarDetails() {
                     aria-current={i === imgIndex ? 'true' : 'false'}
                   >
                     <img
-                      src={optimizeImage(img.url, 240)}
+                      src={optimizeImage(img.url, 200)}
                       alt={`${carName} thumbnail ${i + 1}`}
                       className="h-full w-full object-cover"
                       loading="lazy"
@@ -469,91 +464,91 @@ export default function CarDetails() {
             </AnimatePresence>
 
             {/* Car Details Card */}
-            <div className="mt-6 rounded-[28px] border border-line bg-white p-5 shadow-card sm:p-6 dark:bg-white/5 dark:border-white/10">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="mt-4 sm:mt-6 rounded-2xl sm:rounded-[28px] border border-line bg-white p-4 sm:p-5 shadow-card sm:p-6 dark:bg-white/5 dark:border-white/10">
+              <div className="flex flex-col gap-3 sm:gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#F4B400]">
+                  <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.22em] text-[#F4B400]">
                     Available Vehicle
                   </p>
-                  <h1 className="mt-2 text-2xl font-extrabold leading-tight text-ink sm:text-4xl dark:text-white">
+                  <h1 className="mt-1.5 sm:mt-2 text-xl sm:text-2xl font-extrabold leading-tight text-ink sm:text-4xl dark:text-white">
                     {carName}
                   </h1>
-                  <p className="mt-3 text-sm leading-7 text-body sm:text-base dark:text-white/70">
+                  <p className="mt-2 sm:mt-3 text-sm leading-6 sm:leading-7 text-body sm:text-base dark:text-white/70">
                     {car.description || 'A premium verified used car with a clean presentation, trusted paperwork, and dealer support for a confident purchase.'}
                   </p>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-wrap items-center gap-2" role="toolbar" aria-label="Car actions">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2" role="toolbar" aria-label="Car actions">
                   <button
                     onClick={handleToggleFavorite}
                     aria-label={fav ? 'Remove from favourites' : 'Add to favourites'}
                     aria-pressed={fav}
-                    className={`flex h-11 w-11 items-center justify-center rounded-full border shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 ${
+                    className={`flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-full border shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 ${
                       fav 
                         ? 'border-red-300 bg-red-50 text-red-500 dark:border-red-800/30 dark:bg-red-900/20' 
                         : 'border-line bg-white text-ink hover:border-[#F4B400] dark:border-white/10 dark:bg-white/5 dark:text-white'
                     }`}
                   >
-                    <Heart size={17} className={fav ? 'fill-red-500 text-red-500' : ''} />
+                    <Heart size={15} className={fav ? 'fill-red-500 text-red-500' : ''} />
                   </button>
                   
                   <button
                     onClick={handleToggleCompare}
                     aria-label={comparing ? 'Remove from compare' : 'Add to compare'}
                     aria-pressed={comparing}
-                    className={`flex h-11 w-11 items-center justify-center rounded-full border shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 ${
+                    className={`flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-full border shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 ${
                       comparing 
                         ? 'border-[#F4B400] bg-[#F4B400] text-black' 
                         : 'border-line bg-white text-ink hover:border-[#F4B400] dark:border-white/10 dark:bg-white/5 dark:text-white'
                     }`}
                   >
-                    <GitCompare size={17} />
+                    <GitCompare size={15} />
                   </button>
                   
                   <button
                     onClick={handleShare}
                     aria-label="Share this car"
-                    className="flex h-11 w-11 items-center justify-center rounded-full border border-line bg-white text-ink shadow-sm transition-all hover:border-[#F4B400] focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 dark:border-white/10 dark:bg-white/5 dark:text-white"
+                    className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-full border border-line bg-white text-ink shadow-sm transition-all hover:border-[#F4B400] focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 dark:border-white/10 dark:bg-white/5 dark:text-white"
                   >
-                    <Share2 size={16} />
+                    <Share2 size={14} />
                   </button>
                 </div>
               </div>
 
               {/* Price Section */}
-              <div className="mt-5 flex flex-wrap items-end gap-3">
+              <div className="mt-4 sm:mt-5 flex flex-wrap items-end gap-2 sm:gap-3">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-body dark:text-white/50">Price</p>
-                  <div className="mt-1 flex items-center gap-3">
-                    <p className="text-3xl font-extrabold text-[#F4B400]">{formatPrice(car.price)}</p>
+                  <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-body dark:text-white/50">Price</p>
+                  <div className="mt-1 flex items-center gap-2 sm:gap-3">
+                    <p className="text-2xl sm:text-3xl font-extrabold text-[#F4B400]">{formatPrice(car.price)}</p>
                     {hasPriceDrop && (
-                      <p className="text-sm text-body line-through dark:text-white/40">
+                      <p className="text-xs sm:text-sm text-body line-through dark:text-white/40">
                         {formatPrice(car.previousPrice!)}
                       </p>
                     )}
                   </div>
                 </div>
-                <span className="rounded-full bg-surface px-3 py-1.5 text-xs font-semibold text-body dark:bg-white/5 dark:text-white/60">
+                <span className="rounded-full bg-surface px-2.5 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-semibold text-body dark:bg-white/5 dark:text-white/60">
                   Loan support available
                 </span>
-                <span className="rounded-full bg-surface px-3 py-1.5 text-xs font-semibold text-body dark:bg-white/5 dark:text-white/60">
+                <span className="rounded-full bg-surface px-2.5 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-semibold text-body dark:bg-white/5 dark:text-white/60">
                   RC transfer assistance
                 </span>
               </div>
             </div>
 
             {/* Specs Grid */}
-            <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3">
+            <div className="mt-4 sm:mt-6 grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3">
               {specs.map((s) => (
-                <div key={s.label} className="rounded-[22px] border border-line bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/5">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#F4B400]/15 text-[#F4B400]">
-                      <s.icon size={17} />
+                <div key={s.label} className="rounded-2xl sm:rounded-[22px] border border-line bg-white p-3 sm:p-4 shadow-sm dark:border-white/10 dark:bg-white/5">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full bg-[#F4B400]/15 text-[#F4B400]">
+                      <s.icon size={15} className="sm:size-[17px]" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[11px] uppercase tracking-[0.18em] text-body dark:text-white/50">{s.label}</p>
-                      <p className="truncate text-sm font-semibold text-ink dark:text-white">{s.value}</p>
+                      <p className="text-[10px] uppercase tracking-[0.18em] text-body dark:text-white/50">{s.label}</p>
+                      <p className="truncate text-xs sm:text-sm font-semibold text-ink dark:text-white">{s.value}</p>
                     </div>
                   </div>
                 </div>
@@ -561,29 +556,29 @@ export default function CarDetails() {
             </div>
 
             {/* Status Badges */}
-            <div className="mt-6 flex flex-wrap gap-2">
+            <div className="mt-4 sm:mt-6 flex flex-wrap gap-1.5 sm:gap-2">
               {car.insuranceActive && (
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
-                  <ShieldCheck size={12} /> Insurance Active
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-medium text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
+                  <ShieldCheck size={11} className="sm:size-[12px]" /> Insurance Active
                 </span>
               )}
               {car.fcValid && (
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
-                  <CheckCircle2 size={12} /> FC Valid
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-medium text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
+                  <CheckCircle2 size={11} className="sm:size-[12px]" /> FC Valid
                 </span>
               )}
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-surface px-3 py-1.5 text-xs font-medium text-body dark:bg-white/5 dark:text-white/60">
+              <span className="inline-flex items-center gap-1 rounded-full bg-surface px-2.5 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-medium text-body dark:bg-white/5 dark:text-white/60">
                 RC {car.rcStatus || 'Clear'}
               </span>
             </div>
 
             {/* Features */}
             {car.features?.length > 0 && (
-              <div className="mt-6 rounded-[28px] border border-line bg-white p-5 shadow-card dark:border-white/10 dark:bg-white/5">
-                <h3 className="text-lg font-bold text-ink dark:text-white">Features</h3>
-                <div className="mt-4 flex flex-wrap gap-2">
+              <div className="mt-4 sm:mt-6 rounded-2xl sm:rounded-[28px] border border-line bg-white p-4 sm:p-5 shadow-card dark:border-white/10 dark:bg-white/5">
+                <h3 className="text-base sm:text-lg font-bold text-ink dark:text-white">Features</h3>
+                <div className="mt-3 sm:mt-4 flex flex-wrap gap-1.5 sm:gap-2">
                   {car.features.map((f) => (
-                    <span key={f} className="rounded-full border border-line bg-surface px-3 py-1.5 text-sm font-medium text-ink dark:border-white/10 dark:bg-white/5 dark:text-white">
+                    <span key={f} className="rounded-full border border-line bg-surface px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-ink dark:border-white/10 dark:bg-white/5 dark:text-white">
                       {f}
                     </span>
                   ))}
@@ -593,41 +588,41 @@ export default function CarDetails() {
 
             {/* Description */}
             {car.description && (
-              <div className="mt-6 rounded-[28px] border border-line bg-white p-5 shadow-card dark:border-white/10 dark:bg-white/5">
-                <h3 className="text-lg font-bold text-ink dark:text-white">Description</h3>
-                <p className="mt-3 text-sm leading-7 text-body dark:text-white/70">{car.description}</p>
+              <div className="mt-4 sm:mt-6 rounded-2xl sm:rounded-[28px] border border-line bg-white p-4 sm:p-5 shadow-card dark:border-white/10 dark:bg-white/5">
+                <h3 className="text-base sm:text-lg font-bold text-ink dark:text-white">Description</h3>
+                <p className="mt-2 sm:mt-3 text-sm leading-6 sm:leading-7 text-body dark:text-white/70">{car.description}</p>
               </div>
             )}
           </div>
 
           {/* Right Column - Sidebar */}
-          <aside className="space-y-4 xl:sticky xl:top-28 xl:self-start">
+          <aside className="space-y-4 sm:space-y-4 xl:sticky xl:top-28 xl:self-start">
             {/* Contact Card */}
-            <div className="rounded-[28px] border border-line bg-[#0F0F10] p-5 text-white shadow-[0_18px_60px_rgba(0,0,0,.18)] dark:bg-black dark:border-white/10">
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#F4B400]">Contact Dealer</p>
-              <p className="mt-3 text-sm leading-7 text-white/75">
+            <div className="rounded-2xl sm:rounded-[28px] border border-line bg-[#0F0F10] p-4 sm:p-5 text-white shadow-[0_18px_60px_rgba(0,0,0,.18)] dark:bg-black dark:border-white/10">
+              <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.22em] text-[#F4B400]">Contact Dealer</p>
+              <p className="mt-2 sm:mt-3 text-sm leading-6 sm:leading-7 text-white/75">
                 Reach out directly for a viewing, finance support, or more photos of this car.
               </p>
 
-              <div className="mt-5 space-y-3">
+              <div className="mt-4 sm:mt-5 space-y-2.5 sm:space-y-3">
                 {whatsapp && (
                   <a
                     href={`https://wa.me/${whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`Hi, I'm interested in the ${car.brand} ${car.model}`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex w-full items-center justify-center gap-2 rounded-full bg-[#F4B400] px-5 py-3.5 text-sm font-semibold text-black transition-all hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 focus:ring-offset-2 focus:ring-offset-black"
+                    className="flex w-full items-center justify-center gap-2 rounded-full bg-[#F4B400] px-4 sm:px-5 py-3 sm:py-3.5 text-sm font-semibold text-black transition-all hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 focus:ring-offset-2 focus:ring-offset-black"
                     aria-label={`Chat on WhatsApp about ${carName}`}
                   >
-                    <MessageCircle size={16} aria-hidden="true" /> Chat on WhatsApp
+                    <MessageCircle size={15} aria-hidden="true" /> Chat on WhatsApp
                   </a>
                 )}
                 {phone && (
                   <a
                     href={`tel:${phone}`}
-                    className="flex w-full items-center justify-center gap-2 rounded-full border border-white/15 px-5 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-black"
+                    className="flex w-full items-center justify-center gap-2 rounded-full border border-white/15 px-4 sm:px-5 py-3 sm:py-3.5 text-sm font-semibold text-white transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-black"
                     aria-label={`Call about ${carName}`}
                   >
-                    <Phone size={16} aria-hidden="true" /> Call Now
+                    <Phone size={15} aria-hidden="true" /> Call Now
                   </a>
                 )}
                 {instagram && (
@@ -635,10 +630,10 @@ export default function CarDetails() {
                     href={instagram}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex w-full items-center justify-center gap-2 rounded-full border border-white/15 px-5 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-black"
+                    className="flex w-full items-center justify-center gap-2 rounded-full border border-white/15 px-4 sm:px-5 py-3 sm:py-3.5 text-sm font-semibold text-white transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-black"
                     aria-label={`View ${carName} on Instagram`}
                   >
-                    <Instagram size={16} aria-hidden="true" /> View on Instagram
+                    <Instagram size={15} aria-hidden="true" /> View on Instagram
                   </a>
                 )}
               </div>
@@ -646,7 +641,7 @@ export default function CarDetails() {
 
             {/* EMI Calculator */}
             <Suspense fallback={
-              <div className="rounded-[28px] border border-line bg-white h-[340px] animate-pulse shadow-card dark:border-white/10 dark:bg-white/5" />
+              <div className="rounded-2xl sm:rounded-[28px] border border-line bg-white h-[280px] sm:h-[340px] animate-pulse shadow-card dark:border-white/10 dark:bg-white/5" />
             }>
               <EMICalculator carPrice={car.price} />
             </Suspense>
@@ -655,12 +650,12 @@ export default function CarDetails() {
             <EnquiryForm carId={car._id} />
 
             {/* Back Link */}
-            <div className="rounded-[22px] border border-line bg-white p-4 text-center shadow-sm dark:border-white/10 dark:bg-white/5">
+            <div className="rounded-2xl sm:rounded-[22px] border border-line bg-white p-3 sm:p-4 text-center shadow-sm dark:border-white/10 dark:bg-white/5">
               <Link 
                 to="/" 
-                className="inline-flex items-center gap-2 text-sm font-semibold text-body transition-colors hover:text-[#F4B400] focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 rounded-full px-3 py-1"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-body transition-colors hover:text-[#F4B400] focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 rounded-full px-2 sm:px-3 py-1"
               >
-                <ArrowRight size={15} className="rotate-180" aria-hidden="true" />
+                <ArrowRight size={14} className="rotate-180" aria-hidden="true" />
                 Back to all cars
               </Link>
             </div>
