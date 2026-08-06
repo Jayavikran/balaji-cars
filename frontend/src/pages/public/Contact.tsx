@@ -166,23 +166,28 @@ export default function Contact() {
       <Seo title={seoTitle} description={seoDescription} />
       <Header settings={settings} showSearchBar={false} />
 
-      <header className="relative overflow-hidden bg-black text-white" role="banner">
+      {/* ===== HERO SECTION WITH BACKGROUND IMAGE ===== */}
+      <header className="relative overflow-hidden bg-black text-white min-h-[50vh] sm:min-h-[60vh] lg:min-h-[70vh] flex items-center" role="banner">
+        {/* Background Image */}
         <div className="absolute inset-0">
           <picture>
-            <source srcSet="/images/banner2.webp" type="image/webp" />
+            <source srcSet="/images/banner4.png" type="image/jpeg" />
             <img 
-              src="/images/banner2.jpeg" 
-              alt={`Contact ${siteName}`} 
-              className="h-full w-full object-cover opacity-40" 
+              src="/images/banner4.png" 
+              alt={`Contact ${siteName} - Premium car dealership`} 
+              className="h-full w-full object-cover object-center" 
               loading="eager" 
               decoding="async" 
             />
           </picture>
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+          {/* Dark Overlay for better text readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/40" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+          {/* Decorative gold gradient accent */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#F4B400]/10 via-transparent to-transparent" />
         </div>
 
-        <div className="container relative z-10 mx-auto px-4 py-12 sm:py-20 lg:py-36">
+        <div className="container relative z-10 mx-auto px-4 py-12 sm:py-16 lg:py-20">
           <motion.div
             initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
@@ -193,7 +198,7 @@ export default function Contact() {
               initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="mb-4 sm:mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 sm:px-5 py-1.5 sm:py-2.5 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.26em] text-[#F4B400] backdrop-blur-sm"
+              className="mb-4 sm:mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 backdrop-blur-md px-3 sm:px-5 py-1.5 sm:py-2.5 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.26em] text-[#F4B400]"
             >
               <MessageCircle size={12} className="text-[#F4B400] sm:size-[14px]" />
               Get in Touch
@@ -203,9 +208,12 @@ export default function Contact() {
               initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
-              className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight"
+              className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1]"
             >
-              Let Us Help You Find the Right Car
+              Let Us Help You Find
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#F4B400] to-[#F59E0B]">
+                the Right Car
+              </span>
             </motion.h1>
 
             <motion.p
@@ -226,7 +234,7 @@ export default function Contact() {
             >
               <a
                 href="#contact-form"
-                className="group inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-[#F4B400] px-6 sm:px-8 py-3 sm:py-4 text-sm font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#F4B400]/25 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 focus:ring-offset-2 focus:ring-offset-black"
+                className="group inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#F4B400] to-[#F59E0B] px-6 sm:px-8 py-3 sm:py-4 text-sm font-semibold text-black shadow-[0_16px_40px_rgba(244,180,0,.25)] transition-all duration-300 hover:scale-105 hover:shadow-[0_24px_60px_rgba(244,180,0,.35)] active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 focus:ring-offset-2 focus:ring-offset-black"
               >
                 Send Enquiry
                 <Send size={16} className="transition-transform group-hover:translate-x-1 sm:size-[18px]" />
@@ -236,7 +244,7 @@ export default function Contact() {
                   href={whatsappUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full border border-white/20 px-6 sm:px-8 py-3 sm:py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-white/10 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-black"
+                  className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 backdrop-blur-sm px-6 sm:px-8 py-3 sm:py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-white/20 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-black"
                 >
                   <MessageCircle size={16} className="sm:size-[18px]" />
                   WhatsApp
@@ -246,6 +254,7 @@ export default function Contact() {
           </motion.div>
         </div>
 
+        {/* Animated scroll indicator */}
         <motion.div
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}

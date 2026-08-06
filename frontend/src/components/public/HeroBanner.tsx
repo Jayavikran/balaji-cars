@@ -351,7 +351,7 @@ const HeroImageSlider = memo(() => {
 HeroImageSlider.displayName = 'HeroImageSlider';
 
 // ============================================
-// MAIN HERO BANNER
+// MAIN HERO BANNER - FIXED
 // ============================================
 const HeroBanner = memo(function HeroBanner() {
   const prefersReducedMotion = useReducedMotion();
@@ -368,18 +368,18 @@ const HeroBanner = memo(function HeroBanner() {
     <section 
       className="relative w-full overflow-hidden bg-black text-white"
       style={{ 
-        minHeight: '55vh',
-        height: 'auto',
-        maxHeight: '100vh'
+        minHeight: '100vh',
+        maxHeight: '100vh',
+        height: '100vh'
       }}
       aria-label="Hero banner showcasing premium used cars"
     >
       <div className="absolute inset-0">
         <HeroImage
           src="/images/banner1.jpeg"
-          srcWebp="/images/banner1.jpeg"
+          srcWebp="/images/banner1.webp"
           alt="Balaji Cars dealership showroom with premium vehicles on display"
-          className="h-full w-full object-cover object-center opacity-75"
+          className="h-full w-full object-cover object-center"
           fallback="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=1200&auto=format&fit=crop"
           priority={true}
         />
