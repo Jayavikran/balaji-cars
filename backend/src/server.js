@@ -147,7 +147,7 @@ app.use('/api/admin/settings', settingsRoutes);
 // ✅ STATIC FILES & FRONTEND - AFTER API ROUTES
 // ============================================
 
-// ✅ CORRECT PATH - Go up one level from backend to find frontend
+// ✅ FIXED: Correct path - Go up one level from backend to find frontend
 const frontendPath = path.join(__dirname, '..', 'frontend', 'dist');
 console.log(`📁 Frontend path: ${frontendPath}`);
 
