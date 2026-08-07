@@ -36,7 +36,8 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 
 // ✅ UPDATED: Format full amount without "L" abbreviation
 function formatFullAmount(amount: number) {
-  if (!amount) return '₹0';
+  if (!amount && amount !== 0) return '₹0';
+  if (amount === 0) return '₹0';
   return `₹${amount.toLocaleString('en-IN')}`;
 }
 
@@ -136,7 +137,7 @@ const RevenueCard = ({ label, value, sub, icon: Icon, color }: any) => (
         </div>
         {/* ✅ Updated to show full amount without "L" */}
         <p className="mt-2 text-xl font-display font-bold text-ink">
-          {value ? formatFullAmount(value) : '—'}
+          {formatFullAmount(value)}
         </p>
         <p className="text-xs text-body/50 mt-1">{sub}</p>
       </div>
@@ -154,13 +155,17 @@ export default function AdminDashboard() {
   const { data, isLoading } = useQuery({ 
     queryKey: ['dashboard-stats'], 
     queryFn: fetchDashboardStats,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 0, // ✅ FIXED: Forces fresh data fetch every time
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
   
   const { data: enquiriesData } = useQuery({ 
     queryKey: ['recent-enquiries'], 
     queryFn: () => fetchAdminEnquiries(1, 5),
-    staleTime: 2 * 60 * 1000,
+    staleTime: 0, // ✅ FIXED: Forces fresh data fetch every time
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
   const maxSales = Math.max(1, ...(data?.salesStats.map((s: any) => s.count) ?? [1]));
@@ -190,7 +195,6 @@ export default function AdminDashboard() {
     { 
       label: 'Total Profit', 
       value: data?.revenue.lifetime.profit, 
-      // ✅ Updated to show full amount without "L"
       sub: `Avg ${data ? formatFullAmount(data.revenue.averageProfit) : '—'}/vehicle`,
       icon: Medal,
       color: 'text-rose-500'
