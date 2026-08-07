@@ -3,14 +3,20 @@ const crypto = require('crypto');
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
 
-// FIX: Changed 'lax' to 'none' to allow cookie sharing between frontend/backend subdomains
-const cookieOptions = (rememberMe) => ({
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production', // Must be true if sameSite is 'none'
-  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'none' for production HTTPS
-  maxAge: (rememberMe ? 30 : 7) * 24 * 60 * 60 * 1000,
-  path: '/', // Ensure cookie is available site-wide
-});
+// ULTIMATE FIX: Includes domain for subdomains, and 'none' for production
+const cookieOptions = (rememberMe) => {
+  const isProduction = process.env.NODE_ENV === 'production';
+  
+  return {
+    httpOnly: true,
+    secure: isProduction, // Must be true for sameSite: 'none'
+    sameSite: isProduction ? 'none' : 'lax',
+    maxAge: (rememberMe ? 30 : 7) * 24 * 60 * 60 * 1000,
+    path: '/',
+    // CRITICAL: This allows the cookie to work across frontend & backend subdomains on Render
+    domain: isProduction ? '.onrender.com' : undefined 
+  };
+};
 
 // POST /api/admin/auth/login - SIMPLIFIED
 const loginAdmin = asyncHandler(async (req, res) => {
@@ -63,11 +69,11 @@ const loginAdmin = asyncHandler(async (req, res) => {
   await user.save();
 
   const token = generateToken(user._id, Boolean(rememberMe));
+  const options = cookieOptions(Boolean(rememberMe));
   
-  // LOGGING: This will help confirm the cookie is being set with correct 'None' attribute
-  console.log(`🍪 Setting cookie: secure=${cookieOptions(Boolean(rememberMe)).secure}, sameSite=${cookieOptions(Boolean(rememberMe)).sameSite}`);
+  console.log(`🍪 Setting cookie: secure=${options.secure}, sameSite=${options.sameSite}, domain=${options.domain || 'default'}`);
   
-  res.cookie('adminToken', token, cookieOptions(Boolean(rememberMe)));
+  res.cookie('adminToken', token, options);
 
   res.json({
     success: true,
@@ -78,12 +84,15 @@ const loginAdmin = asyncHandler(async (req, res) => {
 
 // POST /api/admin/auth/logout
 const logoutAdmin = asyncHandler(async (req, res) => {
-  res.clearCookie('adminToken', {
+  const options = {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     path: '/',
-  });
+    domain: process.env.NODE_ENV === 'production' ? '.onrender.com' : undefined
+  };
+  
+  res.clearCookie('adminToken', options);
   res.json({ success: true, message: 'Logged out.' });
 });
 
