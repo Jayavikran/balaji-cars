@@ -115,8 +115,9 @@ export async function bulkFeatureCars(ids: string[], isFeatured: boolean) {
   await api.post('/admin/cars/bulk-feature', { ids, isFeatured });
 }
 
+// ✅ FIXED: Added cacheBuster to force fresh data every time
 export async function fetchDashboardStats() {
-  const { data } = await api.get('/admin/dashboard/stats');
+  const { data } = await api.get(`/admin/dashboard/stats?cacheBuster=${Date.now()}`);
   return data as {
     stats: { totalCars: number; availableCars: number; soldCars: number; reservedCars: number; featuredCars: number };
     recentUploads: Car[];
@@ -140,7 +141,8 @@ export interface AnalyticsData {
   revenueByExecutive: { salesExecutive: string; revenue: number; unitsSold: number }[];
 }
 
+// ✅ FIXED: Added cacheBuster to force fresh data every time
 export async function fetchAnalytics() {
-  const { data } = await api.get<AnalyticsData>('/admin/analytics');
+  const { data } = await api.get<AnalyticsData>(`/admin/analytics?cacheBuster=${Date.now()}`);
   return data;
 }
