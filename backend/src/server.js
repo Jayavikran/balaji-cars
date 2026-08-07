@@ -144,10 +144,11 @@ app.use('/api/admin/enquiries', adminEnquiryRoutes);
 app.use('/api/admin/settings', settingsRoutes);
 
 // ============================================
+// ============================================
 // ✅ STATIC FILES & FRONTEND - AFTER API ROUTES
 // ============================================
 
-// ✅ FIXED: Correct path - Go up one level from backend to find frontend
+// ✅ CORRECT PATH - Go up two levels from backend/src
 const frontendPath = path.join(__dirname, '../../frontend/dist');
 console.log(`📁 Frontend path: ${frontendPath}`);
 
