@@ -399,17 +399,25 @@ const getDashboardStats = asyncHandler(async (req, res) => {
     Car.find({}).sort({ createdAt: -1 }).limit(5).lean(),
   ]);
 
-  // Monthly sales stats for the last 6 months (based on updatedAt when status flips to Sold).
+  // Monthly sales stats for the last 6 months (based on saleDate when status flips to Sold).
   const sixMonthsAgo = new Date();
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
+  // ✅ FIXED: Replaced `'$price'` with `'$sale.soldPrice'` to prevent counting unsold cars
   const salesStats = await Car.aggregate([
-    { $match: { status: 'Sold', updatedAt: { $gte: sixMonthsAgo } } },
+    { 
+      $match: { 
+        status: 'Sold', 
+        'sale.soldPrice': { $ne: null },
+        'sale.saleDate': { $gte: sixMonthsAgo } 
+      } 
+    },
     {
       $group: {
-        _id: { year: { $year: '$updatedAt' }, month: { $month: '$updatedAt' } },
+        _id: { year: { $year: '$sale.saleDate' }, month: { $month: '$sale.saleDate' } },
         count: { $sum: 1 },
-        revenue: { $sum: '$price' },
+        revenue: { $sum: '$sale.soldPrice' },
+        profit: { $sum: '$sale.profit' },
       },
     },
     { $sort: { '_id.year': 1, '_id.month': 1 } },
