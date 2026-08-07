@@ -5,6 +5,8 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
+const path = require('path');
+const mongoose = require('mongoose');
 
 const connectDB = require('./config/db');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
@@ -130,7 +132,7 @@ const authLimiter = rateLimit({
 app.use('/api/admin/auth', authLimiter);
 
 // ============================================
-// PUBLIC ROUTES
+// ✅ API ROUTES - MUST COME FIRST
 // ============================================
 
 // Health check
@@ -145,8 +147,8 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Root route
-app.get('/', (req, res) => {
+// Root API route
+app.get('/api', (req, res) => {
   res.json({
     success: true,
     message: 'Balaji Cars API is running',
@@ -185,10 +187,28 @@ app.use('/api/admin/enquiries', adminEnquiryRoutes);
 app.use('/api/admin/settings', settingsRoutes);
 
 // ============================================
+// ✅ STATIC FILES & FRONTEND - AFTER API ROUTES
+// ============================================
+
+// Check if frontend dist exists
+const frontendPath = path.join(__dirname, '../frontend/dist');
+console.log(`📁 Frontend path: ${frontendPath}`);
+
+// Serve static files from frontend dist
+app.use(express.static(frontendPath));
+
+// Catch-all for SPA frontend routes (AFTER API routes)
+app.get('*', (req, res) => {
+  // Check if the request is for an API route (should have been caught above)
+  // If we get here, it's a frontend route
+  res.sendFile(path.join(frontendPath, 'index.html'));
+});
+
+// ============================================
 // ERROR HANDLING
 // ============================================
 
-// 404 handler
+// 404 handler (for API routes that weren't found)
 app.use(notFound);
 
 // Global error handler
@@ -198,7 +218,6 @@ app.use(errorHandler);
 // START SERVER
 // ============================================
 
-const mongoose = require('mongoose');
 const PORT = process.env.PORT || 5000;
 
 // Handle unhandled rejections
@@ -225,5 +244,6 @@ app.listen(PORT, () => {
   console.log(`🚀 BALAJI CARS API listening on port ${PORT}`);
   console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🔗 API URL: http://localhost:${PORT}/api/health`);
+  console.log(`📁 Frontend path: ${frontendPath}`);
   console.log(`✅ Allowed CORS origins:`, uniqueOrigins);
 });
