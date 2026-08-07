@@ -176,6 +176,20 @@ app.use('/api/admin/enquiries', adminEnquiryRoutes);
 app.use('/api/admin/settings', settingsRoutes);
 
 // ============================================
+// 🔥 NUCLEAR CACHE KILLER FOR FRONTEND ASSETS
+// ============================================
+// This forces the browser to NEVER cache your JS/CSS files.
+app.use((req, res, next) => {
+  // Only apply to static frontend assets (JS, CSS, HTML)
+  if (req.url.endsWith('.js') || req.url.endsWith('.css') || req.url.endsWith('.html')) {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+  }
+  next();
+});
+
+// ============================================
 // FRONTEND (React Build)
 // ============================================
 
