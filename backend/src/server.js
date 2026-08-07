@@ -44,16 +44,12 @@ const allowedOrigins = [
   process.env.CLIENT_URL
 ].filter(Boolean);
 
-console.log('✅ Allowed CORS origins:', allowedOrigins);
-
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
-
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      console.log('❌ Blocked by CORS:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
@@ -68,6 +64,12 @@ app.use(cors({
 }));
 
 app.options('*', cors());
+
+// ============================================
+// TRUST PROXY (CRITICAL FOR RENDER + CLOUDFLARE)
+// ============================================
+// This tells Express to trust the first proxy (Render) so req.ip works properly
+app.set('trust proxy', 1); 
 
 // ============================================
 // SECURITY & MIDDLEWARE
@@ -96,18 +98,27 @@ app.use(
 );
 
 // ============================================
-// RATE LIMITER
+// RATE LIMITER (FIXED FOR PROXY ERRORS)
 // ============================================
 
+// Custom key generator to grab Cloudflare's real IP header to prevent warnings
+const cloudflareKeyGenerator = (req) => {
+  return req.headers['cf-connecting-ip'] || req.ip || req.connection.remoteAddress;
+};
+
+// General API Limiter
 app.use('/api', rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 500,
+  keyGenerator: cloudflareKeyGenerator,
   message: 'Too many requests. Please try again later.'
 }));
 
+// Strict Auth Limiter
 app.use('/api/admin/auth', rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
+  keyGenerator: cloudflareKeyGenerator,
   message: 'Too many login attempts. Please try again later.'
 }));
 
@@ -193,7 +204,6 @@ const PORT = process.env.PORT || 5000;
 
 process.on('unhandledRejection', (err) => {
   console.error('❌ Unhandled Rejection:', err);
-
   if (process.env.NODE_ENV === 'development') {
     process.exit(1);
   }
@@ -201,7 +211,6 @@ process.on('unhandledRejection', (err) => {
 
 process.on('uncaughtException', (err) => {
   console.error('❌ Uncaught Exception:', err);
-
   if (process.env.NODE_ENV === 'development') {
     process.exit(1);
   }

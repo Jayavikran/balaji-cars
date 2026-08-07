@@ -9,11 +9,19 @@ const User = require('../models/User');
 const protect = asyncHandler(async (req, res, next) => {
   let token;
 
-  if (req.cookies && req.cookies.adminToken) {
-    token = req.cookies.adminToken;
-  } else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+  // 1. Check for multiple possible cookie names for flexibility
+  if (req.cookies) {
+    // Prioritize 'adminToken', but also check for 'token' or 'jwt' commonly set by frontends
+    token = req.cookies.adminToken || req.cookies.token || req.cookies.jwt;
+  }
+
+  // 2. Fallback to Authorization header
+  if (!token && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
     token = req.headers.authorization.split(' ')[1];
   }
+
+  // DEBUG LOG: Uncomment the line below to see what the server receives in Render logs
+  // console.log(`[Auth Debug] Token found: ${token ? 'Yes' : 'No'}, Cookie keys: ${Object.keys(req.cookies || {})}`);
 
   if (!token) {
     res.status(401);
@@ -22,16 +30,22 @@ const protect = asyncHandler(async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
+    const user = await User.findById(decoded.id).select('-password'); // don't send password back
 
-    if (!user || !user.isActive) {
+    if (!user) {
       res.status(401);
-      throw new Error('Session invalid. Please log in again.');
+      throw new Error('User not found. Please log in again.');
+    }
+    
+    if (!user.isActive) {
+      res.status(401);
+      throw new Error('Account is deactivated. Please contact support.');
     }
 
     req.user = user;
     next();
   } catch (err) {
+    console.error(`[Auth Error] ${err.message}`);
     res.status(401);
     throw new Error('Session expired or invalid token. Please log in again.');
   }
