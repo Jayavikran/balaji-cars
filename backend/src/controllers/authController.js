@@ -3,11 +3,13 @@ const crypto = require('crypto');
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
 
+// FIX: Changed 'lax' to 'none' to allow cookie sharing between frontend/backend subdomains
 const cookieOptions = (rememberMe) => ({
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax',
+  secure: process.env.NODE_ENV === 'production', // Must be true if sameSite is 'none'
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'none' for production HTTPS
   maxAge: (rememberMe ? 30 : 7) * 24 * 60 * 60 * 1000,
+  path: '/', // Ensure cookie is available site-wide
 });
 
 // POST /api/admin/auth/login - SIMPLIFIED
@@ -61,6 +63,10 @@ const loginAdmin = asyncHandler(async (req, res) => {
   await user.save();
 
   const token = generateToken(user._id, Boolean(rememberMe));
+  
+  // LOGGING: This will help confirm the cookie is being set with correct 'None' attribute
+  console.log(`🍪 Setting cookie: secure=${cookieOptions(Boolean(rememberMe)).secure}, sameSite=${cookieOptions(Boolean(rememberMe)).sameSite}`);
+  
   res.cookie('adminToken', token, cookieOptions(Boolean(rememberMe)));
 
   res.json({
@@ -72,7 +78,12 @@ const loginAdmin = asyncHandler(async (req, res) => {
 
 // POST /api/admin/auth/logout
 const logoutAdmin = asyncHandler(async (req, res) => {
-  res.clearCookie('adminToken');
+  res.clearCookie('adminToken', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    path: '/',
+  });
   res.json({ success: true, message: 'Logged out.' });
 });
 
