@@ -539,10 +539,14 @@ export default memo(function About({
                   variants={itemVariants}
                   className={`relative flex flex-col gap-4 sm:flex-row ${
                     index % 2 === 0 ? 'sm:pr-12' : 'sm:pl-12 sm:flex-row-reverse'
-                  } mb-12 last:mb-0`}
+                  } mb-8 last:mb-0 sm:mb-12`}
                 >
-                  <div className={`flex-1 ${index % 2 === 0 ? 'sm:text-right' : 'sm:text-left'}`}>
-                    <div className={`inline-block rounded-2xl bg-[#F4B400]/10 px-4 py-1.5 text-sm font-bold text-[#F4B400] ${
+                  {/* Mobile: pl-14 pushes the year/title/description clear of the
+                      absolutely-positioned icon (which sits at left-4, ~36px wide
+                      including its circle) so nothing renders underneath it.
+                      sm:pl-0 restores the original desktop layout untouched. */}
+                  <div className={`flex-1 pl-14 sm:pl-0 ${index % 2 === 0 ? 'sm:text-right' : 'sm:text-left'}`}>
+                    <div className={`inline-block whitespace-nowrap rounded-2xl bg-[#F4B400]/10 px-4 py-1.5 text-sm font-bold text-[#F4B400] ${
                       index % 2 === 0 ? 'sm:float-right' : 'sm:float-left'
                     }`}>
                       {item.year}
@@ -553,7 +557,7 @@ export default memo(function About({
                     </div>
                   </div>
                   
-                  <div className="absolute left-4 -translate-x-1/2 sm:left-1/2">
+                  <div className="absolute left-4 top-0 -translate-x-1/2 sm:left-1/2 sm:top-auto">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F4B400] text-black shadow-lg shadow-[#F4B400]/25">
                       <item.icon size={18} />
                     </div>
