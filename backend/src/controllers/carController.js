@@ -408,7 +408,7 @@ const getDashboardStats = asyncHandler(async (req, res) => {
     { 
       $match: { 
         status: 'Sold', 
-        'sale.soldPrice': { $ne: null },
+        'sale.soldPrice': { $exists: true, $ne: null },
         'sale.saleDate': { $gte: sixMonthsAgo } 
       } 
     },
@@ -431,7 +431,12 @@ const getDashboardStats = asyncHandler(async (req, res) => {
   const startOfYear = new Date(now.getFullYear(), 0, 1);
 
   const [revenueBuckets] = await Car.aggregate([
-    { $match: { 'sale.soldPrice': { $ne: null } } },
+    // ✅ FIXED: aggregation must never trust sale.soldPrice alone — a car
+    // that was Sold and then moved back to Available/Reserved should have
+    // had its `sale` subdocument cleared already (see updateCarStatus),
+    // but this explicit status filter is a defense-in-depth guard so stale
+    // or inconsistent sale data can never leak into revenue/profit totals.
+    { $match: { status: 'Sold', 'sale.soldPrice': { $exists: true, $ne: null } } },
     {
       $facet: {
         lifetime: [
@@ -478,7 +483,8 @@ const getAnalytics = asyncHandler(async (req, res) => {
     // Revenue + profit + units sold, grouped by brand — only cars that
     // actually went through Complete Sale.
     Car.aggregate([
-      { $match: { 'sale.soldPrice': { $ne: null } } },
+      // ✅ FIXED: explicit status: 'Sold' guard — see revenueBuckets above.
+      { $match: { status: 'Sold', 'sale.soldPrice': { $exists: true, $ne: null } } },
       {
         $group: {
           _id: '$brand',
@@ -493,7 +499,7 @@ const getAnalytics = asyncHandler(async (req, res) => {
 
     // Best-selling brand+model combinations by units sold.
     Car.aggregate([
-      { $match: { 'sale.soldPrice': { $ne: null } } },
+      { $match: { status: 'Sold', 'sale.soldPrice': { $exists: true, $ne: null } } },
       {
         $group: {
           _id: { brand: '$brand', model: '$model' },
@@ -518,7 +524,13 @@ const getAnalytics = asyncHandler(async (req, res) => {
 
     // Revenue attributed to each named sales executive.
     Car.aggregate([
-      { $match: { 'sale.soldPrice': { $ne: null }, 'sale.salesExecutive': { $nin: [null, ''] } } },
+      {
+        $match: {
+          status: 'Sold',
+          'sale.soldPrice': { $exists: true, $ne: null },
+          'sale.salesExecutive': { $nin: [null, ''] },
+        },
+      },
       {
         $group: {
           _id: '$sale.salesExecutive',
