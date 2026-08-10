@@ -26,8 +26,8 @@ const cookieOptions = (req, rememberMe = false) => {
 
   return {
     httpOnly: true,
-    secure: isProduction, // Must be true for HTTPS in production
-    sameSite: 'lax', // Secure & persistent across same-site navigations and subdomains
+    secure: isProduction, // Must be true for HTTPS in production (required for SameSite=None)
+    sameSite: isProduction ? 'none' : 'lax', // Lax for local development, None for production cross-site domains
     maxAge: (rememberMe ? 30 : 7) * 24 * 60 * 60 * 1000,
     path: '/',
     domain: domain
