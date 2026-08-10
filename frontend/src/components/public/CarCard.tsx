@@ -28,13 +28,8 @@ function CarCard({ car, badge, priority = false }: CarCardProps) {
   const fav = isFavorite(car._id);
   const comparing = isComparing(car._id);
 
-  const defaultImage = {
-    url: 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=1200&auto=format&fit=crop'
-  };
-  const images = car.images?.length ? car.images : [defaultImage];
-
-  const rawUrl = images[0]?.url || '';
-  const cover = rawUrl ? optimizeImage(rawUrl, 900) : '/images/placeholder-car.jpg';
+  const rawUrl = car.images?.[0]?.url || '';
+  const cover = optimizeImage(rawUrl, 900);
 
   const handleToggleCompare = (e: MouseEvent) => {
     e.preventDefault();

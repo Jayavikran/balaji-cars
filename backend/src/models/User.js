@@ -40,27 +40,16 @@ userSchema.pre('save', async function(next) {
 // ✅ Compare password method - FIXED
 userSchema.methods.comparePassword = async function(candidatePassword) {
   try {
-    console.log('🔐 comparePassword called');
-    console.log(`   Candidate: ${candidatePassword}`);
-    console.log(`   Stored hash: ${this.password}`);
-    console.log(`   Hash length: ${this.password ? this.password.length : 0}`);
-    
     if (!this.password) {
-      console.log('❌ No password stored for this user');
       return false;
     }
-    
+
     if (!this.password.startsWith('$2a$') && !this.password.startsWith('$2b$')) {
-      console.log('❌ Invalid hash format - does not start with $2a$ or $2b$');
-      console.log(`   Hash starts with: ${this.password.substring(0, 4)}`);
       return false;
     }
-    
-    const result = await bcrypt.compare(candidatePassword, this.password);
-    console.log(`   Comparison result: ${result ? '✅ MATCH' : '❌ NO MATCH'}`);
-    return result;
+
+    return await bcrypt.compare(candidatePassword, this.password);
   } catch (error) {
-    console.log(`❌ Error in comparePassword: ${error.message}`);
     return false;
   }
 };

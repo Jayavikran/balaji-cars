@@ -39,12 +39,28 @@ export default function EnquiryForm({ carId }: { carId: string }) {
       />
       {errors.customerName && <p className="text-xs text-red-500">Name is required.</p>}
       <input
-        {...register('phone', { required: true })}
-        placeholder="Phone number"
+        {...register('phone', {
+          required: 'Phone number is required',
+          pattern: {
+            value: /^[0-9]{10}$/,
+            message: 'Please enter a valid 10-digit phone number',
+          },
+        })}
+        placeholder="Phone number (10 digits)"
         className="input"
       />
-      {errors.phone && <p className="text-xs text-red-500">Phone number is required.</p>}
-      <input {...register('email')} placeholder="Email (optional)" className="input" />
+      {errors.phone && <p className="text-xs text-red-500">{errors.phone.message}</p>}
+      <input
+        {...register('email', {
+          pattern: {
+            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+            message: 'Please enter a valid email address',
+          },
+        })}
+        placeholder="Email (optional)"
+        className="input"
+      />
+      {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
       <textarea
         {...register('message')}
         placeholder="Message (optional)"

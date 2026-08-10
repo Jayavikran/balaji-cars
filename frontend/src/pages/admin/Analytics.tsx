@@ -146,6 +146,11 @@ export default function Analytics() {
     queryKey: ['analytics'], 
     queryFn: fetchAnalytics,
     staleTime: 5 * 60 * 1000,
+    // The global QueryClient default is refetchOnMount: false, which means
+    // simply invalidating this query elsewhere (see ManageCars' refresh())
+    // isn't enough to guarantee a fresh fetch when this page is next
+    // visited — override it here so Analytics always refetches on mount.
+    refetchOnMount: true,
   });
 
   // Calculate summary stats

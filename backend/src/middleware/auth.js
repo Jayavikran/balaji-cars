@@ -29,7 +29,8 @@ const protect = asyncHandler(async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const secret = process.env.JWT_SECRET || 'replace_with_a_long_random_secret';
+    const decoded = jwt.verify(token, secret);
     const user = await User.findById(decoded.id).select('-password'); // don't send password back
 
     if (!user) {

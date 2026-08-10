@@ -16,6 +16,7 @@ const { notFound, errorHandler } = require('./middleware/errorHandler');
 const carRoutes = require('./routes/carRoutes');
 const enquiryRoutes = require('./routes/enquiryRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
+const adminSettingsRoutes = require('./routes/adminSettingsRoutes');
 const authRoutes = require('./routes/authRoutes');
 const adminCarRoutes = require('./routes/adminCarRoutes');
 const adminEnquiryRoutes = require('./routes/adminEnquiryRoutes');
@@ -41,10 +42,11 @@ const allowedOrigins = [
   'https://www.balajicars.in',
   'http://balajicars.in',
   'http://www.balajicars.in',
-  process.env.CLIENT_URL
+  process.env.CLIENT_URL,
+  'http://localhost:5174'
 ].filter(Boolean);
 
-app.use(cors({
+const corsOptions = {
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) {
@@ -61,9 +63,10 @@ app.use(cors({
     'X-Requested-With',
     'Accept'
   ]
-}));
+};
 
-app.options('*', cors());
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 // ============================================
 // TRUST PROXY (CRITICAL FOR RENDER + CLOUDFLARE)
@@ -122,6 +125,17 @@ app.use('/api/admin/auth', rateLimit({
   message: 'Too many login attempts. Please try again later.'
 }));
 
+// Enquiry Limiter — the public lead form (POST /api/enquiries) had no
+// dedicated limit beyond the general 500/15min API-wide one, making it an
+// easy target for a scripted spam flood. This only applies to the public
+// enquiry-submission route, not the admin enquiries list/management routes.
+app.use('/api/enquiries', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  keyGenerator: cloudflareKeyGenerator,
+  message: 'Too many enquiries submitted. Please try again later.'
+}));
+
 // ============================================
 // HEALTH CHECK
 // ============================================
@@ -173,7 +187,7 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/admin/auth', authRoutes);
 app.use('/api/admin', adminCarRoutes);
 app.use('/api/admin/enquiries', adminEnquiryRoutes);
-app.use('/api/admin/settings', settingsRoutes);
+app.use('/api/admin/settings', adminSettingsRoutes);
 
 // ============================================
 // 🔥 NUCLEAR CACHE KILLER FOR FRONTEND ASSETS
@@ -188,6 +202,13 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+// ============================================
+// API 404 (must come before the SPA catch-all below, or unmatched /api/*
+// requests silently fall through to index.html with a 200 status)
+// ============================================
+
+app.all('/api/*', notFound);
 
 // ============================================
 // FRONTEND (React Build)

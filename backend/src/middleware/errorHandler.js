@@ -1,8 +1,32 @@
 // middleware/errorHandler.js
 
+const { CAR_IMAGE_MAX_MB, LOGO_MAX_MB } = require('../config/uploadLimits');
+
 const notFound = (req, res, next) => {
   res.status(404);
   next(new Error(`Route not found - ${req.originalUrl}`));
+};
+
+// Fields that must never be written to logs
+const SENSITIVE_BODY_FIELDS = ['password', 'newPassword', 'currentPassword', 'token', 'confirmPassword'];
+const SENSITIVE_HEADERS = ['authorization', 'cookie', 'set-cookie'];
+
+const sanitizeBody = (body) => {
+  if (!body || typeof body !== 'object') return body;
+  const clone = { ...body };
+  SENSITIVE_BODY_FIELDS.forEach((field) => {
+    if (field in clone) clone[field] = '[REDACTED]';
+  });
+  return clone;
+};
+
+const sanitizeHeaders = (headers) => {
+  if (!headers || typeof headers !== 'object') return headers;
+  const clone = { ...headers };
+  SENSITIVE_HEADERS.forEach((field) => {
+    if (field in clone) clone[field] = '[REDACTED]';
+  });
+  return clone;
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -10,7 +34,7 @@ const errorHandler = (err, req, res, next) => {
   let statusCode = res.statusCode && res.statusCode !== 200 ? res.statusCode : 500;
   let message = err.message || 'Server error';
 
-  // Log error for debugging
+  // Log error for debugging (sensitive fields redacted)
   console.error('❌ Error Details:', {
     statusCode,
     message,
@@ -18,9 +42,9 @@ const errorHandler = (err, req, res, next) => {
     url: req.originalUrl,
     method: req.method,
     query: req.query,
-    body: req.body,
+    body: sanitizeBody(req.body),
     params: req.params,
-    headers: req.headers,
+    headers: sanitizeHeaders(req.headers),
     timestamp: new Date().toISOString()
   });
 
@@ -79,7 +103,12 @@ const errorHandler = (err, req, res, next) => {
   if (err.name === 'MulterError') {
     statusCode = 400;
     if (err.code === 'LIMIT_FILE_SIZE') {
-      message = 'File too large. Maximum size is 5MB.';
+      // The size limit that was actually exceeded depends on which field
+      // was being uploaded ('logo' vs 'images') — report the real limit
+      // for that field instead of a hardcoded number that can drift out
+      // of sync with the actual Multer config (see uploadLimits.js).
+      const maxMb = err.field === 'logo' ? LOGO_MAX_MB : CAR_IMAGE_MAX_MB;
+      message = `File too large. Maximum size is ${maxMb}MB.`;
     } else if (err.code === 'LIMIT_UNEXPECTED_FILE') {
       message = 'Unexpected file field.';
     } else {

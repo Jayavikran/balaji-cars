@@ -19,8 +19,25 @@ const carSchema = new mongoose.Schema(
       default: 'Hatchback',
       index: true,
     },
-    manufacturingYear: { type: Number, required: true, index: true },
-    registrationYear: { type: Number, required: true },
+    manufacturingYear: {
+      type: Number,
+      required: true,
+      index: true,
+      min: [1990, 'Year must be 1990 or later'],
+      validate: {
+        validator: (v) => v <= new Date().getFullYear(),
+        message: () => `Year cannot be after ${new Date().getFullYear()}`,
+      },
+    },
+    registrationYear: {
+      type: Number,
+      required: true,
+      min: [1990, 'Year must be 1990 or later'],
+      validate: {
+        validator: (v) => v <= new Date().getFullYear(),
+        message: () => `Year cannot be after ${new Date().getFullYear()}`,
+      },
+    },
     price: { type: Number, required: true, index: true },
     previousPrice: { type: Number }, // optional — set when price is reduced, powers the "Price Dropped" badge
     fuelType: {
@@ -35,15 +52,21 @@ const carSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-    engineCC: { type: Number },
-    mileage: { type: Number }, // km/l or km/kWh
-    kilometersDriven: { type: Number, required: true, index: true },
+    engineCC: { type: Number, min: [0, 'Must be 0 or more'], max: [10000, 'Value seems too high'] },
+    mileage: { type: Number, min: [0, 'Must be 0 or more'], max: [50, 'Value seems too high'] }, // km/l or km/kWh
+    kilometersDriven: {
+      type: Number,
+      required: true,
+      index: true,
+      min: [0, 'Must be 0 or more'],
+      max: [1000000, 'Value seems too high'],
+    },
     owner: {
       type: String,
       enum: ['1st Owner', '2nd Owner', '3rd Owner', '4th+ Owner'],
       default: '1st Owner',
     },
-    seats: { type: Number, default: 5 },
+    seats: { type: Number, default: 5, min: [1, 'Must be at least 1'], max: [15, 'Value seems too high'] },
     color: { type: String, trim: true },
     location: { type: String, trim: true, index: true },
     branch: { type: String, trim: true },

@@ -1,4 +1,5 @@
 const asyncHandler = require('express-async-handler');
+const validator = require('validator');
 const Enquiry = require('../models/Enquiry');
 const Car = require('../models/Car');
 
@@ -9,6 +10,19 @@ const createEnquiry = asyncHandler(async (req, res) => {
   if (!customerName || !phone) {
     res.status(400);
     throw new Error('Name and phone number are required.');
+  }
+
+  // Same 10-digit rule already enforced on the Contact page form —
+  // applied consistently here so both entry points (Contact page and
+  // per-car EnquiryForm) can't save malformed phone numbers.
+  if (!/^[0-9]{10}$/.test(String(phone).trim())) {
+    res.status(400);
+    throw new Error('Please enter a valid 10-digit phone number.');
+  }
+
+  if (email && !validator.isEmail(String(email).trim())) {
+    res.status(400);
+    throw new Error('Please enter a valid email address.');
   }
 
   let carSnapshot;

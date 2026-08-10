@@ -372,21 +372,23 @@ const Footer = memo(function Footer({ settings, className = '' }: FooterProps) {
           <p>&copy; {currentYear} {companyName}. All rights reserved.</p>
           
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <motion.a 
-              href="#" 
-              className="transition-colors hover:text-white/60 hover:underline focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 rounded px-1"
-              whileHover={{ scale: 1.05 }}
-            >
-              Privacy Policy
-            </motion.a>
+            <motion.div whileHover={{ scale: 1.05 }} className="inline-block">
+              <Link
+                to="/privacy-policy"
+                className="transition-colors hover:text-white/60 hover:underline focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 rounded px-1"
+              >
+                Privacy Policy
+              </Link>
+            </motion.div>
             <span className="w-px h-3 bg-white/10" aria-hidden="true" />
-            <motion.a 
-              href="#" 
-              className="transition-colors hover:text-white/60 hover:underline focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 rounded px-1"
-              whileHover={{ scale: 1.05 }}
-            >
-              Terms of Service
-            </motion.a>
+            <motion.div whileHover={{ scale: 1.05 }} className="inline-block">
+              <Link
+                to="/terms-of-service"
+                className="transition-colors hover:text-white/60 hover:underline focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 rounded px-1"
+              >
+                Terms of Service
+              </Link>
+            </motion.div>
             <span className="w-px h-3 bg-white/10" aria-hidden="true" />
             <motion.span
               onHoverStart={() => handleYearHover(false)}

@@ -10,7 +10,8 @@ const generateToken = (userId, rememberMe = false) => {
     ? process.env.JWT_REMEMBER_EXPIRES_IN || '30d'
     : process.env.JWT_EXPIRES_IN || '7d';
 
-  return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn });
+  const secret = process.env.JWT_SECRET || 'replace_with_a_long_random_secret';
+  return jwt.sign({ id: userId }, secret, { expiresIn });
 };
 
 module.exports = generateToken;

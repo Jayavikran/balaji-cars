@@ -198,7 +198,7 @@ export default function CarDetails() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isLightboxOpen]);
 
-  const images = car?.images?.length ? car.images : [{ url: 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=1200&auto=format&fit=crop' }];
+  const images = car?.images?.length ? car.images : [{ url: '/images/placeholder-car.jpg' }];
 
   const nextImage = useCallback(() => {
     if (isTransitioning) return;

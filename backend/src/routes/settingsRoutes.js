@@ -1,14 +1,11 @@
 const express = require('express');
-const { getPublicSettings, updateSettings } = require('../controllers/settingsController');
-const { protect, authorize } = require('../middleware/auth');
-const { logoUpload } = require('../middleware/upload');
+const { getPublicSettings } = require('../controllers/settingsController');
 
 const router = express.Router();
 
-// Public - GET settings
+// Public - GET settings only. Admin read/write lives in
+// adminSettingsRoutes.js (mounted at /api/admin/settings), which requires
+// authentication for both GET and PUT.
 router.get('/', getPublicSettings);
-
-// Admin only - PUT update settings
-router.put('/', protect, authorize('admin', 'superadmin'), logoUpload.single('logo'), updateSettings);
 
 module.exports = router;

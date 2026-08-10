@@ -39,7 +39,10 @@ const FUEL_TYPES = ['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid'];
 const TRANSMISSIONS = ['Manual', 'Automatic', 'CVT', 'DCT', 'AMT'];
 const OWNER_OPTIONS = ['1st Owner', '2nd Owner', '3rd Owner', '4th+ Owner'];
 const RC_STATUS = ['Clear', 'Pending', 'Hypothecated'];
-const CAR_STATUS = ['Available', 'Sold', 'Reserved'];
+// A brand-new car can never be created directly as Sold — that must go
+// through the Complete Sale flow (see backend createCar guard) so profit/
+// buyer data is always captured.
+const CAR_STATUS = ['Available', 'Reserved'];
 
 interface CarFormValues {
   brand: string; model: string; variant: string; bodyType: string;
@@ -118,7 +121,7 @@ const ImageUploadZone = ({
         </span>
         <input type="file" multiple accept="image/*" className="hidden" onChange={(e) => e.target.files && onBrowse(e.target.files)} />
       </label>
-      <p className="text-xs text-body/30 mt-2">Supports JPG, PNG, WebP • Max 5MB each</p>
+      <p className="text-xs text-body/30 mt-2">Supports JPG, PNG, WebP • Max 8MB each</p>
     </motion.div>
   </div>
 );
@@ -322,7 +325,7 @@ export default function UploadCar() {
                 {errors.manufacturingYear && <p className="text-xs text-red-500 mt-1">{errors.manufacturingYear.message}</p>}
               </Field>
               <Field label="Registration Year" required>
-                <input type="number" {...register('registrationYear', { required: 'Year is required' })} className="input" placeholder="YYYY" />
+                <input type="number" {...register('registrationYear', { required: 'Year is required', min: { value: 1990, message: 'Year must be 1990 or later' }, max: { value: new Date().getFullYear(), message: `Year cannot be after ${new Date().getFullYear()}` } })} className="input" placeholder="YYYY" />
                 {errors.registrationYear && <p className="text-xs text-red-500 mt-1">{errors.registrationYear.message}</p>}
               </Field>
               <Field label="Price (₹)" required>
@@ -344,13 +347,15 @@ export default function UploadCar() {
                 {errors.transmission && <p className="text-xs text-red-500 mt-1">{errors.transmission.message}</p>}
               </Field>
               <Field label="Engine CC">
-                <input type="number" {...register('engineCC')} className="input" placeholder="e.g., 1500" />
+                <input type="number" {...register('engineCC', { min: { value: 0, message: 'Must be 0 or more' }, max: { value: 10000, message: 'Value seems too high' } })} className="input" placeholder="e.g., 1500" />
+                {errors.engineCC && <p className="text-xs text-red-500 mt-1">{errors.engineCC.message}</p>}
               </Field>
               <Field label="Mileage (km/l)">
-                <input type="number" {...register('mileage')} className="input" placeholder="e.g., 18.5" step="0.1" />
+                <input type="number" {...register('mileage', { min: { value: 0, message: 'Must be 0 or more' }, max: { value: 50, message: 'Value seems too high' } })} className="input" placeholder="e.g., 18.5" step="0.1" />
+                {errors.mileage && <p className="text-xs text-red-500 mt-1">{errors.mileage.message}</p>}
               </Field>
               <Field label="Kilometers Driven" required>
-                <input type="number" {...register('kilometersDriven', { required: 'Kilometers is required' })} className="input" placeholder="e.g., 25000" />
+                <input type="number" {...register('kilometersDriven', { required: 'Kilometers is required', min: { value: 0, message: 'Must be 0 or more' }, max: { value: 1000000, message: 'Value seems too high' } })} className="input" placeholder="e.g., 25000" />
                 {errors.kilometersDriven && <p className="text-xs text-red-500 mt-1">{errors.kilometersDriven.message}</p>}
               </Field>
               <Field label="Owner" required>
@@ -361,7 +366,8 @@ export default function UploadCar() {
                 {errors.owner && <p className="text-xs text-red-500 mt-1">{errors.owner.message}</p>}
               </Field>
               <Field label="Seats">
-                <input type="number" {...register('seats')} className="input" placeholder="5" />
+                <input type="number" {...register('seats', { min: { value: 1, message: 'Must be at least 1' }, max: { value: 15, message: 'Value seems too high' } })} className="input" placeholder="5" />
+                {errors.seats && <p className="text-xs text-red-500 mt-1">{errors.seats.message}</p>}
               </Field>
               <Field label="Color">
                 <input {...register('color')} className="input" placeholder="e.g., Red" />

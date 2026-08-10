@@ -3,13 +3,13 @@ import { useQueries } from '@tanstack/react-query';
 import { X, ShieldCheck, ArrowLeft, AlertTriangle, RefreshCw, Loader2 } from 'lucide-react';
 import Header from '@/components/public/Header';
 import Footer from '@/components/public/Footer';
-import { useCompare, type CompareCar } from '@/hooks/useCompare';
+import { useCompare } from '@/hooks/useCompare';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import Seo from '@/components/shared/Seo';
 import { fetchCarByIdOrSlug } from '@/api/cars';
 import { optimizeImage } from '@/utils/optimizeImage';
 import type { Car } from '@/types';
-import { memo, useState, useEffect } from 'react';
+import { memo } from 'react';
 
 function formatPrice(price?: number) {
   if (price === undefined) return '—';
@@ -144,54 +144,12 @@ const CarHeader = memo(function CarHeader({
 });
 
 export default function Compare() {
-  const { compareList: hookList, removeFromCompare: hookRemove, clearCompare: hookClear } = useCompare();
+  // useCompare() already reads from localStorage on mount and stays in sync
+  // via 'storage'/'compare-changed' events — no need for a second parallel
+  // localStorage-backed state here (that duplication was a source of
+  // stale/empty-flicker bugs on load, since the two could briefly disagree).
+  const { compareList, removeFromCompare, clearCompare } = useCompare();
   const { data: settings } = useSiteSettings();
-
-  const [localList, setLocalList] = useState<CompareCar[]>(() => {
-    try {
-      const stored = localStorage.getItem('balaji-cars-compare');
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
-    }
-  });
-
-  useEffect(() => {
-    if (hookList.length > 0) {
-      setLocalList(hookList);
-    }
-  }, [hookList]);
-
-  useEffect(() => {
-    const handleStorageChange = () => {
-      try {
-        const stored = localStorage.getItem('balaji-cars-compare');
-        const parsed = stored ? JSON.parse(stored) : [];
-        setLocalList(parsed);
-      } catch {
-        setLocalList([]);
-      }
-    };
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('compare-changed', handleStorageChange);
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('compare-changed', handleStorageChange);
-    };
-  }, []);
-
-  const compareList = hookList.length > 0 ? hookList : localList;
-
-  const removeFromCompare = (id: string) => {
-    hookRemove(id);
-    const updated = localList.filter((c) => c._id !== id);
-    setLocalList(updated);
-  };
-
-  const clearCompare = () => {
-    hookClear();
-    setLocalList([]);
-  };
 
   const results = useQueries({
     queries: compareList.map((c) => ({

@@ -26,8 +26,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { fetchPublicSettings } from '@/api/enquiries';
-import { updateSettings } from '@/api/settings';
+import { fetchPublicSettings, updateSettings } from '@/api/enquiries';
 import type { SiteSettings } from '@/types';
 
 // ============================================

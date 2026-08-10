@@ -3,18 +3,34 @@ const crypto = require('crypto');
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
 
-// ULTIMATE FIX: Includes domain for subdomains, and 'none' for production
-const cookieOptions = (rememberMe) => {
+// Cookie domain is configurable via env var so it can match whatever domain
+// the API is actually served from in production (e.g. balajicars.in).
+// Leaving COOKIE_DOMAIN unset means no explicit `domain` attribute is sent,
+// so the cookie correctly defaults to the responding host.
+// Cookie domain is configurable via env var or dynamically detected from request header
+// so it matches whatever domain the API is actually served from in production (e.g. balajicars.in).
+const cookieOptions = (req, rememberMe = false) => {
   const isProduction = process.env.NODE_ENV === 'production';
-  
+
+  let domain = undefined;
+  if (isProduction) {
+    if (process.env.COOKIE_DOMAIN) {
+      domain = process.env.COOKIE_DOMAIN;
+    } else if (req && req.headers && req.headers.host) {
+      const host = req.headers.host.split(':')[0];
+      if (host.endsWith('balajicars.in')) {
+        domain = '.balajicars.in';
+      }
+    }
+  }
+
   return {
     httpOnly: true,
-    secure: isProduction, // Must be true for sameSite: 'none'
-    sameSite: isProduction ? 'none' : 'lax',
+    secure: isProduction, // Must be true for HTTPS in production
+    sameSite: 'lax', // Secure & persistent across same-site navigations and subdomains
     maxAge: (rememberMe ? 30 : 7) * 24 * 60 * 60 * 1000,
     path: '/',
-    // CRITICAL: This allows the cookie to work across frontend & backend subdomains on Render
-    domain: isProduction ? '.onrender.com' : undefined 
+    domain: domain
   };
 };
 
@@ -22,57 +38,36 @@ const cookieOptions = (rememberMe) => {
 const loginAdmin = asyncHandler(async (req, res) => {
   const { email, password, rememberMe } = req.body;
 
-  console.log('\n🔐 ===== LOGIN ATTEMPT =====');
-  console.log(`📧 Email: ${email}`);
-  console.log(`🔑 Password provided: ${password ? '✅ Yes' : '❌ No'}`);
-
   if (!email || !password) {
     res.status(400);
     throw new Error('Email and password are required.');
   }
 
-  console.log('📡 Searching for user...');
   const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
 
   if (!user) {
-    console.log('❌ User NOT found');
     res.status(401);
     throw new Error('Invalid email or password.');
   }
-
-  console.log('👤 User FOUND:');
-  console.log(`   Name: ${user.name}`);
-  console.log(`   Email: ${user.email}`);
-  console.log(`   Role: ${user.role}`);
-  console.log(`   Active: ${user.isActive}`);
-  console.log(`   Password hash: ${user.password}`);
-  console.log(`   Hash length: ${user.password ? user.password.length : 0}`);
 
   if (!user.isActive) {
-    console.log('❌ User is not active');
     res.status(401);
     throw new Error('Invalid email or password.');
   }
 
-  console.log('🔐 Calling comparePassword...');
   const isMatch = await user.comparePassword(password);
-  console.log(`   Result: ${isMatch ? '✅ MATCH' : '❌ NO MATCH'}`);
 
   if (!isMatch) {
-    console.log('❌ Password does not match');
     res.status(401);
     throw new Error('Invalid email or password.');
   }
 
-  console.log('✅ Login successful!');
   user.lastLoginAt = new Date();
   await user.save();
 
   const token = generateToken(user._id, Boolean(rememberMe));
-  const options = cookieOptions(Boolean(rememberMe));
-  
-  console.log(`🍪 Setting cookie: secure=${options.secure}, sameSite=${options.sameSite}, domain=${options.domain || 'default'}`);
-  
+  const options = cookieOptions(req, Boolean(rememberMe));
+
   res.cookie('adminToken', token, options);
 
   res.json({
@@ -84,15 +79,11 @@ const loginAdmin = asyncHandler(async (req, res) => {
 
 // POST /api/admin/auth/logout
 const logoutAdmin = asyncHandler(async (req, res) => {
-  const options = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    path: '/',
-    domain: process.env.NODE_ENV === 'production' ? '.onrender.com' : undefined
-  };
-  
-  res.clearCookie('adminToken', options);
+  // clearCookie must be called with the same attributes (domain/path/etc.)
+  // the cookie was originally set with, or the browser won't remove it.
+  const { maxAge, ...clearOptions } = cookieOptions(req, false);
+
+  res.clearCookie('adminToken', clearOptions);
   res.json({ success: true, message: 'Logged out.' });
 });
 

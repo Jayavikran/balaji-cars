@@ -171,10 +171,13 @@ export default function AdminDashboard() {
   const maxSales = Math.max(1, ...(data?.salesStats.map((s: any) => s.count) ?? [1]));
 
   const cards = [
-    { label: 'Total Cars', value: data?.stats.totalCars, icon: Car, color: 'bg-gradient-to-br from-[#F4B400] to-[#F59E0B]', to: '/admin/cars', trend: 12 },
-    { label: 'Available Cars', value: data?.stats.availableCars, icon: Package, color: 'bg-gradient-to-br from-emerald-500 to-emerald-600', to: '/admin/cars?status=Available', trend: 8 },
-    { label: 'Sold Cars', value: data?.stats.soldCars, icon: CheckCircle2, color: 'bg-gradient-to-br from-blue-500 to-blue-600', to: '/admin/cars?status=Sold', trend: -3 },
-    { label: 'Featured Cars', value: data?.stats.featuredCars, icon: Star, color: 'bg-gradient-to-br from-amber-500 to-amber-600', to: '/admin/cars?featuredOnly=true', trend: 5 },
+    // Trend badges removed: these were hardcoded/fabricated percentages not
+    // derived from any real period-over-period calculation (see StatCard's
+    // `trend` prop, which only renders a badge when a value is provided).
+    { label: 'Total Cars', value: data?.stats.totalCars, icon: Car, color: 'bg-gradient-to-br from-[#F4B400] to-[#F59E0B]', to: '/admin/cars' },
+    { label: 'Available Cars', value: data?.stats.availableCars, icon: Package, color: 'bg-gradient-to-br from-emerald-500 to-emerald-600', to: '/admin/cars?status=Available' },
+    { label: 'Sold Cars', value: data?.stats.soldCars, icon: CheckCircle2, color: 'bg-gradient-to-br from-blue-500 to-blue-600', to: '/admin/cars?status=Sold' },
+    { label: 'Featured Cars', value: data?.stats.featuredCars, icon: Star, color: 'bg-gradient-to-br from-amber-500 to-amber-600', to: '/admin/cars?featuredOnly=true' },
   ];
 
   const revenueCards = [
@@ -411,13 +414,13 @@ export default function AdminDashboard() {
               <Link to={`/admin/edit/${car._id}`} className="group block">
                 <div className="relative aspect-square rounded-2xl overflow-hidden bg-surface/50 shadow-sm">
                   <img 
-                    src={car.images?.[0]?.url || 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=300&auto=format&fit=crop'} 
+                    src={car.images?.[0]?.url || '/images/placeholder-car.jpg'} 
                     alt={`${car.brand} ${car.model}`}
                     className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
                     loading="lazy"
                     decoding="async"
                     onError={(e) => {
-                      e.currentTarget.src = 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=300&auto=format&fit=crop';
+                      e.currentTarget.src = '/images/placeholder-car.jpg';
                     }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

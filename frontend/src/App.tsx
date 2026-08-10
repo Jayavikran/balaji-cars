@@ -13,8 +13,12 @@ const About = lazy(() => import('@/pages/public/About'));
 const Contact = lazy(() => import('@/pages/public/Contact'));
 const CarDetails = lazy(() => import('@/pages/public/CarDetails'));
 const Compare = lazy(() => import('@/pages/public/Compare'));
+const PrivacyPolicy = lazy(() => import('@/pages/public/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('@/pages/public/TermsOfService'));
+const NotFound = lazy(() => import('@/pages/public/NotFound'));
 
 const AdminLogin = lazy(() => import('@/pages/admin/AdminLogin'));
+const ResetPassword = lazy(() => import('@/pages/admin/ResetPassword'));
 const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'));
 const Analytics = lazy(() => import('@/pages/admin/Analytics'));
 const UploadCar = lazy(() => import('@/pages/admin/UploadCar'));
@@ -34,6 +38,7 @@ function RouteFallback() {
 export default function App() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const isComparePage = location.pathname === '/compare';
 
   return (
     <div className="app-shell">
@@ -46,9 +51,12 @@ export default function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/cars/:idOrSlug" element={<CarDetails />} />
           <Route path="/compare" element={<Compare />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
 
           {/* ---------------- Admin panel (fully separate) ---------------- */}
           <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/reset-password/:token" element={<ResetPassword />} />
 
           <Route
             path="/admin/dashboard"
@@ -88,10 +96,10 @@ export default function App() {
           <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
 
           {/* ---------------- Fallback ---------------- */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
-      {!isAdminRoute && <CompareBar />}
+      {!isAdminRoute && !isComparePage && <CompareBar />}
     </div>
   );
 }

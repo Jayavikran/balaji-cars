@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import {
   Eye, Pencil, Trash2, CheckCircle2, XCircle, Star, StarOff, Copy, Search,
-  Plus, Filter, ChevronDown, ChevronUp, Calendar, Fuel, Gauge,
+  Plus, Filter, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Calendar, Fuel, Gauge,
   DollarSign, Shield, Award, Sparkles, Crown, Users, Clock,
   ArrowUpDown, Car as CarIcon, FileCheck, AlertCircle, RefreshCw
 } from 'lucide-react';
@@ -36,6 +36,23 @@ const STATUS_ICONS = {
 const BRANDS = ['Maruti Suzuki', 'Mahindra', 'Hyundai', 'Toyota', 'Honda', 'Kia', 'MG', 'Volkswagen', 'BMW', 'Mercedes-Benz', 'Audi'];
 const FUEL_TYPES = ['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid'];
 const STATUS_OPTIONS = ['Available', 'Sold', 'Reserved'];
+
+// Builds a truncated page-number list (e.g. 1 … 4 5 6 … 42) instead of
+// rendering one button per page, which broke down visually once an
+// inventory grew past a handful of pages.
+function getPageNumbers(current: number, total: number): (number | 'ellipsis')[] {
+  const delta = 1;
+  const pages: (number | 'ellipsis')[] = [1];
+  const left = Math.max(2, current - delta);
+  const right = Math.min(total - 1, current + delta);
+
+  if (left > 2) pages.push('ellipsis');
+  for (let i = left; i <= right; i++) pages.push(i);
+  if (right < total - 1) pages.push('ellipsis');
+  if (total > 1) pages.push(total);
+
+  return pages;
+}
 
 // ============================================
 // SUB-COMPONENTS
@@ -89,13 +106,13 @@ const CarCard = ({
         <div className="relative shrink-0">
           <div className="w-20 h-20 rounded-2xl overflow-hidden bg-surface shadow-sm">
             <img 
-              src={car.images?.[0]?.url || 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=300&auto=format&fit=crop'} 
+              src={car.images?.[0]?.url || '/images/placeholder-car.jpg'} 
               alt={`${car.brand} ${car.model}`}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               loading="lazy"
               decoding="async"
               onError={(e) => {
-                e.currentTarget.src = 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=300&auto=format&fit=crop';
+                e.currentTarget.src = '/images/placeholder-car.jpg';
               }}
             />
           </div>
@@ -260,8 +277,19 @@ export default function ManageCars() {
     }
   }, [data, page]);
 
+  // Selection is page/filter-scoped: clear it whenever the visible set of
+  // cars changes, so a stale selection from a previous page/filter can't
+  // silently linger and mislead a bulk action.
+  useEffect(() => {
+    setSelected([]);
+  }, [filters]);
+
   const refresh = () => {
+    // Also invalidate Analytics/Dashboard so a sale or edit here is
+    // reflected immediately instead of waiting out their staleTime.
     queryClient.invalidateQueries({ queryKey: ['admin-cars'] });
+    queryClient.invalidateQueries({ queryKey: ['analytics'] });
+    queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
     refetch();
   };
 
@@ -270,7 +298,9 @@ export default function ManageCars() {
 
   const toggleSelectAll = () => {
     if (!data) return;
-    setSelected(selected.length === data.cars.length ? [] : data.cars.map((c) => c._id));
+    const pageIds = data.cars.map((c) => c._id);
+    const allPageIdsSelected = pageIds.length > 0 && pageIds.every((id) => selected.includes(id));
+    setSelected(allPageIdsSelected ? [] : pageIds);
   };
 
   const handleDelete = async (id: string) => {
@@ -513,7 +543,7 @@ export default function ManageCars() {
                         <th className="px-4 py-3">
                           <input
                             type="checkbox"
-                            checked={selected.length === data.cars.length && data.cars.length > 0}
+                            checked={data.cars.length > 0 && data.cars.every((c) => selected.includes(c._id))}
                             onChange={toggleSelectAll}
                             className="w-4 h-4 rounded border-line text-[#F4B400] focus:ring-[#F4B400]/20"
                           />
@@ -548,13 +578,13 @@ export default function ManageCars() {
                             <div className="flex items-center gap-3">
                               <div className="w-12 h-12 rounded-xl overflow-hidden bg-surface shrink-0">
                                 <img
-                                  src={car.images?.[0]?.url || 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=300&auto=format&fit=crop'}
+                                  src={car.images?.[0]?.url || '/images/placeholder-car.jpg'}
                                   alt=""
                                   className="w-full h-full object-cover"
                                   loading="lazy"
                                   decoding="async"
                                   onError={(e) => {
-                                    e.currentTarget.src = 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=300&auto=format&fit=crop';
+                                    e.currentTarget.src = '/images/placeholder-car.jpg';
                                   }}
                                 />
                               </div>
@@ -656,22 +686,50 @@ export default function ManageCars() {
 
         {/* Pagination */}
         {data && data.pagination.totalPages > 1 && (
-          <div className="flex justify-center gap-2 p-4 bg-white rounded-3xl shadow-card border border-line">
-            {Array.from({ length: data.pagination.totalPages }).map((_, i) => (
-              <motion.button
-                key={i}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setPage(i + 1)}
-                className={`w-9 h-9 rounded-full text-sm font-medium transition-all ${
-                  page === i + 1 
-                    ? 'bg-[#F4B400] text-black shadow-lg shadow-[#F4B400]/25' 
-                    : 'bg-surface text-ink hover:bg-line'
-                }`}
-              >
-                {i + 1}
-              </motion.button>
-            ))}
+          <div className="flex justify-center items-center gap-2 p-4 bg-white rounded-3xl shadow-card border border-line">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              aria-label="Previous page"
+              className="w-9 h-9 rounded-full text-sm font-medium transition-all bg-surface text-ink hover:bg-line disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-surface"
+            >
+              <ChevronLeft size={16} className="mx-auto" />
+            </motion.button>
+
+            {getPageNumbers(page, data.pagination.totalPages).map((p, i) =>
+              p === 'ellipsis' ? (
+                <span key={`ellipsis-${i}`} className="w-9 h-9 flex items-center justify-center text-sm text-body/50">
+                  …
+                </span>
+              ) : (
+                <motion.button
+                  key={p}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setPage(p)}
+                  className={`w-9 h-9 rounded-full text-sm font-medium transition-all ${
+                    page === p
+                      ? 'bg-[#F4B400] text-black shadow-lg shadow-[#F4B400]/25'
+                      : 'bg-surface text-ink hover:bg-line'
+                  }`}
+                >
+                  {p}
+                </motion.button>
+              )
+            )}
+
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setPage((p) => Math.min(data.pagination.totalPages, p + 1))}
+              disabled={page === data.pagination.totalPages}
+              aria-label="Next page"
+              className="w-9 h-9 rounded-full text-sm font-medium transition-all bg-surface text-ink hover:bg-line disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-surface"
+            >
+              <ChevronRight size={16} className="mx-auto" />
+            </motion.button>
           </div>
         )}
       </motion.div>

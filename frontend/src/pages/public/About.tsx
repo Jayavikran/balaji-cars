@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { LucideIcon } from 'lucide-react';
 import {
@@ -22,7 +22,6 @@ import {
   Users,
   ThumbsUp,
   Zap,
-  Medal,
   Heart,
   Target,
 } from 'lucide-react';
@@ -57,7 +56,7 @@ type TimelineItem = {
   icon: LucideIcon;
 };
 
-// ===== DEFAULT IMAGES (fallback if no props provided) =====
+// ===== DEFAULT IMAGES =====
 const DEFAULT_HERO_IMAGE = '/images/banner1.jpeg';
 const DEFAULT_HERO_IMAGE_WEBP = '/images/banner1.webp';
 const DEFAULT_STORY_IMAGE = '/images/banner1.jpeg';
@@ -141,25 +140,25 @@ const TIMELINE_ITEMS: TimelineItem[] = [
   {
     year: '2008',
     title: 'Expansion',
-    description: 'Expanded showroom and service capabilities to serve more customers.',
+    description: 'Expanded showroom and service capabilities to serve more customers across the region.',
     icon: Building2,
   },
   {
     year: '2013',
     title: 'Industry Recognition',
-    description: 'Recognized as one of the most trusted used car dealerships in the region.',
+    description: 'Recognized as one of the most trusted used car dealerships in Southern Tamil Nadu.',
     icon: Award,
   },
   {
     year: '2018',
     title: 'Digital Transformation',
-    description: 'Launched online presence with virtual showroom and digital inventory management.',
+    description: 'Launched online inventory showcase with digital verification and seamless enquiry management.',
     icon: Zap,
   },
   {
     year: '2023',
     title: '20 Years of Excellence',
-    description: 'Celebrated two decades of serving the community with premium vehicles and exceptional service.',
+    description: 'Celebrated two decades of serving thousands of happy vehicle owners with premium standards.',
     icon: Crown,
   },
 ];
@@ -181,38 +180,38 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
+      staggerChildren: 0.08,
+      delayChildren: 0.1,
     },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 24 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.6,
-      ease: [0.215, 0.61, 0.355, 1],
+      duration: 0.55,
+      ease: [0.22, 1, 0.36, 1],
     },
   },
 };
 
 const scaleVariants = {
-  hidden: { opacity: 0, scale: 0.9 },
+  hidden: { opacity: 0, scale: 0.95 },
   visible: {
     opacity: 1,
     scale: 1,
     transition: {
-      duration: 0.5,
-      ease: [0.215, 0.61, 0.355, 1],
+      duration: 0.45,
+      ease: [0.22, 1, 0.36, 1],
     },
   },
 };
 
 // ============================================
-// 3. OPTIMIZED SUB-COMPONENTS
+// 3. OPTIMIZED ANIMATED COUNTER
 // ============================================
 
 const AnimatedCounter = memo(({ 
@@ -252,33 +251,36 @@ const AnimatedCounter = memo(({
   }, [active, value, prefersReducedMotion]);
 
   return (
-    <div className="group relative rounded-2xl border border-white/10 bg-white/5 p-6 text-center transition-all duration-300 hover:bg-white/10 hover:-translate-y-1">
+    <motion.div 
+      whileHover={prefersReducedMotion ? undefined : { y: -4, scale: 1.02 }}
+      className="group relative rounded-2xl border border-white/12 bg-white/5 p-5 sm:p-6 text-center transition-all duration-300 hover:bg-white/10 hover:border-[#F4B400]/40 shadow-lg"
+    >
       {Icon && (
         <div className="mb-3 flex justify-center">
-          <div className="rounded-full bg-[#F4B400]/10 p-2.5 group-hover:scale-110 transition-transform duration-300">
-            <Icon size={20} className="text-[#F4B400]" aria-hidden="true" />
+          <div className="rounded-full bg-[#F4B400]/15 p-2.5 group-hover:scale-110 transition-transform duration-300 text-[#F4B400]">
+            <Icon size={22} aria-hidden="true" />
           </div>
         </div>
       )}
       <div className="flex items-baseline justify-center gap-0.5">
-        <span className="font-display text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
+        <span className="font-extrabold text-3xl sm:text-4xl lg:text-5xl text-white tracking-tight">
           {count}
         </span>
         {suffix && (
-          <span className="font-display text-2xl font-bold text-[#F4B400] sm:text-3xl lg:text-4xl">
+          <span className="font-extrabold text-2xl sm:text-3xl lg:text-4xl text-[#F4B400]">
             {suffix}
           </span>
         )}
       </div>
-      <p className="mt-2 text-sm leading-6 text-white/75">{label}</p>
-    </div>
+      <p className="mt-2 text-xs sm:text-sm leading-snug text-white/80 font-medium">{label}</p>
+    </motion.div>
   );
 });
 
 AnimatedCounter.displayName = 'AnimatedCounter';
 
 // ============================================
-// 4. MAIN COMPONENT (with image props)
+// 4. MAIN ABOUT COMPONENT
 // ============================================
 
 type AboutProps = {
@@ -297,14 +299,14 @@ export default memo(function About({
   const { data: settings } = useSiteSettings();
   const prefersReducedMotion = useReducedMotion();
   const companyName = settings?.companyName || 'BALAJI CARS';
-  const seoTitle = `About ${companyName} | Premium Used Car Dealership`;
-  const seoDescription = `Learn about ${companyName}, our 20+ years of experience, leadership expertise, and why customers trust us for premium pre-owned vehicles.`;
+  const seoTitle = `About ${companyName} | Premium Certified Used Car Dealership`;
+  const seoDescription = `Learn about ${companyName}, our 20+ years of dealership experience, leadership expertise, certified vehicle standards, and community trust.`;
 
   const statsRef = useRef<HTMLDivElement>(null);
   const statsInView = useInView(statsRef, { once: true, amount: 0.2 });
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-[#FAFAFA]">
+    <div className="mobile-page min-h-screen flex flex-col bg-gradient-to-b from-white via-[#FAFAFA] to-white">
       <Seo
         title={seoTitle}
         description={seoDescription}
@@ -317,139 +319,139 @@ export default memo(function About({
       />
       <Header settings={settings} showSearchBar={false} />
 
-      {/* ===== HERO SECTION – using props for background ===== */}
-      <header className="relative overflow-hidden bg-black text-white" role="banner">
-        <div className="absolute inset-0">
+      {/* ===== HERO SECTION ===== */}
+      <header className="relative overflow-hidden bg-black text-white py-20 sm:py-28 lg:py-36 flex items-center" role="banner">
+        <div className="absolute inset-0 z-0">
           <picture>
-            <source srcSet={heroImageWebp} type="bnner1/jpeg" />
+            <source srcSet={heroImageWebp} type="image/webp" />
             <img
               src={heroImage}
               alt={`${companyName} premium showroom`}
-              className="h-full w-full object-cover opacity-40"
+              className="h-full w-full object-cover object-center opacity-45 scale-105 transition-transform duration-1000"
               loading="eager"
               decoding="async"
             />
           </picture>
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+          
+          {/* Dark Cinematic Gradient Vignette */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/50" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(244,180,0,0.12),transparent_50%)]" />
         </div>
 
-        <div className="container relative z-10 mx-auto px-4 py-20 sm:py-28 lg:py-36">
+        <div className="container relative z-10 mx-auto px-4 sm:px-6">
           <motion.div
-            initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 40 }}
+            initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.215, 0.61, 0.355, 1] }}
-            className="max-w-4xl"
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="max-w-4xl text-center sm:text-left"
           >
             <motion.div
-              initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.95 }}
+              initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.26em] text-[#F4B400] backdrop-blur-sm"
+              transition={{ delay: 0.15, duration: 0.5 }}
+              className="mb-4 sm:mb-6 inline-flex items-center gap-2 rounded-full border border-[#F4B400]/30 bg-gradient-to-r from-[#F4B400]/20 to-transparent backdrop-blur-md px-3.5 sm:px-5 py-1.5 sm:py-2.5 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.26em] text-[#F4B400] shadow-sm"
             >
               <Crown size={14} className="text-[#F4B400]" />
               About {companyName}
             </motion.div>
 
             <motion.h1
-              initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 30 }}
+              initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.6 }}
-              className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl"
+              transition={{ delay: 0.25, duration: 0.6 }}
+              className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1]"
             >
-              About {companyName}
+              Over 20 Years of Trusted
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#F4B400] via-[#FFD700] to-[#F59E0B]">
+                Automotive Excellence
+              </span>
             </motion.h1>
 
             <motion.p
               initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-              className="mt-4 text-xl font-semibold text-[#F4B400] sm:text-2xl lg:text-3xl"
+              transition={{ delay: 0.35, duration: 0.6 }}
+              className="mt-4 sm:mt-6 max-w-2xl text-base sm:text-lg lg:text-xl leading-relaxed text-white/85 mx-auto sm:mx-0 font-normal"
             >
-              Over 20 Years of Trusted Automotive Excellence
-            </motion.p>
-
-            <motion.p
-              initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.6 }}
-              className="mt-6 max-w-2xl text-base leading-8 text-white/80 sm:text-lg"
-            >
-              Welcome to {companyName}, your trusted destination for premium pre-owned vehicles. 
-              For more than 20 years, we have built our reputation on quality, transparency, 
-              and customer satisfaction.
+              Welcome to {companyName}, your most trusted destination for premium pre-owned vehicles. 
+              For over two decades, our reputation has been built on certified quality, complete transparency, and customer devotion.
             </motion.p>
 
             <motion.div
               initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.6 }}
-              className="mt-10 flex flex-wrap gap-4"
+              transition={{ delay: 0.45, duration: 0.6 }}
+              className="mt-8 flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-3.5"
             >
               <Link
                 to="/#car-listings"
-                className="group inline-flex items-center gap-2 rounded-full bg-[#F4B400] px-8 py-4 text-sm font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#F4B400]/25 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#F4B400]/50 focus:ring-offset-2 focus:ring-offset-black"
+                className="group relative overflow-hidden inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#F4B400] to-[#F59E0B] px-8 py-4 text-sm font-bold text-black shadow-[0_16px_40px_rgba(244,180,0,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_24px_50px_rgba(244,180,0,0.4)] active:scale-[0.98]"
               >
-                Browse Inventory
+                <span>Browse Inventory</span>
                 <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
                 to="/contact"
-                className="inline-flex items-center justify-center rounded-full border border-white/20 px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-white/10 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-black"
+                className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full border border-white/25 bg-white/10 backdrop-blur-md px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-white/20 hover:-translate-y-0.5 active:scale-[0.98] shadow-lg"
               >
-                Contact Us
+                <span>Contact Us</span>
               </Link>
             </motion.div>
           </motion.div>
         </div>
 
-        {/* Animated scroll indicator */}
+        {/* Scroll Indicator */}
         <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden sm:block"
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 hidden sm:block z-10"
         >
-          <div className="flex flex-col items-center gap-1 text-white/40 text-xs uppercase tracking-widest">
+          <div className="flex flex-col items-center gap-1 text-white/40 text-[10px] uppercase tracking-widest font-medium">
             <span>Scroll</span>
-            <ChevronRight size={14} className="rotate-90" />
+            <ChevronRight size={14} className="rotate-90 text-[#F4B400]" />
           </div>
         </motion.div>
       </header>
 
       {/* ===== MAIN CONTENT ===== */}
       <main className="flex-1" role="main">
-        {/* About Section */}
-        <section className="container mx-auto px-4 py-16 sm:py-20 lg:py-24" aria-labelledby="about-heading">
+        
+        {/* Welcome & Philosophy Cards */}
+        <section className="container mx-auto px-4 sm:px-6 py-16 sm:py-20 lg:py-24" aria-labelledby="about-heading">
           <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]"
+            viewport={{ once: true, amount: 0.15 }}
+            className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] items-stretch"
           >
-            <motion.div variants={itemVariants} className="rounded-3xl border border-line bg-white p-8 shadow-xl sm:p-10">
-              <p className="text-sm font-semibold uppercase tracking-[0.26em] text-[#F4B400]">About {companyName}</p>
-              <h2 id="about-heading" className="mt-4 text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-                Welcome to {companyName}
-              </h2>
-              <p className="mt-4 text-lg font-medium text-ink/80">
-                Your most trusted destination for premium pre-owned vehicles with over 20 years of excellence.
-              </p>
-              <p className="mt-6 text-base leading-8 text-body">
-                Our success is built on one simple promise - delivering quality vehicles with complete 
-                transparency and customer satisfaction.
-              </p>
-              <p className="mt-4 text-base leading-8 text-body">
-                Every vehicle is personally inspected by our experienced, brand-certified technicians, 
-                ensuring only the finest automobiles reach our showroom.
-              </p>
-              <div className="mt-6 flex flex-wrap gap-2">
+            <motion.div variants={itemVariants} className="rounded-3xl border border-line bg-white p-6 sm:p-10 shadow-xl flex flex-col justify-between">
+              <div>
+                <div className="inline-flex items-center gap-1.5 rounded-full bg-[#F4B400]/10 px-3 py-1 text-xs font-bold text-[#F4B400] uppercase tracking-wider mb-3">
+                  <Sparkles size={14} /> About {companyName}
+                </div>
+                <h2 id="about-heading" className="text-3xl sm:text-4xl font-extrabold tracking-tight text-ink">
+                  Welcome to {companyName}
+                </h2>
+                <p className="mt-3 text-base sm:text-lg font-semibold text-ink/80">
+                  Your most trusted destination for premium pre-owned vehicles with over 20 years of excellence.
+                </p>
+                <p className="mt-4 text-sm sm:text-base leading-relaxed text-body">
+                  Our success is built on one simple promise — delivering quality vehicles with complete transparency, verified inspection records, and genuine customer satisfaction.
+                </p>
+                <p className="mt-3 text-sm sm:text-base leading-relaxed text-body">
+                  Every vehicle is personally inspected by our experienced, brand-certified technicians, ensuring only the finest automobiles reach our showroom floor.
+                </p>
+              </div>
+
+              <div className="mt-8 flex flex-wrap gap-2 pt-6 border-t border-line/60">
                 {CORE_VALUES.map(({ icon: Icon, label, color }) => (
                   <span
                     key={label}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-surface px-3 py-1.5 text-xs font-medium"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-surface border border-line/50 px-3.5 py-1.5 text-xs font-semibold text-ink shadow-xs"
                   >
-                    <Icon size={12} style={{ color }} />
+                    <Icon size={14} style={{ color }} />
                     {label}
                   </span>
                 ))}
@@ -458,17 +460,17 @@ export default memo(function About({
 
             <motion.div 
               variants={itemVariants}
-              className="rounded-3xl bg-gradient-to-br from-[#F4B400]/10 to-[#F4B400]/5 border border-[#F4B400]/20 p-8 flex flex-col justify-center"
+              className="rounded-3xl bg-gradient-to-br from-[#121214] via-[#1a1a20] to-[#0f0f12] border border-[#F4B400]/25 p-6 sm:p-10 text-white shadow-2xl flex flex-col justify-center relative overflow-hidden"
             >
-              <div className="flex items-start gap-4">
-                <div className="rounded-2xl bg-[#F4B400]/20 p-3 text-[#F4B400]">
-                  <Quote size={24} />
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[#F4B400]/10 rounded-full blur-3xl pointer-events-none" />
+              <div className="flex items-start gap-4 relative z-10">
+                <div className="rounded-2xl bg-[#F4B400]/20 p-3.5 text-[#F4B400] border border-[#F4B400]/30 shadow-inner">
+                  <Quote size={28} />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.26em] text-[#F4B400]">Our Promise</p>
-                  <p className="mt-2 text-base leading-8 text-body font-medium">
-                    Premium vehicles, honest guidance, dealership-level inspection standards, 
-                    and support that makes every step feel effortless.
+                  <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#F4B400]">Our Promise</p>
+                  <p className="mt-3 text-base sm:text-lg leading-relaxed text-white/90 font-medium">
+                    Premium certified vehicles, honest guidance, dealership-level inspection standards, and support that makes every buying step feel effortless and secure.
                   </p>
                 </div>
               </div>
@@ -477,29 +479,30 @@ export default memo(function About({
         </section>
 
         {/* Stats Section */}
-        <section className="container mx-auto px-4 pb-16 sm:pb-20 lg:pb-24" aria-labelledby="stats-heading">
+        <section className="container mx-auto px-4 sm:px-6 pb-16 sm:pb-20 lg:pb-24" aria-labelledby="stats-heading">
           <div ref={statsRef}>
             <motion.div
               variants={containerVariants}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
-              className="rounded-3xl bg-gradient-to-br from-[#0F0F10] to-[#1a1a1a] p-8 shadow-2xl sm:p-12"
+              viewport={{ once: true, amount: 0.15 }}
+              className="rounded-3xl bg-gradient-to-br from-[#0F0F10] via-[#161619] to-[#1a1a1e] border border-white/10 p-6 sm:p-12 shadow-2xl relative overflow-hidden text-white"
             >
-              <motion.div variants={itemVariants}>
-                <p className="text-sm font-semibold uppercase tracking-[0.26em] text-[#F4B400]">
+              <div className="absolute top-0 right-0 w-80 h-80 bg-[#F4B400]/10 rounded-full blur-3xl pointer-events-none" />
+
+              <motion.div variants={itemVariants} className="relative z-10 max-w-2xl">
+                <p className="text-xs font-semibold uppercase tracking-[0.26em] text-[#F4B400]">
                   20+ Years of Automotive Excellence
                 </p>
-                <h2 id="stats-heading" className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                  Trusted by Thousands of Customers
+                <h2 id="stats-heading" className="mt-2 text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
+                  Trusted by Thousands of Happy Owners
                 </h2>
-                <p className="mt-4 max-w-2xl text-base leading-8 text-white/78">
-                  Our experience goes beyond selling cars. It is built on understanding customer needs, 
-                  maintaining dealership-level inspection standards, and providing honest guidance.
+                <p className="mt-3 text-sm sm:text-base leading-relaxed text-white/75">
+                  Our experience goes beyond selling cars. It is built on understanding customer needs, maintaining strict dealership-level inspection standards, and providing transparent guidance.
                 </p>
               </motion.div>
 
-              <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+              <div className="mt-8 sm:mt-10 grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 lg:grid-cols-6 relative z-10">
                 {EXPERIENCE_STATS.map((stat) => (
                   <AnimatedCounter
                     key={stat.label}
@@ -516,51 +519,60 @@ export default memo(function About({
         </section>
 
         {/* Timeline Section */}
-        <section className="container mx-auto px-4 pb-16 sm:pb-20 lg:pb-24" aria-labelledby="timeline-heading">
+        <section className="container mx-auto px-4 sm:px-6 pb-16 sm:pb-20 lg:pb-24" aria-labelledby="timeline-heading">
           <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.1 }}
           >
-            <motion.div variants={itemVariants}>
-              <p className="text-sm font-semibold uppercase tracking-[0.26em] text-[#F4B400]">Our Journey</p>
-              <h2 id="timeline-heading" className="mt-4 text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-                Two Decades of Excellence
+            <motion.div variants={itemVariants} className="max-w-3xl mb-12">
+              <p className="text-xs font-semibold uppercase tracking-[0.26em] text-[#F4B400]">Our Journey</p>
+              <h2 id="timeline-heading" className="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight text-ink">
+                Two Decades of Continuous Growth
               </h2>
+              <p className="mt-2 text-sm sm:text-base text-body">
+                From a passionate foundation to a leading pre-owned car destination in the region.
+              </p>
             </motion.div>
 
-            <div className="mt-10 relative">
-              <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-[#F4B400]/20 sm:left-1/2" />
+            {/* Timeline Layout */}
+            <div className="relative">
+              {/* Vertical Center Line */}
+              <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#F4B400] via-[#F4B400]/40 to-[#F4B400]/10 sm:left-1/2 -translate-x-1/2 z-0" />
               
               {TIMELINE_ITEMS.map((item, index) => (
                 <motion.div
                   key={item.year}
-                  variants={itemVariants}
+                  initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 30 }}
+                  whileInView={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.55, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
                   className={`relative flex flex-col gap-4 sm:flex-row ${
                     index % 2 === 0 ? 'sm:pr-12' : 'sm:pl-12 sm:flex-row-reverse'
-                  } mb-8 last:mb-0 sm:mb-12`}
+                  } mb-10 last:mb-0 sm:mb-16 z-10`}
                 >
-                  {/* Mobile: pl-14 pushes the year/title/description clear of the
-                      absolutely-positioned icon (which sits at left-4, ~36px wide
-                      including its circle) so nothing renders underneath it.
-                      sm:pl-0 restores the original desktop layout untouched. */}
+                  {/* Content Box */}
                   <div className={`flex-1 pl-14 sm:pl-0 ${index % 2 === 0 ? 'sm:text-right' : 'sm:text-left'}`}>
-                    <div className={`inline-block whitespace-nowrap rounded-2xl bg-[#F4B400]/10 px-4 py-1.5 text-sm font-bold text-[#F4B400] ${
+                    <div className={`inline-block whitespace-nowrap rounded-full bg-[#F4B400]/15 border border-[#F4B400]/30 px-4 py-1.5 text-xs font-extrabold text-[#F4B400] shadow-sm ${
                       index % 2 === 0 ? 'sm:float-right' : 'sm:float-left'
                     }`}>
                       {item.year}
                     </div>
-                    <div className="mt-3">
-                      <h3 className="text-xl font-bold text-ink">{item.title}</h3>
-                      <p className="mt-2 text-base leading-7 text-body">{item.description}</p>
+                    <div className="mt-3 clear-both bg-white border border-line rounded-2xl p-5 shadow-lg transition-all hover:shadow-xl hover:border-[#F4B400]/40">
+                      <h3 className="text-lg sm:text-xl font-extrabold text-ink">{item.title}</h3>
+                      <p className="mt-2 text-xs sm:text-sm leading-relaxed text-body">{item.description}</p>
                     </div>
                   </div>
                   
-                  <div className="absolute left-4 top-0 -translate-x-1/2 sm:left-1/2 sm:top-auto">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F4B400] text-black shadow-lg shadow-[#F4B400]/25">
-                      <item.icon size={18} />
-                    </div>
+                  {/* Timeline Center Node Icon */}
+                  <div className="absolute left-4 top-0 -translate-x-1/2 sm:left-1/2 sm:top-1/2 sm:-translate-y-1/2 z-20">
+                    <motion.div 
+                      whileHover={prefersReducedMotion ? undefined : { scale: 1.15 }}
+                      className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#F4B400] to-[#F59E0B] text-black shadow-[0_0_20px_rgba(244,180,0,0.4)] border-2 border-black"
+                    >
+                      <item.icon size={20} />
+                    </motion.div>
                   </div>
                   
                   <div className="flex-1 hidden sm:block" />
@@ -571,39 +583,39 @@ export default memo(function About({
         </section>
 
         {/* Feature Cards Grid */}
-        <section className="container mx-auto px-4 pb-16 sm:pb-20 lg:pb-24" aria-labelledby="features-heading">
+        <section className="container mx-auto px-4 sm:px-6 pb-16 sm:pb-20 lg:pb-24" aria-labelledby="features-heading">
           <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.15 }}
           >
-            <motion.div variants={itemVariants}>
-              <p className="text-sm font-semibold uppercase tracking-[0.26em] text-[#F4B400]">Why Choose Us</p>
-              <h2 id="features-heading" className="mt-4 text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+            <motion.div variants={itemVariants} className="max-w-2xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.26em] text-[#F4B400]">Why Choose Us</p>
+              <h2 id="features-heading" className="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight text-ink">
                 Premium Reasons to Trust {companyName}
               </h2>
-              <p className="mt-4 max-w-2xl text-base leading-8 text-body">
-                Eight premium reasons customers trust us for their next vehicle.
+              <p className="mt-2 text-sm sm:text-base text-body">
+                Eight core pillars ensuring complete confidence with every pre-owned car purchase.
               </p>
             </motion.div>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-              {FEATURE_CARDS.map((item, index) => {
+              {FEATURE_CARDS.map((item) => {
                 const Icon = item.icon;
                 return (
                   <motion.div
                     key={item.title}
                     variants={scaleVariants}
-                    whileHover={{ y: -8, scale: 1.02 }}
+                    whileHover={prefersReducedMotion ? undefined : { y: -6, scale: 1.01 }}
                     transition={{ duration: 0.3 }}
-                    className="group rounded-3xl border border-line bg-white p-6 shadow-card transition-all duration-300 hover:shadow-2xl"
+                    className="group rounded-3xl border border-line bg-white p-6 shadow-card transition-all duration-300 hover:shadow-2xl hover:border-[#F4B400]/30"
                   >
                     <div className={`rounded-2xl bg-gradient-to-br ${item.gradient} p-3 w-fit group-hover:scale-110 transition-transform duration-300`}>
                       <Icon size={24} className="text-[#F4B400]" />
                     </div>
-                    <h3 className="mt-4 text-lg font-semibold text-ink">{item.title}</h3>
-                    <p className="mt-2 text-sm leading-7 text-body">{item.text}</p>
+                    <h3 className="mt-4 text-base sm:text-lg font-bold text-ink">{item.title}</h3>
+                    <p className="mt-2 text-xs sm:text-sm leading-relaxed text-body">{item.text}</p>
                   </motion.div>
                 );
               })}
@@ -612,28 +624,28 @@ export default memo(function About({
         </section>
 
         {/* Leadership Section */}
-        <section className="container mx-auto px-4 pb-16 sm:pb-20 lg:pb-24" aria-labelledby="leadership-heading">
+        <section className="container mx-auto px-4 sm:px-6 pb-16 sm:pb-20 lg:pb-24" aria-labelledby="leadership-heading">
           <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.15 }}
           >
-            <motion.div variants={itemVariants}>
-              <p className="text-sm font-semibold uppercase tracking-[0.26em] text-[#F4B400]">Leadership</p>
-              <h2 id="leadership-heading" className="mt-4 text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+            <motion.div variants={itemVariants} className="max-w-2xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.26em] text-[#F4B400]">Leadership</p>
+              <h2 id="leadership-heading" className="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight text-ink">
                 Leadership & Industry Expertise
               </h2>
-              <p className="mt-4 max-w-2xl text-base leading-8 text-body">
-                Founded by professionals with leadership and technical experience from India's leading automobile manufacturers.
+              <p className="mt-2 text-sm sm:text-base text-body">
+                Founded by automotive veterans with technical and executive background across major Indian OEMs.
               </p>
             </motion.div>
 
-            <motion.div variants={itemVariants} className="mt-6 flex flex-wrap gap-3">
+            <motion.div variants={itemVariants} className="mt-6 flex flex-wrap gap-2.5">
               {LEADERSHIP_BADGES.map((label) => (
                 <span
                   key={label}
-                  className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2 text-sm font-medium text-ink shadow-sm transition-all hover:bg-[#F4B400]/5 hover:scale-105"
+                  className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2 text-xs sm:text-sm font-semibold text-ink shadow-xs transition-all hover:bg-[#F4B400]/10 hover:border-[#F4B400]/40"
                 >
                   <BadgeCheck size={16} className="text-[#F4B400]" />
                   {label}
@@ -646,32 +658,32 @@ export default memo(function About({
                 {
                   icon: Award,
                   title: 'Leadership Roles',
-                  text: 'Our founders have held leadership and technical positions in some of India\'s most respected automotive companies.',
+                  text: 'Our founders have held key technical and management roles in India\'s leading automotive companies.',
                 },
                 {
                   icon: Building2,
                   title: 'Technical Depth',
-                  text: 'Real-world experience helps us maintain dealership-level standards in inspection, selection, and quality assurance.',
+                  text: 'Hands-on OEM experience enables dealership-level standards in multi-point inspection and quality control.',
                 },
                 {
                   icon: CarFront,
                   title: 'Customer Trust',
-                  text: 'That industry background lets us deliver a premium buying journey built on clarity, reliability, and support.',
+                  text: 'That professional background lets us deliver a buying journey built on clarity, reliability, and peace of mind.',
                 },
-              ].map((item, index) => {
+              ].map((item) => {
                 const Icon = item.icon;
                 return (
                   <motion.div
                     key={item.title}
                     variants={scaleVariants}
-                    whileHover={{ y: -8 }}
-                    className="rounded-3xl border border-line bg-[#FAFAFA] p-6 shadow-card transition-all hover:shadow-xl"
+                    whileHover={prefersReducedMotion ? undefined : { y: -6 }}
+                    className="rounded-3xl border border-line bg-white p-6 shadow-card transition-all hover:shadow-xl hover:border-[#F4B400]/30"
                   >
                     <div className="rounded-2xl bg-[#F4B400]/10 p-3 w-fit">
                       <Icon size={24} className="text-[#F4B400]" />
                     </div>
-                    <h3 className="mt-4 text-lg font-semibold text-ink">{item.title}</h3>
-                    <p className="mt-2 text-sm leading-7 text-body">{item.text}</p>
+                    <h3 className="mt-4 text-base sm:text-lg font-bold text-ink">{item.title}</h3>
+                    <p className="mt-2 text-xs sm:text-sm leading-relaxed text-body">{item.text}</p>
                   </motion.div>
                 );
               })}
@@ -679,42 +691,39 @@ export default memo(function About({
           </motion.div>
         </section>
 
-        {/* Story Section – using props for image */}
-        <section className="container mx-auto px-4 pb-16 sm:pb-20 lg:pb-24" aria-labelledby="story-heading">
+        {/* Story Section */}
+        <section className="container mx-auto px-4 sm:px-6 pb-16 sm:pb-20 lg:pb-24" aria-labelledby="story-heading">
           <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]"
+            viewport={{ once: true, amount: 0.15 }}
+            className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] items-center"
           >
-            <motion.div variants={itemVariants} className="rounded-3xl bg-gradient-to-br from-[#FFF9E7] to-[#FFF3CD] border border-[#F4B400]/20 p-8 shadow-xl sm:p-10">
-              <p className="text-sm font-semibold uppercase tracking-[0.26em] text-[#F4B400]">Our Story</p>
-              <h2 id="story-heading" className="mt-4 text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-                The Story Behind "{companyName}"
+            <motion.div variants={itemVariants} className="rounded-3xl bg-gradient-to-br from-[#FFF9E7] via-[#FFF3CD] to-[#FFF0BC] border border-[#F4B400]/30 p-6 sm:p-10 shadow-xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.26em] text-[#F4B400]">Our Story</p>
+              <h2 id="story-heading" className="mt-2 text-2xl sm:text-4xl font-extrabold tracking-tight text-ink">
+                The Devotion Behind "{companyName}"
               </h2>
-              <p className="mt-4 text-lg font-medium text-ink/80">
+              <p className="mt-3 text-base sm:text-lg font-semibold text-ink/90">
                 The name {companyName} represents our deep devotion to Lord Sri Venkateswara (Tirupati Balaji).
               </p>
-              <p className="mt-6 text-base leading-8 text-body">
-                Our faith inspires the principles on which our business stands:
+              <p className="mt-4 text-xs sm:text-sm leading-relaxed text-body">
+                Our faith inspires the fundamental values on which our dealership operates every single day:
               </p>
-              <ul className="mt-6 space-y-3">
+              <ul className="mt-5 space-y-2.5">
                 {CORE_VALUES.map(({ icon: Icon, label, color }) => (
-                  <li key={label} className="flex items-center gap-3 text-base text-body">
+                  <li key={label} className="flex items-center gap-3 text-xs sm:text-sm text-body font-medium">
                     <Icon size={18} style={{ color }} className="flex-shrink-0" />
-                    <span className="font-medium">{label}</span>
+                    <span>{label}</span>
                   </li>
                 ))}
               </ul>
-              <p className="mt-6 text-base leading-8 text-body font-medium">
-                These values guide every decision we make and every customer relationship we build.
-              </p>
             </motion.div>
 
-            <motion.div variants={scaleVariants} className="overflow-hidden rounded-3xl shadow-2xl">
+            <motion.div variants={scaleVariants} className="overflow-hidden rounded-3xl shadow-2xl border border-line">
               <picture>
-                <source srcSet={storyImageWebp} type="banner2/jpeg" />
+                <source srcSet={storyImageWebp} type="image/webp" />
                 <img
                   src={storyImage}
                   alt={`${companyName} premium vehicle showroom`}
@@ -727,70 +736,68 @@ export default memo(function About({
           </motion.div>
         </section>
 
-        {/* Quote Section */}
-        <section className="container mx-auto px-4 pb-16 sm:pb-20 lg:pb-24">
+        {/* Philosophy Quote Section */}
+        <section className="container mx-auto px-4 sm:px-6 pb-16 sm:pb-20 lg:pb-24">
           <motion.blockquote
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            className="rounded-3xl bg-gradient-to-br from-[#FAFAFA] to-white border border-line p-8 shadow-xl sm:p-12"
+            viewport={{ once: true, amount: 0.15 }}
+            className="rounded-3xl bg-gradient-to-br from-[#121214] via-[#1a1a20] to-[#0f0f12] border border-[#F4B400]/25 p-6 sm:p-12 text-white shadow-2xl relative overflow-hidden"
           >
-            <motion.div variants={itemVariants} className="flex items-start gap-6">
-              <div className="rounded-2xl bg-[#F4B400]/10 p-4 text-[#F4B400]">
-                <Quote size={28} />
+            <div className="absolute top-0 right-0 w-72 h-72 bg-[#F4B400]/10 rounded-full blur-3xl pointer-events-none" />
+
+            <motion.div variants={itemVariants} className="flex items-start gap-5 relative z-10">
+              <div className="rounded-2xl bg-[#F4B400]/20 p-4 text-[#F4B400] border border-[#F4B400]/30 shrink-0">
+                <Quote size={30} />
               </div>
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.26em] text-[#F4B400]">Our Philosophy</p>
-                <p className="mt-4 text-2xl font-semibold leading-[1.4] tracking-tight text-ink sm:text-3xl lg:text-4xl">
-                  "With His divine grace leading our way and your trust driving us forward, {companyName}  is committed to delivering excellence in every journey."
+                <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#F4B400]">Our Philosophy</p>
+                <p className="mt-3 text-xl sm:text-3xl font-extrabold leading-snug tracking-tight text-white">
+                  "With His divine grace leading our way and your trust driving us forward, {companyName} is committed to delivering excellence in every journey."
                 </p>
                 <div className="mt-6 flex items-center gap-4">
-                  <div className="h-px flex-1 bg-[#F4B400]/20" />
-                  <span className="text-sm font-medium text-[#F4B400]">Balaji Cars Team</span>
-                  <div className="h-px flex-1 bg-[#F4B400]/20" />
+                  <div className="h-px flex-1 bg-white/20" />
+                  <span className="text-xs font-bold text-[#F4B400] tracking-wider uppercase">Balaji Cars Team</span>
+                  <div className="h-px flex-1 bg-white/20" />
                 </div>
               </div>
             </motion.div>
           </motion.blockquote>
         </section>
 
-        {/* CTA Section */}
-        <section className="container mx-auto px-4 pb-16 sm:pb-20 lg:pb-24">
+        {/* CTA Banner */}
+        <section className="container mx-auto px-4 sm:px-6 pb-16 sm:pb-20 lg:pb-24">
           <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0F0F10] to-[#1a1a1a] p-8 shadow-2xl sm:p-12"
+            viewport={{ once: true, amount: 0.15 }}
+            className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0F0F10] to-[#1a1a1a] p-6 sm:p-12 shadow-2xl border border-white/10 text-white"
           >
-            {/* Animated background particles */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-[#F4B400] rounded-full blur-3xl" />
-              <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500 rounded-full blur-3xl" />
-            </div>
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[#F4B400]/10 rounded-full blur-3xl pointer-events-none" />
 
-            <motion.div variants={itemVariants} className="relative flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
+            <motion.div variants={itemVariants} className="relative z-10 flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
               <div className="max-w-2xl">
-                <p className="text-sm font-semibold uppercase tracking-[0.26em] text-[#F4B400]">Ready to Explore?</p>
-                <h2 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                <p className="text-xs font-semibold uppercase tracking-[0.26em] text-[#F4B400]">Ready to Explore?</p>
+                <h2 className="mt-2 text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
                   Visit Our Dealership or Browse Premium Vehicles
                 </h2>
-                <p className="mt-3 text-base text-white/70">
+                <p className="mt-2 text-sm sm:text-base text-white/75">
                   Experience the {companyName} difference. Our team is ready to help you find your perfect vehicle.
                 </p>
               </div>
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-col sm:flex-row w-full lg:w-auto gap-3">
                 <Link
                   to="/#car-listings"
-                  className="group inline-flex items-center gap-2 rounded-full bg-[#F4B400] px-8 py-4 text-sm font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#F4B400]/25 active:scale-95"
+                  className="group inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#F4B400] to-[#F59E0B] px-8 py-4 text-sm font-bold text-black shadow-lg hover:scale-105 transition-all"
                 >
-                  Browse Cars
+                  <span>Browse Cars</span>
                   <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
                 </Link>
                 <Link
                   to="/contact"
-                  className="inline-flex items-center justify-center rounded-full border border-white/20 px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-white/10 hover:scale-105 active:scale-95"
+                  className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur-md px-8 py-4 text-sm font-semibold text-white hover:bg-white/20 transition-all"
                 >
                   Contact Us
                 </Link>
@@ -798,6 +805,7 @@ export default memo(function About({
             </motion.div>
           </motion.div>
         </section>
+
       </main>
 
       <Footer settings={settings} />

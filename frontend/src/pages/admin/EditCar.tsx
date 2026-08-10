@@ -48,7 +48,10 @@ const FUEL_TYPES = ['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid'];
 const TRANSMISSIONS = ['Manual', 'Automatic', 'CVT', 'DCT', 'AMT'];
 const OWNER_OPTIONS = ['1st Owner', '2nd Owner', '3rd Owner', '4th+ Owner'];
 const RC_STATUS = ['Clear', 'Pending', 'Hypothecated'];
-const CAR_STATUS = ['Available', 'Sold', 'Reserved'];
+// The plain edit form must never transition a car into Sold — that has to
+// go through the Complete Sale flow so profit/buyer data is always
+// captured (mirrors the backend guard in updateCar).
+const CAR_STATUS = ['Available', 'Reserved'];
 
 interface CarFormValues {
   brand: string; model: string; variant: string; bodyType: string;
@@ -548,11 +551,11 @@ export default function EditCar() {
                 {errors.bodyType && <p className="text-xs text-red-500 mt-1">{errors.bodyType.message}</p>}
               </Field>
               <Field label="Manufacturing Year" required>
-                <input type="number" {...register('manufacturingYear', { required: 'Year is required' })} className="input" />
+                <input type="number" {...register('manufacturingYear', { required: 'Year is required', min: { value: 1990, message: 'Year must be 1990 or later' }, max: { value: new Date().getFullYear(), message: `Year cannot be after ${new Date().getFullYear()}` } })} className="input" />
                 {errors.manufacturingYear && <p className="text-xs text-red-500 mt-1">{errors.manufacturingYear.message}</p>}
               </Field>
               <Field label="Registration Year" required>
-                <input type="number" {...register('registrationYear', { required: 'Year is required' })} className="input" />
+                <input type="number" {...register('registrationYear', { required: 'Year is required', min: { value: 1990, message: 'Year must be 1990 or later' }, max: { value: new Date().getFullYear(), message: `Year cannot be after ${new Date().getFullYear()}` } })} className="input" />
                 {errors.registrationYear && <p className="text-xs text-red-500 mt-1">{errors.registrationYear.message}</p>}
               </Field>
               <Field label="Price (₹)" required>
@@ -572,13 +575,15 @@ export default function EditCar() {
                 {errors.transmission && <p className="text-xs text-red-500 mt-1">{errors.transmission.message}</p>}
               </Field>
               <Field label="Engine CC">
-                <input type="number" {...register('engineCC')} className="input" />
+                <input type="number" {...register('engineCC', { min: { value: 0, message: 'Must be 0 or more' }, max: { value: 10000, message: 'Value seems too high' } })} className="input" />
+                {errors.engineCC && <p className="text-xs text-red-500 mt-1">{errors.engineCC.message}</p>}
               </Field>
               <Field label="Mileage (km/l)">
-                <input type="number" {...register('mileage')} className="input" step="0.1" />
+                <input type="number" {...register('mileage', { min: { value: 0, message: 'Must be 0 or more' }, max: { value: 50, message: 'Value seems too high' } })} className="input" step="0.1" />
+                {errors.mileage && <p className="text-xs text-red-500 mt-1">{errors.mileage.message}</p>}
               </Field>
               <Field label="Kilometers Driven" required>
-                <input type="number" {...register('kilometersDriven', { required: 'Kilometers is required' })} className="input" />
+                <input type="number" {...register('kilometersDriven', { required: 'Kilometers is required', min: { value: 0, message: 'Must be 0 or more' }, max: { value: 1000000, message: 'Value seems too high' } })} className="input" />
                 {errors.kilometersDriven && <p className="text-xs text-red-500 mt-1">{errors.kilometersDriven.message}</p>}
               </Field>
               <Field label="Owner" required>
@@ -588,7 +593,8 @@ export default function EditCar() {
                 {errors.owner && <p className="text-xs text-red-500 mt-1">{errors.owner.message}</p>}
               </Field>
               <Field label="Seats">
-                <input type="number" {...register('seats')} className="input" />
+                <input type="number" {...register('seats', { min: { value: 1, message: 'Must be at least 1' }, max: { value: 15, message: 'Value seems too high' } })} className="input" />
+                {errors.seats && <p className="text-xs text-red-500 mt-1">{errors.seats.message}</p>}
               </Field>
               <Field label="Color">
                 <input {...register('color')} className="input" />
@@ -659,9 +665,26 @@ export default function EditCar() {
           <Section title="Status & Visibility" icon={AlertCircle}>
             <div className="flex flex-wrap items-center gap-4">
               <Field label="Status">
-                <select {...register('status')} className="input w-full sm:w-48">
-                  {CAR_STATUS.map((s) => <option key={s}>{s}</option>)}
-                </select>
+                {car?.status === 'Sold' ? (
+                  <>
+                    <input type="hidden" {...register('status')} value="Sold" />
+                    <select
+                      value="Sold"
+                      disabled
+                      title="Use the Complete Sale flow to change a Sold car's status."
+                      className="input w-full sm:w-48 cursor-not-allowed opacity-70"
+                    >
+                      <option>Sold</option>
+                    </select>
+                    <p className="mt-1 text-xs text-body">
+                      This car is Sold. Use the Complete Sale flow to make changes.
+                    </p>
+                  </>
+                ) : (
+                  <select {...register('status')} className="input w-full sm:w-48">
+                    {CAR_STATUS.map((s) => <option key={s}>{s}</option>)}
+                  </select>
+                )}
               </Field>
               <label className="flex items-center gap-2 text-sm text-ink cursor-pointer mt-4 sm:mt-0">
                 <input type="checkbox" {...register('isFeatured')} className="w-4 h-4 rounded border-line text-[#F4B400] focus:ring-[#F4B400]/20" />

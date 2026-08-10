@@ -180,6 +180,14 @@ const getSimilarCars = asyncHandler(async (req, res) => {
 
 // POST /api/admin/cars  (admin only: create/upload car)
 const createCar = asyncHandler(async (req, res) => {
+  // A brand-new car must never be created directly as Sold — that has to go
+  // through completeSale so profit/buyer data is always captured. (Mirrors
+  // the same guard in updateCar/updateCarStatus.)
+  if (req.body.status === 'Sold') {
+    res.status(400);
+    throw new Error('Use the Complete Sale flow to mark a car as Sold.');
+  }
+
   const images = (req.files || []).map((f) => ({ url: f.path, publicId: f.filename }));
 
   const car = await Car.create({
