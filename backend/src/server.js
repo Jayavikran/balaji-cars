@@ -6,7 +6,6 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
-const path = require('path');
 const mongoose = require('mongoose');
 const Car = require('./models/Car');
 
@@ -144,6 +143,7 @@ app.use('/api/enquiries', rateLimit({
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
+    service: 'BALAJI CARS API',
     message: 'BALAJI CARS API is running',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
@@ -166,12 +166,9 @@ app.get('/api', (req, res) => {
   });
 });
 
-const getPublicSiteUrl = (req) => {
+const getPublicSiteUrl = () => {
   const configured = (process.env.CLIENT_URL || '').replace(/\/$/, '');
-  if (configured) return configured;
-  const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
-  const host = req.get('host');
-  return host ? `${protocol}://${host}`.replace(/\/$/, '') : 'https://www.balajicars.in';
+  return configured || 'https://www.balajicars.in';
 };
 
 app.get('/robots.txt', (req, res) => {
@@ -181,8 +178,8 @@ app.get('/robots.txt', (req, res) => {
   );
 });
 
-// Sitemap must be registered before any SPA catch-all so the backend
-// serves XML directly instead of falling through to HTML.
+// Sitemap must be registered before the generic 404 handlers so the backend
+// serves XML directly instead of returning a JSON not-found response.
 app.use('/', sitemapRoutes);
 
 app.get('/cars/:idOrSlug', async (req, res, next) => {
@@ -219,39 +216,21 @@ app.use('/api/admin/enquiries', adminEnquiryRoutes);
 app.use('/api/admin/settings', adminSettingsRoutes);
 
 // ============================================
-// 🔥 NUCLEAR CACHE KILLER FOR FRONTEND ASSETS
+// ROOT / SERVICE INFO
 // ============================================
-// This forces the browser to NEVER cache your JS/CSS files.
-app.use((req, res, next) => {
-  // Only apply to static frontend assets (JS, CSS, HTML)
-  if (req.url.endsWith('.js') || req.url.endsWith('.css') || req.url.endsWith('.html')) {
-    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
-  }
-  next();
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    service: 'BALAJI CARS API',
+    message: 'BALAJI CARS backend is running'
+  });
 });
 
 // ============================================
-// API 404 (must come before the SPA catch-all below, or unmatched /api/*
-// requests silently fall through to index.html with a 200 status)
+// API 404
 // ============================================
 
 app.all('/api/*', notFound);
-
-// ============================================
-// FRONTEND (React Build)
-// ============================================
-
-const frontendPath = path.join(__dirname, '../../frontend/dist');
-
-console.log('📁 Frontend path:', frontendPath);
-
-app.use(express.static(frontendPath));
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(frontendPath, 'index.html'));
-});
 
 // ============================================
 // ERROR HANDLING
@@ -283,5 +262,4 @@ process.on('uncaughtException', (err) => {
 app.listen(PORT, () => {
   console.log(`🚀 BALAJI CARS API listening on port ${PORT}`);
   console.log(`📍 Environment: ${process.env.NODE_ENV}`);
-  console.log(`📁 Frontend path: ${frontendPath}`);
 });

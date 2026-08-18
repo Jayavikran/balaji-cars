@@ -22,10 +22,7 @@ function urlEntry(loc, lastmod, changefreq, priority) {
 
 function getSiteUrl(req) {
   const configured = (process.env.CLIENT_URL || '').replace(/\/$/, '');
-  if (configured) return configured;
-  const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
-  const host = req.get('host');
-  return host ? `${protocol}://${host}`.replace(/\/$/, '') : 'https://www.balajicars.in';
+  return configured || 'https://www.balajicars.in';
 }
 
 // GET /api/sitemap.xml — dynamically generated so it always reflects the
