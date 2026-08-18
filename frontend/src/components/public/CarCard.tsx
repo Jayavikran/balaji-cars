@@ -29,7 +29,7 @@ function CarCard({ car, badge, priority = false }: CarCardProps) {
   const comparing = isComparing(car._id);
 
   const rawUrl = car.images?.[0]?.url || '';
-  const cover = optimizeImage(rawUrl, 900);
+  const cover = optimizeImage(rawUrl, 600);
 
   const handleToggleCompare = (e: MouseEvent) => {
     e.preventDefault();
@@ -60,7 +60,7 @@ function CarCard({ car, badge, priority = false }: CarCardProps) {
       <div className="relative aspect-[4/3] overflow-hidden bg-black/5">
         <LazyImage
           src={cover}
-          alt={`${car.brand} ${car.model}`}
+          alt={`${car.manufacturingYear} ${car.brand} ${car.model}${car.variant ? ` ${car.variant}` : ''} used car`}
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
           fallback="/images/placeholder-car.jpg"
           rootMargin="200px"

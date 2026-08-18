@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /admin/
+Disallow: /api/
 Disallow: /compare
 
 # See README > SEO & Sitemap for a note on routing this to the backend

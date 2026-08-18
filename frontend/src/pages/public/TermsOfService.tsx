@@ -14,6 +14,7 @@ export default function TermsOfService() {
       <Seo
         title="Terms of Service"
         description={`The terms and conditions for using the ${siteName} website.`}
+        canonical="/terms-of-service"
         noindex
       />
       <Header />

@@ -179,6 +179,7 @@ export default function Compare() {
         <Seo
           title={`Compare Cars | ${settings?.companyName || 'BALAJI CARS'}`}
           description="Compare vehicle specs, pricing, and features side by side."
+          canonical="/compare"
           noindex
         />
         <Header settings={settings} showSearchBar={false} />
@@ -206,6 +207,7 @@ export default function Compare() {
         <Seo
           title={`Compare Cars | ${settings?.companyName || 'BALAJI CARS'}`}
           description="Compare vehicle specs, pricing, and features side by side."
+          canonical="/compare"
           noindex
         />
         <Header settings={settings} showSearchBar={false} />
@@ -241,6 +243,7 @@ export default function Compare() {
         <Seo
           title={`Compare Cars | ${settings?.companyName || 'BALAJI CARS'}`}
           description="Compare vehicle specs, pricing, and features side by side."
+          canonical="/compare"
           noindex
         />
         <Header settings={settings} showSearchBar={false} />
@@ -269,6 +272,7 @@ export default function Compare() {
       <Seo
         title={`Compare Cars | ${settings?.companyName || 'BALAJI CARS'}`}
         description="Compare vehicle specs, pricing, and features side by side."
+        canonical="/compare"
         noindex
       />
       <Header settings={settings} showSearchBar={false} />

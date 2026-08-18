@@ -14,6 +14,7 @@ export default function PrivacyPolicy() {
       <Seo
         title="Privacy Policy"
         description={`How ${siteName} collects, uses, and protects your personal information.`}
+        canonical="/privacy-policy"
         noindex
       />
       <Header />

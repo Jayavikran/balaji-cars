@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 const mongoose = require('mongoose');
+const Car = require('./models/Car');
 
 const connectDB = require('./config/db');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
@@ -171,6 +172,37 @@ app.get('/api', (req, res) => {
 
 app.get('/api/sitemap.xml', getSitemap);
 app.get('/sitemap.xml', getSitemap);
+
+const getPublicSiteUrl = (req) => {
+  const configured = (process.env.CLIENT_URL || '').replace(/\/$/, '');
+  if (configured) return configured;
+  const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+  const host = req.get('host');
+  return host ? `${protocol}://${host}`.replace(/\/$/, '') : 'https://balajicars.in';
+};
+
+app.get('/robots.txt', (req, res) => {
+  const siteUrl = getPublicSiteUrl(req);
+  res.type('text/plain').send(
+    `User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /api/\nDisallow: /compare\nSitemap: ${siteUrl}/sitemap.xml\n`
+  );
+});
+
+app.get('/cars/:idOrSlug', async (req, res, next) => {
+  const { idOrSlug } = req.params;
+  const isObjectId = /^[0-9a-fA-F]{24}$/.test(idOrSlug);
+
+  try {
+    const car = await Car.findOne(isObjectId ? { _id: idOrSlug } : { slug: idOrSlug }).select('slug').lean();
+    if (car && car.slug && car.slug !== idOrSlug) {
+      return res.redirect(301, `/cars/${car.slug}`);
+    }
+  } catch (error) {
+    return next(error);
+  }
+
+  next();
+});
 
 // ============================================
 // PUBLIC ROUTES

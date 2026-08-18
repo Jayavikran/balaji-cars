@@ -272,10 +272,19 @@ const HeroImageSlider = memo(() => {
   const totalSlides = SLIDER_IMAGES.length;
 
   useEffect(() => {
-    SLIDER_IMAGES.forEach((src) => {
-      const img = new Image();
-      img.src = src;
-    });
+    const preloadImages = () => {
+      SLIDER_IMAGES.forEach((src) => {
+        const img = new Image();
+        img.src = src;
+      });
+    };
+    if (typeof window !== 'undefined') {
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(() => preloadImages());
+      } else {
+        setTimeout(preloadImages, 2000);
+      }
+    }
   }, []);
 
   const goToSlide = useCallback((index: number) => {

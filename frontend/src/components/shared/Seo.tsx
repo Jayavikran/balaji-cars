@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { useMemo } from 'react';
+import { resolveAbsoluteUrl, getSiteOrigin, SITE_NAME as DEFAULT_SITE_NAME, DEFAULT_CITY } from '@/utils/seo';
 
 // ============================================
 // TYPES
@@ -42,9 +43,8 @@ interface SeoProps {
 // DEFAULT SITE CONFIG
 // ============================================
 
-const DEFAULT_SITE_NAME = 'BALAJI CARS';
-const DEFAULT_IMAGE = '/images/og-image.jpg';
-const DEFAULT_DESCRIPTION = 'Premium certified used cars with transparent pricing and verified quality.';
+const DEFAULT_IMAGE = '/images/banner1.jpeg';
+const DEFAULT_DESCRIPTION = `Premium used cars in ${DEFAULT_CITY} with transparent pricing and verified quality.`;
 
 // ============================================
 // MAIN SEO COMPONENT
@@ -76,13 +76,19 @@ export default function Seo({
   // ===== Memoized Values =====
   
   const canonicalUrl = useMemo(() => {
-    if (customCanonical) return customCanonical;
-    if (typeof window === 'undefined') return '';
+    const origin = getSiteOrigin();
+    if (customCanonical) return resolveAbsoluteUrl(customCanonical, origin);
+    if (typeof window === 'undefined') return origin;
     return `${window.location.origin}${window.location.pathname}`;
   }, [customCanonical]);
 
   const fullTitle = useMemo(() => {
-    return `${title} | ${siteName}`;
+    const normalizedTitle = title.trim();
+    const sitePattern = new RegExp(`\\s*\\|\\s*${siteName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
+    if (sitePattern.test(normalizedTitle)) {
+      return normalizedTitle;
+    }
+    return `${normalizedTitle} | ${siteName}`;
   }, [title, siteName]);
 
   const metaDescription = useMemo(() => {
@@ -92,9 +98,9 @@ export default function Seo({
   // Use openGraph data if provided
   const ogTitle = openGraph?.title || fullTitle;
   const ogDescription = openGraph?.description || metaDescription;
-  const ogImage = openGraph?.images?.[0]?.url || image || DEFAULT_IMAGE;
+  const ogImage = resolveAbsoluteUrl(openGraph?.images?.[0]?.url || image || DEFAULT_IMAGE, getSiteOrigin());
   const ogType = openGraph?.type || type;
-  const ogUrl = openGraph?.url || canonicalUrl;
+  const ogUrl = resolveAbsoluteUrl(openGraph?.url || canonicalUrl, getSiteOrigin());
 
   const jsonLdList = useMemo(() => {
     if (!jsonLd) return [];
@@ -126,15 +132,18 @@ export default function Seo({
       <title>{fullTitle}</title>
       <meta name="description" content={metaDescription} />
       <link rel="canonical" href={canonicalUrl} />
+      <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+      <link rel="shortcut icon" href="/favicon.svg" />
+      <link rel="apple-touch-icon" href="/images/balaji-cars-logo.png" />
       
       {/* ===== Language & Locale ===== */}
-      <html lang="en" />
+      <html lang="en-IN" />
       <meta property="og:locale" content="en_IN" />
       <meta property="og:site_name" content={siteName} />
 
       {/* ===== Robots ===== */}
-      {noindex && <meta name="robots" content="noindex, nofollow" />}
-      {!noindex && <meta name="robots" content="index, follow" />}
+      {noindex && <meta name="robots" content="noindex, nofollow, max-image-preview:none" />}
+      {!noindex && <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />}
 
       {/* ===== Performance ===== */}
       <link rel="dns-prefetch" href="//fonts.googleapis.com" />
@@ -151,7 +160,7 @@ export default function Seo({
       <meta property="og:image" content={ogImage} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
-      <meta property="og:image:alt" content={title} />
+      <meta property="og:image:alt" content={ogTitle} />
 
       {/* ===== Twitter Card ===== */}
       <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
@@ -224,7 +233,7 @@ export const generateWebsiteSchema = (data: {
     '@type': 'SearchAction',
     target: {
       '@type': 'EntryPoint',
-      urlTemplate: `${data.url}/search?q={search_term_string}`,
+      urlTemplate: `${data.url}/?q={search_term_string}`,
     },
     'query-input': 'required name=search_term_string',
   },
@@ -272,16 +281,21 @@ export const generateProductSchema = (data: {
     name: data.brand,
   },
   model: data.model,
+  category: 'Used Car',
+  itemCondition: 'https://schema.org/UsedCondition',
   productionDate: data.year?.toString(),
-  vehicleEngine: data.fuelType ? {
-    '@type': 'EngineSpecification',
-    fuelType: data.fuelType,
-  } : undefined,
-  mileage: data.mileage ? {
-    '@type': 'QuantitativeValue',
-    value: data.mileage,
-    unitText: 'KM',
-  } : undefined,
+  additionalProperty: [
+    data.fuelType ? {
+      '@type': 'PropertyValue',
+      name: 'Fuel Type',
+      value: data.fuelType,
+    } : undefined,
+    data.mileage ? {
+      '@type': 'PropertyValue',
+      name: 'Kilometers Driven',
+      value: `${data.mileage} km`,
+    } : undefined,
+  ].filter(Boolean),
   offers: {
     '@type': 'Offer',
     price: data.price,

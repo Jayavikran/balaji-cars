@@ -19,19 +19,33 @@ function urlEntry(loc, lastmod, changefreq, priority) {
   </url>`;
 }
 
+function getSiteUrl(req) {
+  const configured = (process.env.CLIENT_URL || '').replace(/\/$/, '');
+  if (configured) return configured;
+  const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+  const host = req.get('host');
+  return host ? `${protocol}://${host}`.replace(/\/$/, '') : 'https://balajicars.in';
+}
+
 // GET /api/sitemap.xml — dynamically generated so it always reflects the
 // current inventory (car listings change far too often for a static file).
 // In production, route your domain's /sitemap.xml to this endpoint (see
 // README > SEO & Sitemap).
 const getSitemap = asyncHandler(async (req, res) => {
-  const siteUrl = (process.env.CLIENT_URL || 'http://localhost:5173').replace(/\/$/, '');
+  const siteUrl = getSiteUrl(req);
 
   const cars = await Car.find({ status: { $ne: 'Sold' } })
     .select('slug updatedAt')
     .sort({ updatedAt: -1 })
     .lean();
 
-  const staticEntries = [urlEntry(`${siteUrl}/`, new Date(), 'daily', '1.0')];
+  const staticEntries = [
+    urlEntry(`${siteUrl}/`, new Date(), 'daily', '1.0'),
+    urlEntry(`${siteUrl}/about`, new Date(), 'monthly', '0.7'),
+    urlEntry(`${siteUrl}/contact`, new Date(), 'monthly', '0.8'),
+    urlEntry(`${siteUrl}/privacy-policy`, new Date(), 'yearly', '0.3'),
+    urlEntry(`${siteUrl}/terms-of-service`, new Date(), 'yearly', '0.3'),
+  ];
 
   const carEntries = cars.map((car) =>
     urlEntry(`${siteUrl}/cars/${car.slug}`, car.updatedAt, 'weekly', '0.8')

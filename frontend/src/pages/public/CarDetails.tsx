@@ -1,5 +1,5 @@
 import { useEffect, useState, lazy, Suspense, useCallback, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
   MessageCircle,
@@ -37,6 +37,7 @@ import { useSiteSettings } from '@/hooks/useSiteSettings';
 import Seo from '@/components/shared/Seo';
 import Breadcrumbs, { getBreadcrumbJsonLd } from '@/components/shared/Breadcrumbs';
 import { optimizeImage } from '@/utils/optimizeImage';
+import { buildCarBreadcrumbItems, buildCarProductSchema, buildCarSeoDescription, buildCarSeoTitle, getSiteOrigin, resolveAbsoluteUrl, SITE_NAME } from '@/utils/seo';
 
 const EMICalculator = lazy(() => import('@/components/public/EMICalculator'));
 
@@ -169,6 +170,7 @@ const ImageLightbox = function ImageLightbox({
 
 export default function CarDetails() {
   const { idOrSlug = '' } = useParams();
+  const navigate = useNavigate();
   const [imgIndex, setImgIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -187,6 +189,12 @@ export default function CarDetails() {
   useEffect(() => {
     setImgIndex(0);
   }, [idOrSlug]);
+
+  useEffect(() => {
+    if (car?.slug && idOrSlug !== car.slug) {
+      navigate(`/cars/${car.slug}`, { replace: true });
+    }
+  }, [car?.slug, idOrSlug, navigate]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -264,45 +272,18 @@ export default function CarDetails() {
   }
 
   const carName = `${car.brand} ${car.model}${car.variant ? ` ${car.variant}` : ''}`;
-  const seoTitle = `${carName} (${car.manufacturingYear}) for ${formatPrice(car.price)} | ${settings?.companyName || 'BALAJI CARS'}`;
-  const seoDescription = car.description?.slice(0, 155) || `${carName} - ${car.manufacturingYear}, ${(car.kilometersDriven || 0).toLocaleString('en-IN')} km driven, ${car.fuelType} ${car.transmission}. Priced at ${formatPrice(car.price)}.`;
-  const siteOrigin = typeof window !== 'undefined' ? window.location.origin : '';
+  const seoTitle = buildCarSeoTitle(car);
+  const seoDescription = buildCarSeoDescription(car);
+  const siteOrigin = getSiteOrigin();
+  const siteName = settings?.companyName || SITE_NAME;
   const fav = isFavorite(car._id);
   const comparing = isComparing(car._id);
   const isNew = isNewArrival(car.createdAt);
   const hasPriceDrop = car.previousPrice && car.previousPrice > car.price;
   const statusColor = getStatusColor(car.status);
 
-  const breadcrumbItems = [
-    { label: 'Home', href: '/' },
-    { label: car.brand, href: `/?brand=${encodeURIComponent(car.brand)}` },
-    { label: `${car.model}${car.variant ? ` ${car.variant}` : ''}` },
-  ];
-
-  const vehicleJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Vehicle',
-    name: carName,
-    brand: { '@type': 'Brand', name: car.brand },
-    model: car.model,
-    vehicleModelDate: String(car.manufacturingYear),
-    mileageFromOdometer: {
-      '@type': 'QuantitativeValue',
-      value: car.kilometersDriven,
-      unitCode: 'KMT',
-    },
-    fuelType: car.fuelType,
-    vehicleTransmission: car.transmission,
-    image: images.map((img) => img.url),
-    description: seoDescription,
-    offers: {
-      '@type': 'Offer',
-      price: car.price,
-      priceCurrency: 'INR',
-      availability: car.status === 'Available' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-      url: `${siteOrigin}/cars/${car.slug}`,
-    },
-  };
+  const breadcrumbItems = buildCarBreadcrumbItems(car);
+  const productJsonLd = buildCarProductSchema(car, siteOrigin, siteName);
 
   const specs = [
     { icon: Calendar, label: 'Year', value: `${car.manufacturingYear} (Reg. ${car.registrationYear})` },
@@ -322,9 +303,11 @@ export default function CarDetails() {
       <Seo
         title={seoTitle}
         description={seoDescription}
-        image={images[0]?.url}
+        image={resolveAbsoluteUrl(images[0]?.url, siteOrigin)}
         type="product"
-        jsonLd={[vehicleJsonLd, getBreadcrumbJsonLd(breadcrumbItems, siteOrigin)]}
+        canonical={`/cars/${car.slug}`}
+        noindex={car.status === 'Sold'}
+        jsonLd={[productJsonLd, getBreadcrumbJsonLd(breadcrumbItems, siteOrigin)]}
       />
       <Header settings={settings} showSearchBar={false} />
 

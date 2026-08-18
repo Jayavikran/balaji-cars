@@ -147,7 +147,9 @@ carSchema.index({
 });
 
 carSchema.pre('save', function generateSlug(next) {
-  if (this.isModified('brand') || this.isModified('model') || this.isModified('variant') || !this.slug) {
+  // Slugs are created once and then kept stable so old public URLs do not
+  // break when an admin edits the title fields later.
+  if (!this.slug) {
     const base = `${this.brand}-${this.model}-${this.variant || ''}-${this.manufacturingYear}`
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')

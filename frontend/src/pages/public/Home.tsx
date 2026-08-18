@@ -12,6 +12,7 @@ import CarList from '@/components/public/CarList';
 import Seo from '@/components/shared/Seo';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { advancedFiltersFromParams, paramsFromFilters } from '@/utils/filterParams';
+import { buildDealerSchema, buildWebsiteSchema, getSiteOrigin, SITE_NAME, DEFAULT_CITY } from '@/utils/seo';
 import { Loader2, RefreshCw } from 'lucide-react';
 
 type SortOption = 'newest' | 'price_low_high' | 'price_high_low' | 'km_low_high' | 'year_newest' | 'featured_first';
@@ -34,21 +35,15 @@ export default function Home() {
 
   const [debouncedSearch] = useDebounce(search, DEBOUNCE_DELAY);
 
-  const siteName = settings?.companyName || 'BALAJI CARS';
-  const siteOrigin = typeof window !== 'undefined' ? window.location.origin : '';
-  const seoTitle = `${siteName} | Premium Certified Used Cars`;
-  const seoDescription = `Browse ${siteName}'s certified used car inventory. Compare vehicles, calculate EMI, and connect with our dealership over WhatsApp or phone - every listing verified.`;
-
-  const autoDealerJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'AutoDealer',
-    name: siteName,
-    url: siteOrigin,
-    telephone: settings?.phoneNumber,
-    email: settings?.email,
-    address: settings?.address ? { '@type': 'PostalAddress', streetAddress: settings.address } : undefined,
-    sameAs: [settings?.facebookUrl, settings?.instagramUrl, settings?.youtubeUrl].filter(Boolean),
-  };
+  const siteName = settings?.companyName || SITE_NAME;
+  const siteOrigin = getSiteOrigin();
+  const seoTitle = `Used Cars in ${DEFAULT_CITY}`;
+  const seoDescription = `Find verified used cars in ${DEFAULT_CITY} with BALAJI CARS. Browse second-hand cars, compare listings, calculate EMI, and contact us for buying or selling support.`;
+  const hasQueryParams = searchParams.toString().length > 0;
+  const homepageSchemas = [
+    buildWebsiteSchema(siteOrigin, siteName),
+    buildDealerSchema(settings, siteOrigin, siteName),
+  ];
 
   const combinedFilters: CarFilters = useMemo(
     () => ({
@@ -75,13 +70,13 @@ export default function Home() {
 
   useEffect(() => {
     const params = paramsFromFilters({
-      q: search,
+      q: debouncedSearch,
       sort,
       brand,
       advanced: appliedFilters,
     });
     setSearchParams(params, { replace: true });
-  }, [search, sort, brand, appliedFilters, setSearchParams]);
+  }, [debouncedSearch, sort, brand, appliedFilters, setSearchParams]);
 
   const loadMore = useCallback(() => {
     if (data?.pagination && page < data.pagination.totalPages) {
@@ -117,7 +112,18 @@ export default function Home() {
 
   return (
     <div className="mobile-page min-h-screen flex flex-col">
-      <Seo title={seoTitle} description={seoDescription} jsonLd={autoDealerJsonLd} />
+      <Seo
+        title={seoTitle}
+        description={seoDescription}
+        canonical="/"
+        noindex={hasQueryParams}
+        jsonLd={homepageSchemas}
+        openGraph={{
+          title: `${seoTitle} | ${siteName}`,
+          description: seoDescription,
+          images: [{ url: '/images/banner1.jpeg', alt: `${siteName} showroom in ${DEFAULT_CITY}` }],
+        }}
+      />
 
       <Header
         settings={settings}
