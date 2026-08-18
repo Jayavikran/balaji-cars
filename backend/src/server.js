@@ -21,7 +21,7 @@ const adminSettingsRoutes = require('./routes/adminSettingsRoutes');
 const authRoutes = require('./routes/authRoutes');
 const adminCarRoutes = require('./routes/adminCarRoutes');
 const adminEnquiryRoutes = require('./routes/adminEnquiryRoutes');
-const { getSitemap } = require('./controllers/sitemapController');
+const sitemapRoutes = require('./routes/sitemapRoutes');
 
 // Connect Database
 connectDB();
@@ -166,13 +166,6 @@ app.get('/api', (req, res) => {
   });
 });
 
-// ============================================
-// SITEMAP
-// ============================================
-
-app.get('/api/sitemap.xml', getSitemap);
-app.get('/sitemap.xml', getSitemap);
-
 const getPublicSiteUrl = (req) => {
   const configured = (process.env.CLIENT_URL || '').replace(/\/$/, '');
   if (configured) return configured;
@@ -187,6 +180,10 @@ app.get('/robots.txt', (req, res) => {
     `User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /api/\nDisallow: /compare\nSitemap: ${siteUrl}/sitemap.xml\n`
   );
 });
+
+// Sitemap must be registered before any SPA catch-all so the backend
+// serves XML directly instead of falling through to HTML.
+app.use('/', sitemapRoutes);
 
 app.get('/cars/:idOrSlug', async (req, res, next) => {
   const { idOrSlug } = req.params;

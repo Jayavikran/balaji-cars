@@ -1,4 +1,5 @@
 const asyncHandler = require('express-async-handler');
+const mongoose = require('mongoose');
 const Car = require('../models/Car');
 
 function escapeXml(value) {
@@ -34,10 +35,20 @@ function getSiteUrl(req) {
 const getSitemap = asyncHandler(async (req, res) => {
   const siteUrl = getSiteUrl(req);
 
-  const cars = await Car.find({ status: { $ne: 'Sold' } })
-    .select('slug updatedAt')
-    .sort({ updatedAt: -1 })
-    .lean();
+  let cars = [];
+
+  // If Mongo is unavailable, still return a valid XML sitemap with the public
+  // static URLs so crawlers never receive an HTML error page.
+  if (mongoose.connection.readyState === 1) {
+    try {
+      cars = await Car.find({ status: { $ne: 'Sold' } })
+        .select('slug updatedAt')
+        .sort({ updatedAt: -1 })
+        .lean();
+    } catch (error) {
+      console.error('Sitemap car lookup failed, serving static URLs only:', error.message);
+    }
+  }
 
   const staticEntries = [
     urlEntry(`${siteUrl}/`, new Date(), 'daily', '1.0'),
@@ -56,7 +67,7 @@ const getSitemap = asyncHandler(async (req, res) => {
 ${[...staticEntries, ...carEntries].join('\n')}
 </urlset>`;
 
-  res.set('Content-Type', 'application/xml');
+  res.set('Content-Type', 'application/xml; charset=utf-8');
   res.send(xml);
 });
 
