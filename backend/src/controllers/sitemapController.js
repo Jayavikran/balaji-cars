@@ -24,7 +24,7 @@ function getSiteUrl(req) {
   if (configured) return configured;
   const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
   const host = req.get('host');
-  return host ? `${protocol}://${host}`.replace(/\/$/, '') : 'https://balajicars.in';
+  return host ? `${protocol}://${host}`.replace(/\/$/, '') : 'https://www.balajicars.in';
 }
 
 // GET /api/sitemap.xml — dynamically generated so it always reflects the

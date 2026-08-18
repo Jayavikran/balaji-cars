@@ -1,0 +1,2 @@
+/sitemap.xml https://balaji-cars-1.onrender.com/sitemap.xml 200
+/api/* https://balaji-cars-1.onrender.com/api/:splat 200

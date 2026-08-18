@@ -1,10 +1,9 @@
 User-agent: *
 Allow: /
 Disallow: /admin/
-Disallow: /api/
 Disallow: /compare
 
 # See README > SEO & Sitemap for a note on routing this to the backend
 # in production (car listings change constantly, so the sitemap is
 # generated dynamically from MongoDB rather than as a static file).
-Sitemap: /sitemap.xml
+Sitemap: https://www.balajicars.in/sitemap.xml

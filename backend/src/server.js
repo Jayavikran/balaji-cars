@@ -178,7 +178,7 @@ const getPublicSiteUrl = (req) => {
   if (configured) return configured;
   const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
   const host = req.get('host');
-  return host ? `${protocol}://${host}`.replace(/\/$/, '') : 'https://balajicars.in';
+  return host ? `${protocol}://${host}`.replace(/\/$/, '') : 'https://www.balajicars.in';
 };
 
 app.get('/robots.txt', (req, res) => {
