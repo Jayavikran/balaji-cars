@@ -26,8 +26,7 @@ const FEATURES = [
 const SLIDER_IMAGES = [
   '/images/banner2.jpeg',
   '/images/banner3.jpeg',
-  '/images/banner4.png',
-  '/images/banner5.png',
+  '/images/banner5.jpeg',
   '/images/banner6.jpeg',
 ];
 
